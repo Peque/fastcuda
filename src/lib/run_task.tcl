@@ -3,7 +3,7 @@
 #
 # See the Development System Reference Guide for a complete list of all
 # the process tasks.
-# 
+#
 # param[in] task The process task you want to run.
 # return True in case of success; false otherwise.
 #
@@ -17,6 +17,6 @@ proc run_task { task } {
 	if { (($status != "up_to_date") && ($status != "warnings")) || !$result } {
 		return false
 	}
-	
+
 	return true
 }
