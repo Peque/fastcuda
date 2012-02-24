@@ -29,17 +29,30 @@ set lib_dir $main_script_dir/lib
 
 # Includes:
 source $lib_dir/run_task.tcl
+source $lib_dir/run_process.tcl
+source $lib_dir/set_project_props.tcl
+source $lib_dir/set_process_props.tcl
+source $lib_dir/create_libraries.tcl
+source $lib_dir/rebuild_project.tcl
+source $lib_dir/open_project.tcl
+source $lib_dir/add_source_files.tcl
+source $lib_dir/main.tcl
 
 # Target file for building the project:
-set target_tcl_script [file normalize [lindex $::argv 0]]
+set target_project_dir [file normalize [lindex $::argv 0]]
 
 # Avoid "not found" issues...
-cd [file dirname $target_tcl_script]
+cd [file dirname $target_project_dir]
 
 # Change argv for the following script, as we are using the source
 # command which we can't use with any parameters except for the file
 # itself:
 set argv {rebuild_project}
 
+set myProject "fastcuda_project"
+set myScript "fastcuda_project.tcl"
+
 # Running the target script:
-source [file tail $target_tcl_script]
+if { [catch { main } result] } {
+	puts "$myScript failed: $result."
+}
