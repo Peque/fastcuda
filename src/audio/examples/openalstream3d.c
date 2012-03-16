@@ -177,6 +177,9 @@ int main (int argc, char **argv)
 
 		}
 
+		// In case there are no processed buffers, sleep a little
+		usleep(10000);
+
 		// Check for a buffer underrun
 		alGetSourcei(sources[0], AL_SOURCE_STATE, &source_state);
 		if (source_state != AL_PLAYING) {
