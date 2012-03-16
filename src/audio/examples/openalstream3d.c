@@ -32,8 +32,8 @@
 
 // General
 #define N_SOURCES 1
-#define N_BUFFERS 3
-#define BUFFER_SIZE 4096
+#define N_BUFFERS 1200
+#define BUFFER_SIZE 256
 
 FILE *audio_file;
 ALenum audio_format;
@@ -178,7 +178,7 @@ int main (int argc, char **argv)
 		}
 
 		// In case there are no processed buffers, sleep a little
-		usleep(10000);
+		usleep(1000000);
 
 		// Check for a buffer underrun
 		alGetSourcei(sources[0], AL_SOURCE_STATE, &source_state);
