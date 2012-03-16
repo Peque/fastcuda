@@ -38,7 +38,7 @@
 FILE *audio_file;
 ALenum audio_format;
 ALenum source_state;
-int decoded_buffer[BUFFER_SIZE];
+char decoded_buffer[BUFFER_SIZE];
 int buffers_processed;
 int buffer_i;
 int current_section;
@@ -52,11 +52,11 @@ ALuint sources[N_SOURCES];
 // Listener
 ALfloat listener_position[] = { 0.0, 0.0, 0.0 };
 ALfloat listener_speed[] = { 0.0, 0.0, 0.0 };
-ALfloat listener_orientation[] = { 0.0, 0.0, 1.0, 0.0, 1.0, 0.0 };
+ALfloat listener_orientation[] = { 0.0, 0.0, -1.0, 0.0, -1.0, 0.0 };
 
 // Source
-ALfloat source_position[] = { 0.0, 0.0, 1.0 };
-ALfloat source_speed[] = { 0.0, 0.0, 1.0 };
+ALfloat source_position[] = { 0.0, 0.0, -1.0 };
+ALfloat source_speed[] = { 0.0, 0.0, -1.0 };
 
 
 int main (int argc, char **argv)
