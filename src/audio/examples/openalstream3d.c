@@ -32,8 +32,8 @@
 
 // General
 #define N_SOURCES 1
-#define N_BUFFERS 1200
-#define BUFFER_SIZE 256
+#define N_BUFFERS 3
+#define BUFFER_SIZE 4096
 
 FILE *audio_file;
 ALenum audio_format;
@@ -43,6 +43,9 @@ int buffers_processed;
 int buffer_i;
 int current_section;
 int audio_end;
+int read_counter;
+int read_bytes;
+int reached_eof;
 int i;
 
 // Buffers and sources
@@ -118,12 +121,17 @@ int main (int argc, char **argv)
 	// Filling the buffers with decoded music
 	for (i = 0; i < N_BUFFERS ; i++) {
 
-		ov_read(&ogg_file, (char *) decoded_buffer, BUFFER_SIZE, 0, 2, 1, &current_section);
+		read_counter = 0;
 
-		alBufferData(buffers[i], audio_format, decoded_buffer, BUFFER_SIZE, ogg_file_information->rate);
+		while (read_counter < BUFFER_SIZE) {
+			read_bytes = ov_read(&ogg_file, (char *) decoded_buffer + read_counter, \
+									BUFFER_SIZE - read_counter, 0, 2, 1, &current_section);
+			if (read_bytes > 0) read_counter += read_bytes;
+			else break;
+		}
+
+		alBufferData(buffers[i], audio_format, decoded_buffer, read_counter, ogg_file_information->rate);
 		if (alGetError() != AL_NO_ERROR) printf ("ERROR: Could not fill buffer with decoded audio!\n");
-
-		// TODO: break if audio size is smaller that all buffers (see openalstream.c)
 
 	}
 
@@ -148,37 +156,51 @@ int main (int argc, char **argv)
 		// Check number of processed buffers
 		alGetSourcei(sources[0], AL_BUFFERS_PROCESSED, &buffers_processed);
 
-		// Unqueue the processed buffer, fill it with data and queue it back
-		while (buffers_processed) {
-
-			alSourceUnqueueBuffers(sources[0], 1, &buffer_i);
-			if (alGetError() != AL_NO_ERROR) {
-				printf("ERROR: Could not unqueue buffer!\n");
-				exit(1);
-			}
-
-			ov_read(&ogg_file, (char *) decoded_buffer, BUFFER_SIZE, 0, 2, 1, &current_section);
-
-			alBufferData(buffer_i, audio_format, decoded_buffer, BUFFER_SIZE, ogg_file_information->rate);
-			if (alGetError() != AL_NO_ERROR) {
-				printf("ERROR: Could not add decoded data to the buffer!\n");
-				exit(1);
-			}
-
-			alSourceQueueBuffers(sources[0], 1, &buffer_i);
-			if (alGetError() != AL_NO_ERROR) {
-				printf("ERROR: Could not reasign buffer to the queue!\n");
-				exit(1);
-			}
-
-			buffers_processed--;
-
-			// TODO: break if audio size is smaller that all buffers (see openalstream.c)
-
-		}
-
 		// In case there are no processed buffers, sleep a little
-		usleep(1000000);
+		if (!buffers_processed) {
+			usleep(10000);
+		} else {
+
+			// Unqueue the processed buffer, fill it with data and queue it back
+			while (buffers_processed) {
+
+				alSourceUnqueueBuffers(sources[0], 1, &buffer_i);
+				if (alGetError() != AL_NO_ERROR) {
+					printf("ERROR: Could not unqueue buffer!\n");
+					exit(1);
+				}
+
+				read_counter = 0;
+
+				while (read_counter < BUFFER_SIZE) {
+					read_bytes = ov_read(&ogg_file, (char *) decoded_buffer + read_counter, \
+											BUFFER_SIZE - read_counter, 0, 2, 1, &current_section);
+					if (read_bytes > 0) read_counter += read_bytes;
+					else {
+						reached_eof = 1;
+						buffers_processed = 0;
+						break;
+					}
+				}
+
+				if (reached_eof) break;
+
+				alBufferData(buffer_i, audio_format, decoded_buffer, read_counter, ogg_file_information->rate);
+				if (alGetError() != AL_NO_ERROR) {
+					printf("ERROR: Could not add decoded data to the buffer!\n");
+					exit(1);
+				}
+
+				alSourceQueueBuffers(sources[0], 1, &buffer_i);
+				if (alGetError() != AL_NO_ERROR) {
+					printf("ERROR: Could not reasign buffer to the queue!\n");
+					exit(1);
+				}
+
+				buffers_processed--;
+
+			}
+		}
 
 		// Check for a buffer underrun
 		alGetSourcei(sources[0], AL_SOURCE_STATE, &source_state);
