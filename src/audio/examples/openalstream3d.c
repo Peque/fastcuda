@@ -32,7 +32,7 @@
 
 // General
 #define N_SOURCES 1
-#define N_BUFFERS 3
+#define N_BUFFERS 4
 #define BUFFER_SIZE 4096
 
 FILE *audio_file;
@@ -45,7 +45,6 @@ int current_section;
 int audio_end;
 int read_counter;
 int read_bytes;
-int reached_eof;
 int i;
 
 // Buffers and sources
@@ -55,11 +54,11 @@ ALuint sources[N_SOURCES];
 // Listener
 ALfloat listener_position[] = { 0.0, 0.0, 0.0 };
 ALfloat listener_speed[] = { 0.0, 0.0, 0.0 };
-ALfloat listener_orientation[] = { 0.0, 0.0, -1.0, 0.0, -1.0, 0.0 };
+ALfloat listener_orientation[] = { 0.0, 0.0, -1.0, 0.0, 1.0, 0.0 }; // Default listener orientation
 
 // Source
-ALfloat source_position[] = { 0.0, 0.0, -1.0 };
-ALfloat source_speed[] = { 0.0, 0.0, -1.0 };
+ALfloat source_position[] = { 0.0, 0.0, 1.0 };
+ALfloat source_speed[] = { 0.0, 0.0, 0.0 };
 
 
 int main (int argc, char **argv)
@@ -116,6 +115,21 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 
+
+	// Configuration for positional audio
+	alEnable(AL_DISTANCE_MODEL);
+	alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
+
+	// Set listener position, speed and orientation
+	alListenerfv(AL_POSITION, listener_position);
+	alListenerfv(AL_VELOCITY, listener_speed);
+	alListenerfv(AL_ORIENTATION, listener_orientation);
+
+	// Set source position
+	alSourcefv(sources[0], AL_POSITION, source_position);
+	alSourcefv(sources[0], AL_VELOCITY, source_speed);
+
+
 	current_section = -1;
 
 	// Filling the buffers with decoded music
@@ -124,14 +138,14 @@ int main (int argc, char **argv)
 		read_counter = 0;
 
 		while (read_counter < BUFFER_SIZE) {
-			read_bytes = ov_read(&ogg_file, (char *) decoded_buffer + read_counter, \
+			read_bytes = ov_read(&ogg_file, decoded_buffer + read_counter, \
 									BUFFER_SIZE - read_counter, 0, 2, 1, &current_section);
 			if (read_bytes > 0) read_counter += read_bytes;
 			else break;
 		}
 
 		alBufferData(buffers[i], audio_format, decoded_buffer, read_counter, ogg_file_information->rate);
-		if (alGetError() != AL_NO_ERROR) printf ("ERROR: Could not fill buffer with decoded audio!\n");
+		if (alGetError() != AL_NO_ERROR) printf ("ERROR: Could not fill buffer '%d' with decoded audio!\n", i);
 
 	}
 
@@ -177,13 +191,12 @@ int main (int argc, char **argv)
 											BUFFER_SIZE - read_counter, 0, 2, 1, &current_section);
 					if (read_bytes > 0) read_counter += read_bytes;
 					else {
-						reached_eof = 1;
 						buffers_processed = 0;
 						break;
 					}
 				}
 
-				if (reached_eof) break;
+				if (read_bytes == 0) break;
 
 				alBufferData(buffer_i, audio_format, decoded_buffer, read_counter, ogg_file_information->rate);
 				if (alGetError() != AL_NO_ERROR) {
