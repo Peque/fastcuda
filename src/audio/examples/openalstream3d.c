@@ -28,6 +28,7 @@
 #include <AL/alc.h>
 #include <AL/alut.h>
 #include <vorbis/vorbisfile.h>
+#include <math.h>
 
 
 // General
@@ -47,6 +48,8 @@ int read_counter;
 int read_bytes;
 int i;
 
+float angle;
+
 // Buffers and sources
 ALuint buffers[N_BUFFERS];
 ALuint sources[N_SOURCES];
@@ -57,7 +60,7 @@ ALfloat listener_speed[] = { 0.0, 0.0, 0.0 };
 ALfloat listener_orientation[] = { 0.0, 0.0, -1.0, 0.0, 1.0, 0.0 }; // Default listener orientation
 
 // Source
-ALfloat source_position[] = { 0.0, 0.0, 1.0 };
+ALfloat source_position[] = { 0.0, 0.0, 0.0 };
 ALfloat source_speed[] = { 0.0, 0.0, 0.0 };
 
 
@@ -173,6 +176,12 @@ int main (int argc, char **argv)
 		// In case there are no processed buffers, sleep a little
 		if (!buffers_processed) {
 			usleep(10000);
+
+			// Move source after sleeping
+			angle += 0.005;
+			source_position[0] = 2 * cos(angle);
+			source_position[1] = 2 * sin(angle);
+			alSourcefv(sources[0], AL_POSITION, source_position);
 		} else {
 
 			// Unqueue the processed buffer, fill it with data and queue it back
