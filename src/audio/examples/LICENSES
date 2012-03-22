@@ -1,7 +1,0 @@
-Both
-
-  /src/audio/examples/alurestream.c
-  /src/audio/examples/alureplay.c
-
-Are taken from http://repo.or.cz/w/alure.git/tree/HEAD:/examples and are only
-used for testing pourposes without any modification.
