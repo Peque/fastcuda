@@ -1,0 +1,17 @@
+Dependencies:
+
+  $ su -c 'yum install alure-devel openal-soft-devel ffmpeg-devel fluidsynth-devel dumb-devel freealut-devel libvorbis-devel SDL SDL_sound'
+
+GCC options for compiling OpenAL programs:
+
+  $ gcc -lopenal -lalut -lalure -lvorbis -lm -lvorbisfile filename.c
+
+Executing the program:
+
+  $ ./a.out audiofile.ogg|audiofile.wav
+  
+Generating mono .ogg file out of an stereo .ogg file:
+
+  $ oggdec myfile.ogg
+  $ oggenc --downmix myfile.wav -o myfile_mono.ogg
+  $ rm myfile.wav

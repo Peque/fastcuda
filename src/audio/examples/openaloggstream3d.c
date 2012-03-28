@@ -68,7 +68,7 @@ int main (int argc, char **argv)
 {
 	// Check correct calling
 	if (argc != 2) {
-		printf("Usage: openalstream3d <audio_file.ogg>\n");
+		printf("Usage: openaloggstream3d <audio_file.ogg>\n");
 		exit(1);
 	}
 
