@@ -15,3 +15,8 @@ Generating mono .ogg file out of an stereo .ogg file:
   $ oggdec myfile.ogg
   $ oggenc --downmix myfile.wav -o myfile_mono.ogg
   $ rm myfile.wav
+
+For enabling HRTF in onpenal-soft (disabled by default):
+
+  $ echo [general]>>~/.alsoftrc
+  $ echo hrtf = true>>~/.alsoftrc
