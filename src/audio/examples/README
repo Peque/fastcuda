@@ -1,6 +1,6 @@
 Dependencies:
 
-  $ su -c 'yum install alure-devel openal-soft-devel ffmpeg-devel fluidsynth-devel dumb-devel freealut-devel libvorbis-devel SDL-devel SDL_sound-devel'
+  $ su -c 'yum install alure-devel openal-soft-devel ffmpeg-devel fluidsynth-devel dumb-devel freealut-devel libvorbis-devel SDL-devel SDL_sound-devel pulseaudio-libs-devel'
 
 GCC options for compiling OpenAL programs:
 
