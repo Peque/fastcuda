@@ -4,7 +4,7 @@ Dependencies:
 
 GCC options for compiling OpenAL programs:
 
-  $ gcc -lopenal -lalut -lalure -lvorbis -lm -lvorbisfile filename.c
+  $ gcc -lopenal -lalut -lalure -lvorbis -lm -lvorbisfile -lSDL filename.c
 
 Executing the program:
 
@@ -16,7 +16,16 @@ Generating mono .ogg file out of an stereo .ogg file:
   $ oggenc --downmix myfile.wav -o myfile_mono.ogg
   $ rm myfile.wav
 
+Downmixing stereo .wav file to mono .wav file:
+
+  $ sox stereo.wav mono.wav remix 1,2
+
 For enabling HRTF in onpenal-soft (disabled by default):
 
   $ echo [general]>>~/.alsoftrc
   $ echo hrtf = true>>~/.alsoftrc
+
+Conflicting libraries in Fedora:
+
+  $ su -c 'rm /usr/lib64/libopenal.so*'
+  $ su -c 'ln -s /usr/local/lib/libopenal.so* /usr/lib64/'
