@@ -23,6 +23,10 @@ proc set_project_props {} {
 	project set "Preferred Language" "VHDL"
 	project set "Enable Message Filtering" "false"
 
+	# Other project properties
+	project set "Working Directory" "/home/peque/test"
+	project set "Work Directory" "/home/peque/test/xst" -process "Synthesize - XST"
+
 	puts "Project property values set."
 
 }
