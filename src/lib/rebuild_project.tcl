@@ -8,6 +8,7 @@
 #
 # It then calls run_process to set process properties and run selected processes.
 #
+
 proc rebuild_project {} {
 
 	global myScript

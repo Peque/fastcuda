@@ -19,15 +19,21 @@
 #  MA 02110-1301, USA.
 #
 
+#
 # Get self information, so we can properly load libraries:
+#
 set main_script [file normalize [info script]]
 set main_script_dir [file dirname $main_script]
 set main_script_name [file tail $main_script]
 
+#
 # Library path:
+#
 set lib_dir $main_script_dir/lib
 
+#
 # Includes:
+#
 source $lib_dir/run_task.tcl
 source $lib_dir/run_process.tcl
 source $lib_dir/set_project_props.tcl
@@ -38,21 +44,31 @@ source $lib_dir/open_project.tcl
 source $lib_dir/add_source_files.tcl
 source $lib_dir/main.tcl
 
+#
 # Target file for building the project:
+#
 set target_project_dir [file normalize [lindex $::argv 0]]
 
+#
 # Avoid "not found" issues...
+#
 cd [file dirname $target_project_dir]
 
+#
 # Change argv for the following script, as we are using the source
 # command which we can't use with any parameters except for the file
-# itself:
+# itself...
+#
+# See lib/main.tcl for valid argv parameters.
+#
 set argv {rebuild_project}
 
 set myProject "fastcuda_project"
 set myScript "fastcuda_project.tcl"
 
+#
 # Running the target script:
+#
 if { [catch { main } result] } {
 	puts "$myScript failed: $result."
 }

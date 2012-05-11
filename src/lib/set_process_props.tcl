@@ -4,6 +4,10 @@
 # This procedure sets properties as requested during script generation (either
 # all of the properties, or only those modified from their defaults).
 #
+# In this file, you will find all of the properties (even those not modified
+# from the defaults).
+#
+
 proc set_process_props {} {
 
 	if { ! [ open_project ] } {
@@ -228,6 +232,6 @@ proc set_process_props {} {
 	project set "Change Device Speed To" "-3" -process "Generate Post-Place & Route Static Timing"
 	project set "Change Device Speed To" "-3" -process "Generate Post-Map Static Timing"
 
-	puts "Project property values set."
+	puts "Process property values set."
 
 }

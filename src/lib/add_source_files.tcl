@@ -4,6 +4,7 @@
 # This procedure add the source files that were known to the project at the
 # time this script was generated.
 #
+
 proc add_source_files {} {
 
 	if { ! [ open_project ] } {
