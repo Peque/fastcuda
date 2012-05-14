@@ -29,3 +29,8 @@ Conflicting libraries in Fedora:
 
   $ su -c 'rm /usr/lib64/libopenal.so*'
   $ su -c 'ln -s /usr/local/lib/libopenal.so* /usr/lib64/'
+
+
+[*] The full size 128 sample filter, without the delay and 32 sample filter, can
+be found up to and including c7a80418d9291cad29dc293b95a5c328f4408b08.
+

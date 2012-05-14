@@ -28,7 +28,7 @@
 
 
 #define N_BUFFERS 6
-#define FREQ 22050
+#define FREQ 44100
 
 
 ALCdevice *dev[2];          // Input and output devices
@@ -44,6 +44,7 @@ int main()
 	ALuint buf;
 
 	dev[0] = alcOpenDevice(NULL);
+
 	ctx = alcCreateContext(dev[0], NULL);
 	alcMakeContextCurrent(ctx);
 

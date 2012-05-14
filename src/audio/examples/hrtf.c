@@ -27,6 +27,9 @@
 #include "AL/alut.h"
 #include "SDL/SDL.h"
 
+
+#define SAMPLES 128
+
 // Listener
 ALfloat listener_position[] = { 0.0, 0.0, 0.0 };
 ALfloat listener_speed[] = { 0.0, 0.0, 0.0 };
@@ -45,18 +48,23 @@ ALuint source;
 // General
 SDL_AudioSpec wav_spec;
 Uint32 size;
-Uint8 *decoded_buffer;
+Uint8 *audio_buffer;
 ALenum source_state;
+FILE *fp;
+char hrir_file[100];
+int16_t hrir_data[2 * SAMPLES];
+float hrir_data_real[2 * SAMPLES];
+int i, j;
 
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 
 	int ch,error;
 
 	// Check for correct parameters
 	if (argc != 2) {
-		printf("Usage: hrtf <audio_file.wav>\n");
+		printf("Usage: hrtf <mono_audio_file.wav>\n");
 		exit(1);
 	}
 
@@ -67,22 +75,71 @@ int main(int argc, char* argv[])
 	alGenBuffers(1, &buffer);
 
 	// Check for errors
-	if ((error = alGetError()) != AL_NO_ERROR){
+	if ((error = alGetError()) != AL_NO_ERROR) {
 		printf("Can not create the buffer\n");
 		exit(1);
 	}
 
 	// Load sound
-	if ( SDL_LoadWAV(argv[1], &wav_spec, &decoded_buffer, &size) == NULL ){
+	if (SDL_LoadWAV(argv[1], &wav_spec, &audio_buffer, &size) == NULL) {
 		printf("Error loading %s\n", argv[1]);
 		exit(1);
 	}
 
+/* ***************************************************************************************** *
+	// Apply HRTF to the buffer
+	strcpy(hrir_file, "./kemar_hrtf/compact/elev0/H0e090a.dat");
+
+	if (!(fp = fopen(hrir_file, "r"))) {
+		printf("Could not open %s!", hrir_file);
+		exit(1);
+	}
+
+	fread(hrir_data, 2, 2 * SAMPLES, fp);
+
+	// Check for little endian system:
+	i = 1;
+	if (*(char *) &i == 1) {
+		// Convert data to little endian format
+		printf("Converting HRIR data to little endian...\n");
+		for (i = 0; i < 2 * SAMPLES; i ++) {
+			hrir_data[i] = ((uint16_t) hrir_data[i] << 8) | (hrir_data[i] >> 8);
+		}
+	}
+
+	for (i = 0; i < 2 * SAMPLES; i += 2) {
+		printf("Left: %6d   Right: %6d\n", hrir_data[i], hrir_data[i + 1]);
+	}
+
+	// Convert 16 bits integer data to real € [ -1, 1 ]
+	for (i = 0; i < 2 * SAMPLES; i += 2) {
+		hrir_data_real[i] = hrir_data[i] / 32768.0f;
+		hrir_data_real[i + 1] = hrir_data[i + 1] / 32768.0f;
+	}
+
+	printf("========================================================%d\n", size);
+
+	for (i = 0; i < 2 * SAMPLES; i += 2) {
+		printf("Left: %6f   Right: %6f\n", hrir_data_real[i], hrir_data_real[i + 1]);
+	}
+
+	int16_t *i16p;
+	i16p = (int16_t *) buffer;
+
+	for (i = 0; i < size - 2 * SAMPLES; i+=2) {
+		for (j = 0; j < 2 * SAMPLES; j += 2) {
+			(i16p*) += ((i16p+j)*) * hrir_data_real[j];
+			((i16p+1)*) += ((i16p+j+1)*) * hrir_data_real[j+1];
+		}
+		i16p += 2;
+	}
+/* ***************************************************************************************** */
+
 	// Move sound data to the buffer
-	alBufferData(buffer, AL_FORMAT_STEREO16, decoded_buffer, size, wav_spec.freq);
+	alBufferData(buffer, AL_FORMAT_STEREO16, audio_buffer, size, wav_spec.freq);
 
 	// Free the loaded file
-	SDL_FreeWAV(decoded_buffer);
+	SDL_FreeWAV(audio_buffer);
 
 	// Generate the source
 	alGenSources(1, &source);
@@ -123,4 +180,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-
