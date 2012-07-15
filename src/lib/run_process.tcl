@@ -9,6 +9,7 @@
 # those properties which have values different from their current settings in the project
 # file will be modified in the project.
 #
+
 proc run_process {} {
 
 	puts "\nRunning project...\n"
@@ -26,7 +27,9 @@ proc run_process {} {
 	# process run "Map"
 	# process run "Place & Route"
 	#
+
 	set task "Implement Design"
+
 	if { ! [run_task $task] } {
 		puts "$task run failed, check run output for details."
 		project close

@@ -33,9 +33,10 @@ fi
 XILINX_DIR_TOKEN=/ISE/bin/$SYSTEM/xtclsh
 FASTCUDA_DIR_TOKEN=/src/lib/run_task.tcl
 
-
+#
 # Check if the configuration file exists. If it doesn't exist, create
 # the configuration directory and a new configuration file
+#
 if [ ! -d $CONFIG_DIR ]; then
 
 	echo "No configuration folder found, creating a new one..."
@@ -99,17 +100,22 @@ if [ ! -d $CONFIG_DIR ]; then
 fi
 
 
+#
 # Get information from the configuration file:
+#
 echo "Reading configuration file..."
 source $CONFIG_DIR/config
 echo "Loaded data from the configuration file."
 
 
+#
 # Find Xilinx's TCL native interpreter (depends on the system's
 # architecture):
+#
 XTCLSH_DIR=$XILINX_DIR/ISE/bin/$SYSTEM
 
 
+#
 # Run the target TCL file using Xilinx's tclsh
+#
 $XTCLSH_DIR/xtclsh $FASTCUDA_DIR/src/main.tcl $1
-
