@@ -58,3 +58,21 @@ xadd_hw_ipinst_parameter $mblaze_0_i_bram_cntlr_handle C_BASEADDR 0x00000000
 xadd_hw_ipinst_parameter $mblaze_0_i_bram_cntlr_handle C_HIGHADDR 0x00001fff
 xadd_hw_ipinst_parameter $mblaze_0_d_bram_cntlr_handle C_BASEADDR 0x00000000
 xadd_hw_ipinst_parameter $mblaze_0_d_bram_cntlr_handle C_HIGHADDR 0x00001fff
+
+# Make MB_0 LMB BRAM ICs accesible from MB_0:
+xadd_hw_ipinst_busif $mblaze_0_handle ILMB mblaze_0_ilmb
+xadd_hw_ipinst_busif $mblaze_0_handle DLMB mblaze_0_dlmb
+
+# Configure MB_0 instructions and data caches:
+#   Instructions cache
+xadd_hw_ipinst_parameter $mblaze_0_handle C_ICACHE_BASEADDR 0xc0000000
+xadd_hw_ipinst_parameter $mblaze_0_handle C_ICACHE_HIGHADDR 0xc7ffffff
+xadd_hw_ipinst_parameter $mblaze_0_handle C_USE_ICACHE 1
+xadd_hw_ipinst_parameter $mblaze_0_handle C_CACHE_BYTE_SIZE 8192
+xadd_hw_ipinst_parameter $mblaze_0_handle C_ICACHE_ALWAYS_USED 1
+#   Data cache
+xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_BASEADDR 0xc0000000
+xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_HIGHADDR 0xc7ffffff
+xadd_hw_ipinst_parameter $mblaze_0_handle C_USE_DCACHE 1
+xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_BYTE_SIZE 8192
+xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_ALWAYS_USED 1
