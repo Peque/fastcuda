@@ -81,8 +81,9 @@ xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_ALWAYS_USED 1
 #
 # Create and configure a processor system reset module:
 #
-set psys_reset_0_handle [xadd_hw_ipinst $mhs_handle psys_reset proc_sys_reset_0 3.00.a]
-xadd_hw_ipinst_parameter $psys_reset_0_handle C_EXT_RESET_HIGH 0  # Reset generated when external reset = '0'
+set psys_reset_0_handle [xadd_hw_ipinst $mhs_handle psys_reset_0 proc_sys_reset 3.00.a]
+# Reset generated when external reset = '0':
+xadd_hw_ipinst_parameter $psys_reset_0_handle C_EXT_RESET_HIGH 0
 xadd_hw_ipinst_port $psys_reset_0_handle Dcm_locked psys_reset_0_Dcm_locked
 xadd_hw_ipinst_port $psys_reset_0_handle MB_Reset psys_reset_0_MB_Reset
 xadd_hw_ipinst_port $psys_reset_0_handle BUS_STRUCT_RESET psys_reset_0_BUS_STRUCT_RESET
@@ -96,23 +97,33 @@ xadd_hw_ipinst_port $psys_reset_0_handle Slowest_sync_clk clk_100_0000MHz_PLL0
 # Create and configure a clock generator:
 #
 set clock_generator_0_handle [xadd_hw_ipinst $mhs_handle clock_generator_0 clock_generator 4.03.a]
-xadd_hw_ipinst_parameter $clock_generator_0_handle C_EXT_RESET_HIGH 0  # Active low
+#   Reset: active low
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_EXT_RESET_HIGH 0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKIN_FREQ 100000000
 xadd_hw_ipinst_port $clock_generator_0_handle RST RESET
 xadd_hw_ipinst_port $clock_generator_0_handle CLKIN GCLK
 xadd_hw_ipinst_port $clock_generator_0_handle LOCKED psys_reset_0_Dcm_locked
 #   Clock 0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_FREQ 600000000
-xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_GROUP PLL0  # For phase alignment purposes
+#     For phase alignment purposes:
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_GROUP PLL0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_BUF FALSE
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT0 clk_600_0000MHz_PLL0_nobuf
 #   Clock 1
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_FREQ 600000000
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_PHASE 180
-xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_GROUP PLL0  # For phase alignment purposes
+#     For phase alignment purposes:
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_GROUP PLL0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_BUF FALSE
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT1 clk_600_0000MHz_180_PLL0_nobuf
 #   Clock 2
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_FREQ 100000000
-xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_GROUP PLL0  # For phase alignment purposes
+#     For phase alignment purposes:
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_GROUP PLL0
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT2 clk_100_0000MHz_PLL0
+
+# Connect MB_0 instructions and data LMB to reset and clock signals:
+xadd_hw_ipinst_port $mblaze_0_ilmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
+xadd_hw_ipinst_port $mblaze_0_ilmb_handle LMB_CLK clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $mblaze_0_dlmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
+xadd_hw_ipinst_port $mblaze_0_dlmb_handle LMB_CLK clk_100_0000MHz_PLL0
