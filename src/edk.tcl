@@ -19,6 +19,11 @@
 #  MA 02110-1301, USA.
 #
 
+#
+# TODO: seek for the latest IP cores available instead of using a specific
+#       version (get rid of warnings due to superseded cores).
+#
+
 xload new test.xmp
 
 #
@@ -191,8 +196,8 @@ xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_IC axi4_0
 #
 # Create AXI 4 and AXI 4-Lite interconnect cores:
 #
-set axi4lite_0_handle [xadd_hw_ipinst $mhs_handle axi4lite_0 axi_interconnect 1.04.a]
-set axi4_0_handle [xadd_hw_ipinst $mhs_handle axi4_0 axi_interconnect 1.04.a]
+set axi4lite_0_handle [xadd_hw_ipinst $mhs_handle axi4lite_0 axi_interconnect 1.06.a]
+set axi4_0_handle [xadd_hw_ipinst $mhs_handle axi4_0 axi_interconnect 1.06.a]
 # Reset and clock ports:
 xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
 xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
@@ -204,7 +209,7 @@ xadd_hw_ipinst_parameter $axi4lite_0_handle C_INTERCONNECT_CONNECTIVITY_MODE 0
 #
 # Spartan 6 memory interface:
 #
-set MCB_DDR2_handle [xadd_hw_ipinst $mhs_handle MCB_DDR2 axi_s6_ddrx 1.04.a]
+set MCB_DDR2_handle [xadd_hw_ipinst $mhs_handle MCB_DDR2 axi_s6_ddrx 1.05.a]
 #   Parameters
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MCB_RZQ_LOC L6
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MCB_ZIO_LOC C2
