@@ -122,8 +122,22 @@ xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_FREQ 100000000
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_GROUP PLL0
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT2 clk_100_0000MHz_PLL0
 
-# Connect MB_0 instructions and data LMB to reset and clock signals:
+# Connect MB_0 instructions and data LMBs to reset and clock signals:
 xadd_hw_ipinst_port $mblaze_0_ilmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
 xadd_hw_ipinst_port $mblaze_0_ilmb_handle LMB_CLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $mblaze_0_dlmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
 xadd_hw_ipinst_port $mblaze_0_dlmb_handle LMB_CLK clk_100_0000MHz_PLL0
+
+# Connect MB_0 to reset and clock signals:
+xadd_hw_ipinst_port $mblaze_0_handle MB_RESET psys_reset_0_MB_Reset
+xadd_hw_ipinst_port $mblaze_0_handle CLK clk_100_0000MHz_PLL0
+
+# Set other MB_0 parameters:
+xadd_hw_ipinst_parameter $mblaze_0_handle C_INTERCONNECT 2
+xadd_hw_ipinst_parameter $mblaze_0_handle C_USE_BARREL 1
+xadd_hw_ipinst_parameter $mblaze_0_handle C_USE_FPU 0
+
+# MB_0 AXI bus interfaces:
+xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_DP axi4lite_0
+xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_DC axi4_0
+xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_IC axi4_0
