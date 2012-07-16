@@ -128,6 +128,11 @@ xadd_hw_ipinst_port $mblaze_0_ilmb_handle LMB_CLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $mblaze_0_dlmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
 xadd_hw_ipinst_port $mblaze_0_dlmb_handle LMB_CLK clk_100_0000MHz_PLL0
 
+# Set MB_0 LMBs and BRAM parameters (number of slaves and memory size):
+xadd_hw_ipinst_parameter $mblaze_0_ilmb_handle C_LMB_NUM_SLAVES 1
+xadd_hw_ipinst_parameter $mblaze_0_dlmb_handle C_LMB_NUM_SLAVES 1
+xadd_hw_ipinst_parameter $mblaze_0_bram_handle C_MEMSIZE 0x2000
+
 # Connect MB_0 to reset and clock signals:
 xadd_hw_ipinst_port $mblaze_0_handle MB_RESET psys_reset_0_MB_Reset
 xadd_hw_ipinst_port $mblaze_0_handle CLK clk_100_0000MHz_PLL0
@@ -136,6 +141,9 @@ xadd_hw_ipinst_port $mblaze_0_handle CLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_parameter $mblaze_0_handle C_INTERCONNECT 2
 xadd_hw_ipinst_parameter $mblaze_0_handle C_USE_BARREL 1
 xadd_hw_ipinst_parameter $mblaze_0_handle C_USE_FPU 0
+xadd_hw_ipinst_parameter $mblaze_0_handle C_ENDIANNESS 1
+xadd_hw_ipinst_parameter $mblaze_0_handle C_ICACHE_USE_FSL 0
+xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_USE_FSL 0
 
 # MB_0 AXI bus interfaces:
 xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_DP axi4lite_0
