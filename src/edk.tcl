@@ -21,9 +21,47 @@
 
 xload new test.xmp
 
+#
+# Project settings:
+#
+xset arch spartan6
+xset dev xc6slx45
+xset package csg324
+xset hdl vhdl
+xset intstyle default
+xset sdk_export_dir SDK/SDK_Export
+xset searchpath /home/peque/Downloads/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/lib
+xset speedgrade -3
+xset ucf_file data/system.ucf
+
+
 # Create hadle variables for the original and merged microprocessor hardware specification (MHS) files:
 set mhs_handle [xget_handle mhs]
 set merged_mhs_handle [xget_handle merged_mhs]
+
+#
+# Global ports
+#
+xadd_hw_ipinst_port $mhs_handle zio "zio, DIR = IO"
+xadd_hw_ipinst_port $mhs_handle rzq "rzq, DIR = IO"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_we_n "mcbx_dram_we_n, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_udqs_n "mcbx_dram_udqs_n, DIR = IO"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_udqs "mcbx_dram_udqs, DIR = IO"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_udm "mcbx_dram_udm, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_ras_n "mcbx_dram_ras_n, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_odt "mcbx_dram_odt, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_ldm "mcbx_dram_ldm, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_dqs_n "mcbx_dram_dqs_n, DIR = IO"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_dqs "mcbx_dram_dqs, DIR = IO"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_dq "mcbx_dram_dq, DIR = IO, VEC = \[15:0\]"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_clk_n "mcbx_dram_clk_n, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_clk "mcbx_dram_clk, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_cke "mcbx_dram_cke, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_cas_n "mcbx_dram_cas_n, DIR = O"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_ba "mcbx_dram_ba, DIR = O, VEC = \[2:0\]"
+xadd_hw_ipinst_port $mhs_handle mcbx_dram_addr "mcbx_dram_addr, DIR = O, VEC = \[12:0\]"
+xadd_hw_ipinst_port $mhs_handle RESET "RESET, DIR = I, SIGIS = RST, RST_POLARITY = 0"
+xadd_hw_ipinst_port $mhs_handle GCLK "GCLK, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000"
 
 # Add a MicroBlaze (MB_0) v8.20.a IP with the instance name mblaze_0 to the MHS:
 set mblaze_0_handle [xadd_hw_ipinst $mhs_handle mblaze_0 microblaze 8.30.a]
@@ -149,3 +187,68 @@ xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_USE_FSL 0
 xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_DP axi4lite_0
 xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_DC axi4_0
 xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_IC axi4_0
+
+#
+# Create AXI 4 and AXI 4-Lite interconnect cores:
+#
+set axi4lite_0_handle [xadd_hw_ipinst $mhs_handle axi4lite_0 axi_interconnect 1.04.a]
+set axi4_0_handle [xadd_hw_ipinst $mhs_handle axi4_0 axi_interconnect 1.04.a]
+# Reset and clock ports:
+xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
+xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
+xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
+# Define axi4lite_0 architecture as "shared access" (area optimized)
+xadd_hw_ipinst_parameter $axi4lite_0_handle C_INTERCONNECT_CONNECTIVITY_MODE 0
+
+#
+# Spartan 6 memory interface:
+#
+set MCB_DDR2_handle [xadd_hw_ipinst $mhs_handle MCB_DDR2 axi_s6_ddrx 1.04.a]
+#   Parameters
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MCB_RZQ_LOC L6
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MCB_ZIO_LOC C2
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MEM_TYPE DDR2
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MEM_PARTNO EDE1116AXXX-8E
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MEM_BANKADDR_WIDTH 3
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MEM_NUM_COL_BITS 10
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MEM_DDR2_RTT 50OHMS
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_SKIP_IN_TERM_CAL 0
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S0_AXI_MASTERS "mblaze_0.M_AXI_DC & mblaze_0.M_AXI_IC"
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S0_AXI_AW_REGISTER 8
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S0_AXI_AR_REGISTER 8
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S0_AXI_W_REGISTER 8
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S0_AXI_R_REGISTER 8
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S0_AXI_B_REGISTER 8
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_ENABLE 1
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_STRICT_COHERENCY 0
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_BASEADDR 0xc0000000
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_HIGHADDR 0xc7ffffff
+#   Bus interfaces
+xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
+#   Ports
+xadd_hw_ipinst_port $MCB_DDR2_handle zio zio
+xadd_hw_ipinst_port $MCB_DDR2_handle rzq rzq
+xadd_hw_ipinst_port $MCB_DDR2_handle s0_axi_aclk clk_100_0000MHz_PPL0
+xadd_hw_ipinst_port $MCB_DDR2_handle ui_clk clk_100_0000MHz_PPL0
+#     Memory signals (mcbx_dram_*)
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_we_n mcbx_dram_we_n
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_udqs_n mcbx_dram_udqs_n
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_udqs mcbx_dram_udqs
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_udm mcbx_dram_udm
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_ras_n mcbx_dram_ras_n
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_odt mcbx_dram_odt
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_ldm mcbx_dram_ldm
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_dqs_n mcbx_dram_dqs_n
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_dqs mcbx_dram_dqs
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_dq mcbx_dram_dq
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_clk_n mcbx_dram_clk_n
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_clk mcbx_dram_clk
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_cke mcbx_dram_cke
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_cas_n mcbx_dram_cas_n
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_ba mcbx_dram_ba
+xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_addr mcbx_dram_addr
+xadd_hw_ipinst_port $MCB_DDR2_handle sysclk_2x clk_600_0000MHz_PPL0_nobuf
+xadd_hw_ipinst_port $MCB_DDR2_handle sysclk_2x_180 clk_600_0000MHz_180_PLL0_nobuf
+xadd_hw_ipinst_port $MCB_DDR2_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
+xadd_hw_ipinst_port $MCB_DDR2_handle PLL_LOCK psys_reset_0_Dcm_locked
