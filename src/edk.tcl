@@ -205,6 +205,9 @@ xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
 # Define axi4lite_0 architecture as "shared access" (area optimized)
 xadd_hw_ipinst_parameter $axi4lite_0_handle C_INTERCONNECT_CONNECTIVITY_MODE 0
+# Define AXI interconnect base family:
+xadd_hw_ipinst_parameter $axi4_0_handle C_BASEFAMILY spartan6
+xadd_hw_ipinst_parameter $axi4lite_0_handle C_BASEFAMILY spartan6
 
 #
 # Spartan 6 memory interface:
@@ -229,6 +232,7 @@ xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_ENABLE 1
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_STRICT_COHERENCY 0
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_BASEADDR 0xc0000000
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_HIGHADDR 0xc7ffffff
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_SYS_RST_PRESENT 1
 #   Bus interfaces
 xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
 #   Ports
