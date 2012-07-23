@@ -198,16 +198,20 @@ xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_IC axi4_0
 #
 set axi4lite_0_handle [xadd_hw_ipinst $mhs_handle axi4lite_0 axi_interconnect 1.06.a]
 set axi4_0_handle [xadd_hw_ipinst $mhs_handle axi4_0 axi_interconnect 1.06.a]
+set axi4_1_handle [xadd_hw_ipinst $mhs_handle axi4_1 axi_interconnect 1.06.a]
 # Reset and clock ports:
 xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
-xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
 xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
 xadd_hw_ipinst_port $axi4_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $axi4_1_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
+xadd_hw_ipinst_port $axi4_1_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
 # Define axi4lite_0 architecture as "shared access" (area optimized)
 xadd_hw_ipinst_parameter $axi4lite_0_handle C_INTERCONNECT_CONNECTIVITY_MODE 0
 # Define AXI interconnect base family:
-xadd_hw_ipinst_parameter $axi4_0_handle C_BASEFAMILY spartan6
 xadd_hw_ipinst_parameter $axi4lite_0_handle C_BASEFAMILY spartan6
+xadd_hw_ipinst_parameter $axi4_0_handle C_BASEFAMILY spartan6
+xadd_hw_ipinst_parameter $axi4_1_handle C_BASEFAMILY spartan6
 
 #
 # Spartan 6 memory interface:
@@ -232,6 +236,7 @@ xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_ENABLE 1
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_STRICT_COHERENCY 0
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_BASEADDR 0xc0000000
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_HIGHADDR 0xc7ffffff
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S1_AXI_MASTERS "master_0.M_AXI"
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_SYS_RST_PRESENT 1
 #   Bus interfaces
 xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
@@ -239,6 +244,7 @@ xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
 xadd_hw_ipinst_port $MCB_DDR2_handle zio zio
 xadd_hw_ipinst_port $MCB_DDR2_handle rzq rzq
 xadd_hw_ipinst_port $MCB_DDR2_handle s0_axi_aclk clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $MCB_DDR2_handle s1_axi_aclk clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $MCB_DDR2_handle ui_clk clk_100_0000MHz_PLL0
 #     Memory signals (mcbx_dram_*)
 xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_we_n mcbx_dram_we_n
@@ -261,3 +267,29 @@ xadd_hw_ipinst_port $MCB_DDR2_handle sysclk_2x clk_600_0000MHz_PLL0_nobuf
 xadd_hw_ipinst_port $MCB_DDR2_handle sysclk_2x_180 clk_600_0000MHz_180_PLL0_nobuf
 xadd_hw_ipinst_port $MCB_DDR2_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
 xadd_hw_ipinst_port $MCB_DDR2_handle PLL_LOCK psys_reset_0_Dcm_locked
+
+#
+# Registers:
+#
+set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers 1.00.a]
+xadd_hw_ipinst_parameter $registers_0_handle C_BASEADDR 0x77c00000
+xadd_hw_ipinst_parameter $registers_0_handle C_HIGHADDR 0x77c0ffff
+xadd_hw_ipinst_busif $registers_0_handle S_AXI axi4lite_0
+xadd_hw_ipinst_port $registers_0_handle S_AXI_ACLK = clk_100_0000MHzPLL0
+xadd_hw_ipinst_port $registers_0_handle address_out_a master_0_address_in_a
+xadd_hw_ipinst_port $registers_0_handle address_out_b master_0_address_in_b
+xadd_hw_ipinst_port $registers_0_handle go master_0_go
+xadd_hw_ipinst_port $registers_0_handle ready master_0_ready
+
+#
+# Master
+#
+set master_0_handle [xadd_hw_ipinst $mhs_handle master_0 master 1.00.a]
+xadd_hw_ipinst_busif $master_0_handle M_AXI axi4_1
+xadd_hw_ipinst_busif $master_0_handle S_AXI_ACLK clk_100_0000MHz_PLL0
+xadd_hw_ipinst_busif $master_0_handle S_AXI_ARESETN psys_reset_0_Interconnect_aresetn
+xadd_hw_ipinst_busif $master_0_handle m_axi_aclk clk_100_0000MHz_PLL0
+xadd_hw_ipinst_busif $master_0_handle address_in_a master_0_address_in_a
+xadd_hw_ipinst_busif $master_0_handle address_in_b master_0_address_in_b
+xadd_hw_ipinst_busif $master_0_handle go master_0_go
+xadd_hw_ipinst_busif $master_0_handle ready master_0_ready
