@@ -275,7 +275,7 @@ set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers 1.00.a]
 xadd_hw_ipinst_parameter $registers_0_handle C_BASEADDR 0x77c00000
 xadd_hw_ipinst_parameter $registers_0_handle C_HIGHADDR 0x77c0ffff
 xadd_hw_ipinst_busif $registers_0_handle S_AXI axi4lite_0
-xadd_hw_ipinst_port $registers_0_handle S_AXI_ACLK = clk_100_0000MHzPLL0
+xadd_hw_ipinst_port $registers_0_handle S_AXI_ACLK clk_100_0000MHzPLL0
 xadd_hw_ipinst_port $registers_0_handle address_out_a master_0_address_in_a
 xadd_hw_ipinst_port $registers_0_handle address_out_b master_0_address_in_b
 xadd_hw_ipinst_port $registers_0_handle go master_0_go
