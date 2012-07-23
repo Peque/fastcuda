@@ -238,8 +238,8 @@ xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
 #   Ports
 xadd_hw_ipinst_port $MCB_DDR2_handle zio zio
 xadd_hw_ipinst_port $MCB_DDR2_handle rzq rzq
-xadd_hw_ipinst_port $MCB_DDR2_handle s0_axi_aclk clk_100_0000MHz_PPL0
-xadd_hw_ipinst_port $MCB_DDR2_handle ui_clk clk_100_0000MHz_PPL0
+xadd_hw_ipinst_port $MCB_DDR2_handle s0_axi_aclk clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $MCB_DDR2_handle ui_clk clk_100_0000MHz_PLL0
 #     Memory signals (mcbx_dram_*)
 xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_we_n mcbx_dram_we_n
 xadd_hw_ipinst_port $MCB_DDR2_handle mcbx_dram_udqs_n mcbx_dram_udqs_n
