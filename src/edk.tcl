@@ -237,6 +237,10 @@ xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_STRICT_COHERENCY 0
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_BASEADDR 0xc0000000
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S0_AXI_HIGHADDR 0xc7ffffff
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S1_AXI_MASTERS "master_0.M_AXI"
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S1_AXI_ENABLE 1
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S1_AXI_STRICT_COHERENCY 0
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S1_AXI_BASEADDR 0xc0000000
+xadd_hw_ipinst_parameter $MCB_DDR2_handle C_S1_AXI_HIGHADDR 0xc7ffffff
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_SYS_RST_PRESENT 1
 #   Bus interfaces
 xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
@@ -276,7 +280,7 @@ set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers 1.00.a]
 xadd_hw_ipinst_parameter $registers_0_handle C_BASEADDR 0x77c00000
 xadd_hw_ipinst_parameter $registers_0_handle C_HIGHADDR 0x77c0ffff
 xadd_hw_ipinst_busif $registers_0_handle S_AXI axi4lite_0
-xadd_hw_ipinst_port $registers_0_handle S_AXI_ACLK clk_100_0000MHzPLL0
+xadd_hw_ipinst_port $registers_0_handle S_AXI_ACLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $registers_0_handle address_out_a master_0_address_in_a
 xadd_hw_ipinst_port $registers_0_handle address_out_b master_0_address_in_b
 xadd_hw_ipinst_port $registers_0_handle go master_0_go
