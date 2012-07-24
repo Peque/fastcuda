@@ -45,7 +45,7 @@ set mhs_handle [xget_handle mhs]
 set merged_mhs_handle [xget_handle merged_mhs]
 
 #
-# Global ports
+# Top level ports
 #
 xadd_hw_ipinst_port $mhs_handle zio "zio, DIR = IO"
 xadd_hw_ipinst_port $mhs_handle rzq "rzq, DIR = IO"
@@ -240,6 +240,7 @@ xadd_hw_ipinst_parameter $MCB_DDR2_handle C_INTERCONNECT_S1_AXI_MASTERS "master_
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_SYS_RST_PRESENT 1
 #   Bus interfaces
 xadd_hw_ipinst_busif $MCB_DDR2_handle S0_AXI axi4_0
+xadd_hw_ipinst_busif $MCB_DDR2_handle S1_AXI axi4_1
 #   Ports
 xadd_hw_ipinst_port $MCB_DDR2_handle zio zio
 xadd_hw_ipinst_port $MCB_DDR2_handle rzq rzq
@@ -293,3 +294,17 @@ xadd_hw_ipinst_port $master_0_handle address_in_a master_0_address_in_a
 xadd_hw_ipinst_port $master_0_handle address_in_b master_0_address_in_b
 xadd_hw_ipinst_port $master_0_handle go master_0_go
 xadd_hw_ipinst_port $master_0_handle ready master_0_ready
+
+
+#
+# TODO: remove this! (use CIP command line mode instead of copying the IP files)
+#
+puts "Finished 	MHS file"
+exec cp -r /home/peque/pcores ./
+puts "pcores copied"
+
+#
+# Save project and exit
+#
+save proj
+exit
