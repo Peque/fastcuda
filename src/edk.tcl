@@ -286,10 +286,10 @@ xadd_hw_ipinst_port $registers_0_handle ready master_0_ready
 #
 set master_0_handle [xadd_hw_ipinst $mhs_handle master_0 master 1.00.a]
 xadd_hw_ipinst_busif $master_0_handle M_AXI axi4_1
-xadd_hw_ipinst_busif $master_0_handle S_AXI_ACLK clk_100_0000MHz_PLL0
-xadd_hw_ipinst_busif $master_0_handle S_AXI_ARESETN psys_reset_0_Interconnect_aresetn
-xadd_hw_ipinst_busif $master_0_handle m_axi_aclk clk_100_0000MHz_PLL0
-xadd_hw_ipinst_busif $master_0_handle address_in_a master_0_address_in_a
-xadd_hw_ipinst_busif $master_0_handle address_in_b master_0_address_in_b
-xadd_hw_ipinst_busif $master_0_handle go master_0_go
-xadd_hw_ipinst_busif $master_0_handle ready master_0_ready
+xadd_hw_ipinst_port $master_0_handle S_AXI_ACLK clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $master_0_handle S_AXI_ARESETN psys_reset_0_Interconnect_aresetn
+xadd_hw_ipinst_port $master_0_handle m_axi_aclk clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $master_0_handle address_in_a master_0_address_in_a
+xadd_hw_ipinst_port $master_0_handle address_in_b master_0_address_in_b
+xadd_hw_ipinst_port $master_0_handle go master_0_go
+xadd_hw_ipinst_port $master_0_handle ready master_0_ready
