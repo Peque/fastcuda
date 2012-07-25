@@ -37,7 +37,7 @@ xset intstyle default
 xset sdk_export_dir SDK/SDK_Export
 xset searchpath /home/peque/Downloads/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/lib
 xset speedgrade -3
-xset ucf_file data/system.ucf
+xset ucf_file data/test.ucf
 
 
 # Create hadle variables for the original and merged microprocessor hardware specification (MHS) files:
@@ -299,7 +299,27 @@ xadd_hw_ipinst_port $master_0_handle address_in_b master_0_address_in_b
 xadd_hw_ipinst_port $master_0_handle go master_0_go
 xadd_hw_ipinst_port $master_0_handle ready master_0_ready
 
+#
+# Create UCF file
+#
+set ucf_descriptor [open ~/test/data/test.ucf a]
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "# pin constraints"
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "NET GCLK LOC = \"L15\"  |  IOSTANDARD = \"LVCMOS33\";"
+puts $ucf_descriptor "NET RESET LOC = \"T15\"  |  IOSTANDARD = \"LVCMOS33\"  |  TIG;"
+puts $ucf_descriptor "NET rzq IOSTANDARD = \"LVCMOS18_JEDEC\";"
+puts $ucf_descriptor "NET zio IOSTANDARD = \"LVCMOS18_JEDEC\";"
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "# additional constraints"
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "NET \"GCLK\" TNM_NET = sys_clk_pin;"
+puts $ucf_descriptor "TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100000 kHz;"
+close $ucf_descriptor
 
+
+#
+# Copy master and registers IPs to pcores/ directory
 #
 # TODO: remove this! (use CIP command line mode instead of copying the IP files)
 #
@@ -308,7 +328,16 @@ exec cp -r /home/peque/pcores ./
 puts "pcores copied"
 
 #
-# Save project and exit
+# Save project
 #
 save proj
+
+#
+# Run the Xilinx implementation tools flow and generate the bitstream
+#
+run bits
+
+#
+# Process finished
+#
 exit
