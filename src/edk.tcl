@@ -39,6 +39,7 @@ xset searchpath /home/peque/Downloads/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Supp
 xset speedgrade -3
 xset ucf_file data/test.ucf
 xset parallel_synthesis yes
+xset enable_par_timing_error 0
 
 
 
