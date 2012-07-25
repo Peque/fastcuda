@@ -38,6 +38,8 @@ xset sdk_export_dir SDK/SDK_Export
 xset searchpath /home/peque/Downloads/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/lib
 xset speedgrade -3
 xset ucf_file data/test.ucf
+xset parallel_synthesis yes
+
 
 
 # Create hadle variables for the original and merged microprocessor hardware specification (MHS) files:
