@@ -58,6 +58,9 @@ ALuint sources[N_SOURCES];
 ALfloat listener_position[] = { 0.0, 0.0, 0.0 };
 ALfloat listener_speed[] = { 0.0, 0.0, 0.0 };
 ALfloat listener_orientation[] = { 0.0, 0.0, -1.0, 0.0, 1.0, 0.0 }; // Default listener orientation
+/*
+ * Important!: -x is left, +x is right, -z is front, and +z is back (like OpenGL's coordinates)
+ */
 
 // Source
 ALfloat source_position[] = { 0.0, 0.0, 0.0 };
@@ -68,7 +71,7 @@ int main (int argc, char **argv)
 {
 	// Check correct calling
 	if (argc != 2) {
-		printf("Usage: openalstream3d <audio_file.ogg>\n");
+		printf("Usage: openaloggstream3d <audio_file.ogg>\n");
 		exit(1);
 	}
 
@@ -180,7 +183,7 @@ int main (int argc, char **argv)
 			// Move source after sleeping
 			angle += 0.005;
 			source_position[0] = 2 * cos(angle);
-			source_position[1] = 2 * sin(angle);
+			source_position[2] = 2 * sin(angle);
 			alSourcefv(sources[0], AL_POSITION, source_position);
 		} else {
 

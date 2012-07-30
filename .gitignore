@@ -1,5 +1,6 @@
-*.ogg
-*.wav
 *.o
-*~
+*.ogg
 *.out
+*.wav
+*~
+HRIRs
