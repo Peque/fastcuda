@@ -24,6 +24,10 @@
 #       version (get rid of warnings due to superseded cores).
 #
 
+
+set FASTCUDA_INSTALLPATH /home/peque/xilinx/fastcuda
+
+
 xload new test.xmp
 
 #
@@ -35,7 +39,7 @@ xset package csg324
 xset hdl vhdl
 xset intstyle default
 xset sdk_export_dir SDK/SDK_Export
-xset searchpath /home/peque/Downloads/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/lib
+xset searchpath $FASTCUDA_INSTALLPATH/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/lib
 xset speedgrade -3
 xset ucf_file data/test.ucf
 xset parallel_synthesis yes
@@ -305,7 +309,7 @@ xadd_hw_ipinst_port $master_0_handle ready master_0_ready
 #
 # Create UCF file
 #
-set ucf_descriptor [open ~/test/data/test.ucf a]
+set ucf_descriptor [open ./data/test.ucf a]
 puts $ucf_descriptor "#"
 puts $ucf_descriptor "# pin constraints"
 puts $ucf_descriptor "#"
@@ -327,7 +331,7 @@ close $ucf_descriptor
 # TODO: remove this! (use CIP command line mode instead of copying the IP files)
 #
 puts "Finished 	MHS file"
-exec cp -r /home/peque/pcores ./
+exec cp -r $FASTCUDA_INSTALLPATH/pcores ./
 puts "pcores copied"
 
 #
