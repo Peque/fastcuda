@@ -128,10 +128,9 @@ echo "Loaded data from the configuration file."
 
 
 #
-# Find Xilinx's TCL native interpreter (depends on the system's
-# architecture):
+# Load Xilinx settings for our system
 #
-#XTCLSH_DIR=$XILINX_DIR/ISE/bin/$SYSTEM
+source $XILINX_DIR/ISE_DS/settings$SYSTEM.sh
 
 
 #
