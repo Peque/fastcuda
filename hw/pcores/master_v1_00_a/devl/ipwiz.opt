@@ -1,0 +1,9 @@
+-batch 
+-create master 
+-ver 1.00.a 
+-dir "C:\SoPC_Carlos\version4" 
+-lang vhdl 
+-bus axi4 ms 
+-burst m 32 
+-xps 
+-driver 

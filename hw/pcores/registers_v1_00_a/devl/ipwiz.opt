@@ -1,0 +1,9 @@
+-batch 
+-create registers 
+-ver 1.00.a 
+-dir "C:\SoPC_Carlos\version11" 
+-lang vhdl 
+-bus axi4lite s 
+-reg 32 
+-xps 
+-driver 
