@@ -25,13 +25,15 @@
 
 CONFIG_DIR=~/.fastcuda
 
-SYSTEM=lin
+SYSTEM=32  # 32 bits systems
 if [ `uname -m | grep x86_64` ]; then
-	SYSTEM=${SYSTEM}64  # lin64 for 64 bits systems
+	SYSTEM=64  # 64 bits systems
 fi
 
-XILINX_DIR_TOKEN=/ISE/bin/$SYSTEM/xtclsh
-FASTCUDA_DIR_TOKEN=/src/lib/run_task.tcl
+
+XILINX_DIR_TOKEN=/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores
+FASTCUDA_DIR_TOKEN=/src/fc.sh
+
 
 #
 # Check if the configuration file exists. If it doesn't exist, create
@@ -44,6 +46,10 @@ if [ ! -d $CONFIG_DIR ]; then
 	mkdir $CONFIG_DIR
 	touch $CONFIG_DIR/config
 
+
+	#
+	# Find Xilinx installation
+	#
 	echo "Trying to find Xilinx in your /opt and user directories..."
 	XILINX_FOUND_OPT=$(find /opt -name '.?*' -prune -o -print | grep $XILINX_DIR_TOKEN)
 	XILINX_FOUND_HOME=$(find ~ -name '.?*' -prune -o -print | grep $XILINX_DIR_TOKEN)
@@ -61,16 +67,17 @@ if [ ! -d $CONFIG_DIR ]; then
 	else
 		if [[ ! -z "$XILINX_FOUND_OPT" ]]; then
 			echo "Found Xilinx installation in /opt."
-			# Make use of parameter expansion:
 			echo XILINX_DIR=${XILINX_FOUND_OPT%%"$XILINX_DIR_TOKEN"*}>> $CONFIG_DIR/config
 		else
 			echo "Found Xilinx installation in your user directory."
-			# Make use of parameter expansion:
 			echo XILINX_DIR=${XILINX_FOUND_HOME%%"$XILINX_DIR_TOKEN"*}>> $CONFIG_DIR/config
 		fi
 	fi
 
 
+	#
+	# Find FASTCUDA installation
+	#
 	echo "Trying to find FASTCUDA in your /opt and user directories..."
 	FASTCUDA_FOUND_OPT=$(find /opt -name '.?*' -prune -o -print | grep $FASTCUDA_DIR_TOKEN)
 	FASTCUDA_FOUND_HOME=$(find ~ -name '.?*' -prune -o -print | grep $FASTCUDA_DIR_TOKEN)
@@ -87,16 +94,28 @@ if [ ! -d $CONFIG_DIR ]; then
 	else
 		if [[ ! -z "$FASTCUDA_FOUND_OPT" ]]; then
 			echo "Found FASTCUDA installation in /opt."
-			# Make use of parameter expansion:
 			echo FASTCUDA_DIR=${FASTCUDA_FOUND_OPT%%"$FASTCUDA_DIR_TOKEN"*}>> $CONFIG_DIR/config
 		else
 			echo "Found FASTCUDA installation in your user directory."
-			# Make use of parameter expansion:
 			echo FASTCUDA_DIR=${FASTCUDA_FOUND_HOME%%"$FASTCUDA_DIR_TOKEN"*}>> $CONFIG_DIR/config
 		fi
 	fi
 
 	echo "Configuration file created."
+
+
+	#
+	# Atlys AXI BSB Support
+	#
+	echo "Downloading Atlys AXI BSB Support..."
+	wget -P $CONFIG_DIR https://www.digilentinc.com/Data/Products/ATLYS/Atlys_BSB_Support_v_3_4.zip
+	echo "Extracting Atlys BSB Support..."
+	unzip -d $CONFIG_DIR $CONFIG_DIR/Atlys_BSB_Support_v_3_4.zip
+	echo "Saving Atlys BSB Support..."
+	mv $CONFIG_DIR/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/ $CONFIG_DIR
+	echo "Cleaning files..."
+	rm -rf $CONFIG_DIR/Atlys_BSB_Support_v_3_4/
+	rm $CONFIG_DIR/Atlys_BSB_Support_v_3_4.zip
 fi
 
 
@@ -112,10 +131,10 @@ echo "Loaded data from the configuration file."
 # Find Xilinx's TCL native interpreter (depends on the system's
 # architecture):
 #
-XTCLSH_DIR=$XILINX_DIR/ISE/bin/$SYSTEM
+#XTCLSH_DIR=$XILINX_DIR/ISE/bin/$SYSTEM
 
 
 #
 # Run the target TCL file using Xilinx's tclsh
 #
-$XTCLSH_DIR/xtclsh $FASTCUDA_DIR/src/main.tcl $1
+#$XTCLSH_DIR/xtclsh $FASTCUDA_DIR/src/main.tcl $1

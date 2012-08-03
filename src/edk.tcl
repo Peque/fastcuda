@@ -39,7 +39,7 @@ xset package csg324
 xset hdl vhdl
 xset intstyle default
 xset sdk_export_dir SDK/SDK_Export
-xset searchpath $FASTCUDA_INSTALLPATH/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/lib
+xset searchpath ~/.fastcuda/Atlys_AXI_BSB_Support/lib
 xset speedgrade -3
 xset ucf_file data/test.ucf
 xset parallel_synthesis yes
