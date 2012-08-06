@@ -1,5 +1,5 @@
 #
-#  edk.tcl
+#  mhs.tcl
 #
 #  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
 #
@@ -23,27 +23,6 @@
 # TODO: seek for the latest IP cores available instead of using a specific
 #       version (get rid of warnings due to superseded cores).
 #
-
-
-set FASTCUDA_INSTALLPATH /home/peque/xilinx/fastcuda
-
-
-xload new test.xmp
-
-#
-# Project settings:
-#
-xset arch spartan6
-xset dev xc6slx45
-xset package csg324
-xset hdl vhdl
-xset intstyle default
-xset sdk_export_dir SDK/SDK_Export
-xset searchpath ~/.fastcuda/Atlys_AXI_BSB_Support/lib
-xset speedgrade -3
-xset ucf_file data/test.ucf
-xset parallel_synthesis yes
-xset enable_par_timing_error 0
 
 
 
@@ -310,45 +289,3 @@ xadd_hw_ipinst_port $master_0_handle address_in_3 master_0_address_in_3
 xadd_hw_ipinst_port $master_0_handle go master_0_go
 xadd_hw_ipinst_port $master_0_handle ready master_0_ready
 
-#
-# Create UCF file
-#
-set ucf_descriptor [open ./data/test.ucf a]
-puts $ucf_descriptor "#"
-puts $ucf_descriptor "# pin constraints"
-puts $ucf_descriptor "#"
-puts $ucf_descriptor "NET GCLK LOC = \"L15\"  |  IOSTANDARD = \"LVCMOS33\";"
-puts $ucf_descriptor "NET RESET LOC = \"T15\"  |  IOSTANDARD = \"LVCMOS33\"  |  TIG;"
-puts $ucf_descriptor "NET rzq IOSTANDARD = \"LVCMOS18_JEDEC\";"
-puts $ucf_descriptor "NET zio IOSTANDARD = \"LVCMOS18_JEDEC\";"
-puts $ucf_descriptor "#"
-puts $ucf_descriptor "# additional constraints"
-puts $ucf_descriptor "#"
-puts $ucf_descriptor "NET \"GCLK\" TNM_NET = sys_clk_pin;"
-puts $ucf_descriptor "TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100000 kHz;"
-close $ucf_descriptor
-
-
-#
-# Copy master and registers IPs to pcores/ directory
-#
-# TODO: remove this! (use CIP command line mode instead of copying the IP files)
-#
-puts "Finished 	MHS file"
-exec cp -r $FASTCUDA_INSTALLPATH/pcores ./
-puts "pcores copied"
-
-#
-# Save project
-#
-save proj
-
-#
-# Run the Xilinx implementation tools flow and generate the bitstream
-#
-run bits
-
-#
-# Process finished
-#
-exit

@@ -19,56 +19,85 @@
 #  MA 02110-1301, USA.
 #
 
+
+
 #
-# Get self information, so we can properly load libraries:
+# Get self information:
 #
 set main_script [file normalize [info script]]
 set main_script_dir [file dirname $main_script]
 set main_script_name [file tail $main_script]
 
-#
-# Library path:
-#
-set lib_dir $main_script_dir/lib
 
 #
-# Includes:
+# Load configuration variables:
 #
-source $lib_dir/run_task.tcl
-source $lib_dir/run_process.tcl
-source $lib_dir/set_project_props.tcl
-source $lib_dir/set_process_props.tcl
-source $lib_dir/create_libraries.tcl
-source $lib_dir/rebuild_project.tcl
-source $lib_dir/open_project.tcl
-source $lib_dir/add_source_files.tcl
-source $lib_dir/main.tcl
+source ~/.fastcuda/config_build.tcl
+
 
 #
-# Target file for building the project:
+# Generate hardware architecture:
 #
-set target_project_dir [file normalize [lindex $::argv 0]]
+
+xload new test.xmp
+
+
+# Project settings:
+xset arch spartan6
+xset dev xc6slx45
+xset package csg324
+xset hdl vhdl
+xset intstyle default
+xset sdk_export_dir SDK/SDK_Export
+xset searchpath ~/.fastcuda/Atlys_AXI_BSB_Support/lib
+xset speedgrade -3
+xset ucf_file data/test.ucf
+xset parallel_synthesis yes
+xset enable_par_timing_error 0
+
+
+# MHS file creation:
+source $main_script_dir/mhs.tcl
+
+
+# Create UCF file
+set ucf_descriptor [open ./data/test.ucf a]
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "# pin constraints"
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "NET GCLK LOC = \"L15\"  |  IOSTANDARD = \"LVCMOS33\";"
+puts $ucf_descriptor "NET RESET LOC = \"T15\"  |  IOSTANDARD = \"LVCMOS33\"  |  TIG;"
+puts $ucf_descriptor "NET rzq IOSTANDARD = \"LVCMOS18_JEDEC\";"
+puts $ucf_descriptor "NET zio IOSTANDARD = \"LVCMOS18_JEDEC\";"
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "# additional constraints"
+puts $ucf_descriptor "#"
+puts $ucf_descriptor "NET \"GCLK\" TNM_NET = sys_clk_pin;"
+puts $ucf_descriptor "TIMESPEC TS_sys_clk_pin = PERIOD sys_clk_pin 100000 kHz;"
+close $ucf_descriptor
+
 
 #
-# Avoid "not found" issues...
+# Copy master and registers IPs to pcores/ directory
 #
-cd [file dirname $target_project_dir]
+# TODO: remove this! (use CIP command line mode instead of copying the IP files)
+#
+puts "Finished 	MHS file"
+puts "Copying pcores from $FASTCUDA_DIR/pcores"
+exec cp -r $FASTCUDA_DIR/hw/pcores ./
+puts "pcores copied"
 
 #
-# Change argv for the following script, as we are using the source
-# command which we can't use with any parameters except for the file
-# itself...
+# Save project
 #
-# See lib/main.tcl for valid argv parameters.
-#
-set argv {rebuild_project}
-
-set myProject "fastcuda_project"
-set myScript "fastcuda_project.tcl"
+save proj
 
 #
-# Running the target script:
+# Run the Xilinx implementation tools flow and generate the bitstream
 #
-if { [catch { main } result] } {
-	puts "$myScript failed: $result."
-}
+run bits
+
+#
+# Process finished
+#
+exit
