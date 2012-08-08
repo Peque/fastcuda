@@ -49,6 +49,7 @@ xset package csg324
 xset hdl vhdl
 xset intstyle default
 xset sdk_export_dir SDK/SDK_Export
+xset sdk_export_bmm_bit 1
 xset searchpath ~/.fastcuda/Atlys_AXI_BSB_Support/lib
 xset speedgrade -3
 xset ucf_file data/test.ucf
