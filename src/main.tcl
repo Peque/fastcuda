@@ -39,7 +39,7 @@ source ~/.fastcuda/config_build.tcl
 # Generate hardware architecture:
 #
 
-xload new test.xmp
+xload new $FASTCUDA_PROJ_NAME.xmp
 
 
 # Project settings:
@@ -48,11 +48,11 @@ xset dev xc6slx45
 xset package csg324
 xset hdl vhdl
 xset intstyle default
-xset sdk_export_dir SDK/SDK_Export
+xset sdk_export_dir sdk
 xset sdk_export_bmm_bit 1
 xset searchpath ~/.fastcuda/Atlys_AXI_BSB_Support/lib
 xset speedgrade -3
-xset ucf_file data/test.ucf
+xset ucf_file data/$FASTCUDA_PROJ_NAME.ucf
 xset parallel_synthesis yes
 xset enable_par_timing_error 0
 
@@ -62,7 +62,7 @@ source $main_script_dir/mhs.tcl
 
 
 # Create UCF file
-set ucf_descriptor [open ./data/test.ucf a]
+set ucf_descriptor [open ./data/$FASTCUDA_PROJ_NAME.ucf a]
 puts $ucf_descriptor "#"
 puts $ucf_descriptor "# pin constraints"
 puts $ucf_descriptor "#"
