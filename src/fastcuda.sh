@@ -60,18 +60,18 @@ echo "set FASTCUDA_PROJ_NAME \"$1\"">> $CONFIG_DIR/config_build.tcl
 #
 # Creating project's folder
 #
-if [ -d ./fastcuda_$1 ]; then
+if [ -d ./fcbuild_$1 ]; then
 	echo "A folder containing a project with this name already exists."
 	read -p "Would you like to override it? (y/n): "
 	if [ ${REPLY} != "y" ]; then
 		echo "Please, choose a different project name and try again..."
 		exit
 	fi
-	rm -rf fastcuda_$1
+	rm -rf fcbuild_$1
 fi
 
-mkdir fastcuda_$1
-cd fastcuda_$1
+mkdir fcbuild_$1
+cd fcbuild_$1
 
 
 #

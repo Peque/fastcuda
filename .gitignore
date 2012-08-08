@@ -3,4 +3,5 @@
 *.out
 *.wav
 *~
+fcbuild_*
 HRIRs
