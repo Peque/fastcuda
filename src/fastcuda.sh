@@ -77,7 +77,7 @@ cd fcbuild_$1
 #
 # Run the target TCL file using XPS
 #
-xps -nw -scr $FASTCUDA_DIR/src/main.tcl
+time xps -nw -scr $FASTCUDA_DIR/src/main.tcl
 
 
 #
