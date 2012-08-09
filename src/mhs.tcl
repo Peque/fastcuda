@@ -289,3 +289,21 @@ xadd_hw_ipinst_port $master_0_handle address_in_3 master_0_address_in_3
 xadd_hw_ipinst_port $master_0_handle go master_0_go
 xadd_hw_ipinst_port $master_0_handle ready master_0_ready
 
+#
+# MB_0 debug module
+#
+set mblaze_0_debug_handle [xadd_hw_ipinst $mhs_handle mblaze_0_debug mdm 2.00.b]
+xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_INTERCONNECT 2
+xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_USE_UART 1
+xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_BASEADDR 0x74800000
+xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_HIGHADDR 0x7480ffff
+xadd_hw_ipinst_busif $mblaze_0_debug_handle S_AXI axi4lite_0
+xadd_hw_ipinst_busif $mblaze_0_debug_handle MBDEBUG_0 mblaze_0_debug
+xadd_hw_ipinst_port $mblaze_0_debug_handle Debug_SYS_Rst psys_reset_0_MB_Debug_Sys_Rst
+xadd_hw_ipinst_port $mblaze_0_debug_handle S_AXI_ACLK clk_100_0000MHz_PLL0
+# MB_0 bus interface and configuration:
+xadd_hw_ipinst_parameter $mblaze_0_handle C_DEBUG_ENABLED 1
+xadd_hw_ipinst_busif $mblaze_0_handle DEBUG mblaze_0_debug
+# Reset port:
+xadd_hw_ipinst_port $psys_reset_0_handle MB_Debug_Sys_Rst psys_reset_0_MB_Debug_Sys_Rst
+
