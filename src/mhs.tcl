@@ -292,7 +292,7 @@ xadd_hw_ipinst_port $master_0_handle ready master_0_ready
 #
 # MB_0 debug module
 #
-set mblaze_0_debug_handle [xadd_hw_ipinst $mhs_handle mblaze_0_debug mdm 2.00.b]
+set mblaze_0_debug_module_handle [xadd_hw_ipinst $mhs_handle mblaze_0_debug_module mdm 2.00.b]
 xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_INTERCONNECT 2
 xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_USE_UART 1
 xadd_hw_ipinst_parameter $mblaze_0_debug_handle C_BASEADDR 0x74800000
