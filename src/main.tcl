@@ -38,11 +38,12 @@ source ~/.fastcuda/config_build.tcl
 #
 # Generate hardware architecture:
 #
-
 xload new $FASTCUDA_PROJ_NAME.xmp
 
 
+#
 # Project settings:
+#
 xset arch spartan6
 xset dev xc6slx45
 xset package csg324
@@ -57,11 +58,15 @@ xset parallel_synthesis yes
 xset enable_par_timing_error 0
 
 
+#
 # MHS file creation:
+#
 source $main_script_dir/mhs.tcl
 
 
+#
 # Create UCF file
+#
 set ucf_descriptor [open ./data/$FASTCUDA_PROJ_NAME.ucf a]
 puts $ucf_descriptor "#"
 puts $ucf_descriptor "# pin constraints"
@@ -88,17 +93,26 @@ puts "Copying pcores from $FASTCUDA_DIR/pcores"
 exec cp -r $FASTCUDA_DIR/hw/pcores ./
 puts "pcores copied"
 
+
 #
 # Save project
 #
 save proj
 
+
 #
 # Run the Xilinx implementation tools flow and generate the bitstream
 #
-run bits
+make -f $FASTCUDA_PROJ_NAME.make bits
+
+
+#
+# Export to SDK
+#
+make -f $FASTCUDA_PROJ_NAME.make exporttosdk
+
 
 #
 # Process finished
 #
-exit
+#exit
