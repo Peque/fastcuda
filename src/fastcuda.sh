@@ -24,6 +24,7 @@
 
 
 CONFIG_DIR=~/.fastcuda
+FASTCUDA_PROJ_NAME=$1
 
 SYSTEM=32  # 32 bits systems
 if [ `uname -m | grep x86_64` ]; then
@@ -47,37 +48,68 @@ echo "Loaded data from the configuration file."
 #
 # Load Xilinx settings for our system
 #
-source $XILINX_DIR/ISE_DS/settings$SYSTEM.sh
+SETTINGS_FILE=.settings$SYSTEM.sh
+XIL_SCRIPT_LOC="$XILINX_DIR/ISE_DS"
+xlnxInstLocList=""
+xlnxInstLocList="${xlnxInstLocList} common"
+xlnxInstLocList="${xlnxInstLocList} EDK"
+xlnxInstLocList="${xlnxInstLocList} common/CodeSourcery"
+xlnxInstLocList="${xlnxInstLocList} PlanAhead"
+xlnxInstLocList="${xlnxInstLocList} ../../Vivado/2012.1"
+xlnxInstLocList="${xlnxInstLocList} ISE"
+xlnxInstLocList="${xlnxInstLocList} SysGen"
+XIL_SCRIPT_LOC_TMP_UNI=${XIL_SCRIPT_LOC}
+for i in $xlnxInstLocList
+do
+	d="${XIL_SCRIPT_LOC_TMP_UNI}/$i"
+	sfn="$d/$SETTINGS_FILE"
+	if [ -e  "$sfn" ]; then
+		echo . "$sfn" "$d"
+		. "$sfn" "$d"
+	fi
+done
 
 
 #
 # Create configuration file for the TCL script
 #
 echo "set FASTCUDA_DIR \"$FASTCUDA_DIR\"">> $CONFIG_DIR/config_build.tcl
-echo "set FASTCUDA_PROJ_NAME \"$1\"">> $CONFIG_DIR/config_build.tcl
+echo "set FASTCUDA_PROJ_NAME \"$FASTCUDA_PROJ_NAME\"">> $CONFIG_DIR/config_build.tcl
 
 
 #
 # Creating project's folder
 #
-if [ -d ./fcbuild_$1 ]; then
+if [ -d ./fcbuild_$FASTCUDA_PROJ_NAME ]; then
 	echo "A folder containing a project with this name already exists."
 	read -p "Would you like to override it? (y/n): "
 	if [ ${REPLY} != "y" ]; then
 		echo "Please, choose a different project name and try again..."
 		exit
 	fi
-	rm -rf fcbuild_$1
+	rm -rf fcbuild_$FASTCUDA_PROJ_NAME
 fi
 
-mkdir fcbuild_$1
-cd fcbuild_$1
+mkdir fcbuild_$FASTCUDA_PROJ_NAME
+cd fcbuild_$FASTCUDA_PROJ_NAME
 
 
 #
 # Run the target TCL file using XPS
 #
-time xps -nw -scr $FASTCUDA_DIR/src/main.tcl
+xps -nw -scr $FASTCUDA_DIR/src/main.tcl
+
+
+#
+# Run the Xilinx implementation tools flow and generate the bitstream
+#
+make -f ./$FASTCUDA_PROJ_NAME.make bits
+
+
+#
+# Export to SDK
+#
+make -f ./$FASTCUDA_PROJ_NAME.make exporttosdk
 
 
 #

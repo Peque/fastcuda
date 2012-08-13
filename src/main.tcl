@@ -101,18 +101,6 @@ save proj
 
 
 #
-# Run the Xilinx implementation tools flow and generate the bitstream
-#
-make -f $FASTCUDA_PROJ_NAME.make bits
-
-
-#
-# Export to SDK
-#
-make -f $FASTCUDA_PROJ_NAME.make exporttosdk
-
-
-#
 # Process finished
 #
 exit
