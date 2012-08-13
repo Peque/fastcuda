@@ -115,4 +115,4 @@ make -f $FASTCUDA_PROJ_NAME.make exporttosdk
 #
 # Process finished
 #
-#exit
+exit
