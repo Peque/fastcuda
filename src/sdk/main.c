@@ -75,10 +75,10 @@ int main(void)
 	DDR2_DATA(300) = 12;
 
 	// Pass those positions and the position 0 as address parameters
-	addr_0 = &DDR2_DATA(0);
-	addr_1 = &DDR2_DATA(100);
-	addr_2 = &DDR2_DATA(200);
-	addr_3 = &DDR2_DATA(300);
+	addr_0 = (uint32_t) &DDR2_DATA(0);
+	addr_1 = (uint32_t) &DDR2_DATA(100);
+	addr_2 = (uint32_t) &DDR2_DATA(200);
+	addr_3 = (uint32_t) &DDR2_DATA(300);
 
 	// Launch threads
 	xil_printf("Launching threads...\n");
