@@ -196,8 +196,8 @@ begin
   -- BRAM related ports --
   slv_reg6        <= bram_di_bus;
   bram_do_bus     <= slv_reg7;
-  bram_addr_bus   <= slv_reg8;
-  bram_we_bus     <= slv_reg9;
+  bram_addr_bus   <= slv_reg8(8 downto 0);
+  bram_we_bus     <= slv_reg9(3 downto 0);
   bram_en         <= slv_reg10(0);
   ------------------------------------------
   -- Example code to read/write user logic slave model s/w accessible registers

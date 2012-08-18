@@ -69,8 +69,8 @@ use proc_common_v3_00_a.ipif_pkg.all;
 library axi_lite_ipif_v1_01_a;
 use axi_lite_ipif_v1_01_a.axi_lite_ipif;
 
-library registers_v1_00_a;
-use registers_v1_00_a.user_logic;
+library registers_v2_00_a;
+use registers_v2_00_a.user_logic;
 
 ------------------------------------------------------------------------------
 -- Entity section
@@ -300,7 +300,7 @@ begin
   ------------------------------------------
   -- instantiate User Logic
   ------------------------------------------
-  USER_LOGIC_I : entity registers_v1_00_a.user_logic
+  USER_LOGIC_I : entity registers_v2_00_a.user_logic
     generic map
     (
       -- MAP USER GENERICS BELOW THIS LINE ---------------
