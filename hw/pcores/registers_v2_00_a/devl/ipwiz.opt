@@ -1,0 +1,10 @@
+-batch 
+-create registers 
+-ver 1.00.a 
+-dir "/home/peque/xilinx/fcbuild_peque" 
+-lang vhdl 
+-bus axi4lite s 
+-reg 32 
+-xps 
+-ise 
+-driver 

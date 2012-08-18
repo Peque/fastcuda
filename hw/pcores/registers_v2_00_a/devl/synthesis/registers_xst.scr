@@ -1,0 +1,12 @@
+run
+-opt_level 2
+-opt_mode speed
+-ifmt mixed
+-ifn "/home/peque/xilinx/fcbuild_peque/pcores/registers_v1_00_a/devl/synthesis/registers_xst.prj"
+-top registers
+-p virtex6
+-ofn "/home/peque/xilinx/fcbuild_peque/pcores/registers_v1_00_a/devl/synthesis/registers_xst.ngc"
+-iobuf NO
+-rtlview YES
+-hierarchy_separator /
+-work_lib registers_v1_00_a
