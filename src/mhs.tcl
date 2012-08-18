@@ -134,22 +134,24 @@ xadd_hw_ipinst_port $clock_generator_0_handle CLKIN GCLK
 xadd_hw_ipinst_port $clock_generator_0_handle LOCKED psys_reset_0_Dcm_locked
 #   Clock 0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_FREQ 600000000
-#     For phase alignment purposes:
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_GROUP PLL0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT0_BUF FALSE
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT0 clk_600_0000MHz_PLL0_nobuf
 #   Clock 1
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_FREQ 600000000
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_PHASE 180
-#     For phase alignment purposes:
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_GROUP PLL0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT1_BUF FALSE
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT1 clk_600_0000MHz_180_PLL0_nobuf
 #   Clock 2
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_FREQ 100000000
-#     For phase alignment purposes:
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_GROUP PLL0
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT2 clk_100_0000MHz_PLL0
+#   Clock 3
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_FREQ 100000000
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_PHASE 180
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_GROUP PLL0
+xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT3 clk_100_0000MHz_180_PLL0
 
 # Connect MB_0 instructions and data LMBs to reset and clock signals:
 xadd_hw_ipinst_port $mblaze_0_ilmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
@@ -262,7 +264,7 @@ xadd_hw_ipinst_port $MCB_DDR2_handle PLL_LOCK psys_reset_0_Dcm_locked
 #
 # Registers:
 #
-set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers 1.00.a]
+set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers 2.00.a]
 xadd_hw_ipinst_parameter $registers_0_handle C_BASEADDR 0x77c00000
 xadd_hw_ipinst_parameter $registers_0_handle C_HIGHADDR 0x77c0ffff
 xadd_hw_ipinst_busif $registers_0_handle S_AXI axi4lite_0
@@ -273,6 +275,11 @@ xadd_hw_ipinst_port $registers_0_handle address_out_2 master_0_address_in_2
 xadd_hw_ipinst_port $registers_0_handle address_out_3 master_0_address_in_3
 xadd_hw_ipinst_port $registers_0_handle go master_0_go
 xadd_hw_ipinst_port $registers_0_handle ready master_0_ready
+#xadd_hw_ipinst_port $registers_0_handle bram_di_bus shmem_0_BRAM_Din_A
+#xadd_hw_ipinst_port $registers_0_handle bram_do_bus shmem_0_BRAM_Dout_A
+#xadd_hw_ipinst_port $registers_0_handle bram_addr_bus shmem_0_BRAM_Addr_A
+#xadd_hw_ipinst_port $registers_0_handle bram_we_bus shmem_0_BRAM_WEN_A
+#xadd_hw_ipinst_port $registers_0_handle bram_en shmem_0_BRAM_EN_A
 
 #
 # Master
@@ -307,3 +314,20 @@ xadd_hw_ipinst_busif $mblaze_0_handle DEBUG mblaze_0_debug
 # Reset port:
 xadd_hw_ipinst_port $psys_reset_0_handle MB_Debug_Sys_Rst psys_reset_0_MB_Debug_Sys_Rst
 
+
+#
+# Shared memory BRAMs
+#
+#set shmem_0_bram_handle [xadd_hw_ipinst $mhs_handle shmem_0_bram bram_block 1.00.a]
+#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_MEMSIZE 16384
+#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_PORT_DWIDTH 32
+#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_PORT_AWIDTH 9
+#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_NUM_WE 4
+#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_FAMILY spartan6
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Din_A shmem_0_BRAM_Din_A
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Dout_A shmem_0_BRAM_Dout_A
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Addr_A shmem_0_BRAM_Addr_A
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_WEN_A shmem_0_BRAM_WEN_A
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_EN_A shmem_0_BRAM_EN_A
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Clk_A clk_100_0000MHz_PLL0
+#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Rst_A shmem_0_BRAM_Rst_A
