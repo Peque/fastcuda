@@ -275,11 +275,20 @@ xadd_hw_ipinst_port $registers_0_handle address_out_2 master_0_address_in_2
 xadd_hw_ipinst_port $registers_0_handle address_out_3 master_0_address_in_3
 xadd_hw_ipinst_port $registers_0_handle go master_0_go
 xadd_hw_ipinst_port $registers_0_handle ready master_0_ready
-#xadd_hw_ipinst_port $registers_0_handle bram_di_bus shmem_0_BRAM_Din_A
-#xadd_hw_ipinst_port $registers_0_handle bram_do_bus shmem_0_BRAM_Dout_A
-#xadd_hw_ipinst_port $registers_0_handle bram_addr_bus shmem_0_BRAM_Addr_A
-#xadd_hw_ipinst_port $registers_0_handle bram_we_bus shmem_0_BRAM_WEN_A
-#xadd_hw_ipinst_port $registers_0_handle bram_en shmem_0_BRAM_EN_A
+xadd_hw_ipinst_port $registers_0_handle DOA smem_DOA
+xadd_hw_ipinst_port $registers_0_handle DOB smem_DOB
+xadd_hw_ipinst_port $registers_0_handle ADDRA smem_ADDRA
+xadd_hw_ipinst_port $registers_0_handle ADDRB smem_ADDRB
+xadd_hw_ipinst_port $registers_0_handle ENA smem_ENA
+xadd_hw_ipinst_port $registers_0_handle ENB smem_ENB
+xadd_hw_ipinst_port $registers_0_handle REGCEA smem_REGCEA
+xadd_hw_ipinst_port $registers_0_handle REGCEB smem_REGCEB
+xadd_hw_ipinst_port $registers_0_handle RSTA smem_RSTA
+xadd_hw_ipinst_port $registers_0_handle RSTB smem_RSTB
+xadd_hw_ipinst_port $registers_0_handle DIA smem_DIA
+xadd_hw_ipinst_port $registers_0_handle DIB smem_DIB
+xadd_hw_ipinst_port $registers_0_handle WEA smem_WEA
+xadd_hw_ipinst_port $registers_0_handle WEB smem_WEB
 
 #
 # Master
@@ -295,6 +304,22 @@ xadd_hw_ipinst_port $master_0_handle address_in_2 master_0_address_in_2
 xadd_hw_ipinst_port $master_0_handle address_in_3 master_0_address_in_3
 xadd_hw_ipinst_port $master_0_handle go master_0_go
 xadd_hw_ipinst_port $master_0_handle ready master_0_ready
+xadd_hw_ipinst_port $master_0_handle DOA smem_DOA
+xadd_hw_ipinst_port $master_0_handle DOB smem_DOB
+xadd_hw_ipinst_port $master_0_handle ADDRA smem_ADDRA
+xadd_hw_ipinst_port $master_0_handle ADDRB smem_ADDRB
+xadd_hw_ipinst_port $master_0_handle ENA smem_ENA
+xadd_hw_ipinst_port $master_0_handle ENB smem_ENB
+xadd_hw_ipinst_port $master_0_handle REGCEA smem_REGCEA
+xadd_hw_ipinst_port $master_0_handle REGCEB smem_REGCEB
+xadd_hw_ipinst_port $master_0_handle RSTA smem_RSTA
+xadd_hw_ipinst_port $master_0_handle RSTB smem_RSTB
+xadd_hw_ipinst_port $master_0_handle DIA smem_DIA
+xadd_hw_ipinst_port $master_0_handle DIB smem_DIB
+xadd_hw_ipinst_port $master_0_handle WEA smem_WEA
+xadd_hw_ipinst_port $master_0_handle WEB smem_WEB
+xadd_hw_ipinst_port $master_0_handle CLKA clk_100_0000MHz_PLL0
+xadd_hw_ipinst_port $master_0_handle CLKB clk_100_0000MHz_180_PLL0
 
 #
 # MB_0 debug module
@@ -313,21 +338,3 @@ xadd_hw_ipinst_parameter $mblaze_0_handle C_DEBUG_ENABLED 1
 xadd_hw_ipinst_busif $mblaze_0_handle DEBUG mblaze_0_debug
 # Reset port:
 xadd_hw_ipinst_port $psys_reset_0_handle MB_Debug_Sys_Rst psys_reset_0_MB_Debug_Sys_Rst
-
-
-#
-# Shared memory BRAMs
-#
-#set shmem_0_bram_handle [xadd_hw_ipinst $mhs_handle shmem_0_bram bram_block 1.00.a]
-#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_MEMSIZE 16384
-#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_PORT_DWIDTH 32
-#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_PORT_AWIDTH 9
-#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_NUM_WE 4
-#xadd_hw_ipinst_parameter $shmem_0_bram_handle C_FAMILY spartan6
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Din_A shmem_0_BRAM_Din_A
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Dout_A shmem_0_BRAM_Dout_A
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Addr_A shmem_0_BRAM_Addr_A
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_WEN_A shmem_0_BRAM_WEN_A
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_EN_A shmem_0_BRAM_EN_A
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Clk_A clk_100_0000MHz_PLL0
-#xadd_hw_ipinst_port $shmem_0_bram_handle BRAM_Rst_A shmem_0_BRAM_Rst_A

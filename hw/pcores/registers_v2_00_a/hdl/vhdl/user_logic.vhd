@@ -98,18 +98,17 @@ entity user_logic is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_out_0 : out std_logic_vector(31 downto 0);
-    address_out_1 : out std_logic_vector(31 downto 0);
-    address_out_2 : out std_logic_vector(31 downto 0);
-    address_out_3 : out std_logic_vector(31 downto 0);
-    go            : out std_logic;
-    ready         : in std_logic;
-    -- BRAM related ports --
-    bram_di_bus     : in std_logic_vector(31 downto 0);
-    bram_do_bus     : out std_logic_vector(31 downto 0);
-    bram_addr_bus   : out std_logic_vector(8 downto 0);
-    bram_we_bus     : out std_logic_vector(3 downto 0);
-    bram_en         : out std_logic;
+    address_out_0                                     : out std_logic_vector(31 downto 0);
+    address_out_1                                     : out std_logic_vector(31 downto 0);
+    address_out_2                                     : out std_logic_vector(31 downto 0);
+    address_out_3                                     : out std_logic_vector(31 downto 0);
+    go                                                : out std_logic;
+    ready                                             : in  std_logic;
+    DOA, DOB                                          : in  std_logic_vector (31 downto 0);
+    ADDRA, ADDRB                                      : out std_logic_vector (8 downto 0);
+    ENA, ENB, REGCEA, REGCEB, RSTA, RSTB              : out std_logic;
+    DIA, DIB                                          : out std_logic_vector (31 downto 0);
+    WEA, WEB                                          : out std_logic_vector (3 downto 0);
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -187,18 +186,26 @@ architecture IMP of user_logic is
 begin
 
   --USER logic implementation added here
-  address_out_0 <= slv_reg0;
-  address_out_1 <= slv_reg1;
-  address_out_2 <= slv_reg2;
-  address_out_3 <= slv_reg3;
-  go            <= slv_reg4(0);
-  slv_reg5(0)   <= ready;
-  -- BRAM related ports --
-  slv_reg6        <= bram_di_bus;
-  bram_do_bus     <= slv_reg7;
-  bram_addr_bus   <= slv_reg8(8 downto 0);
-  bram_we_bus     <= slv_reg9(3 downto 0);
-  bram_en         <= slv_reg10(0);
+  address_out_0   <= slv_reg0;
+  address_out_1   <= slv_reg1;
+  address_out_2   <= slv_reg2;
+  address_out_3   <= slv_reg3;
+  go              <= slv_reg4(0);
+  slv_reg5(0)     <= ready;
+  slv_reg6        <= DOA;
+  slv_reg7        <= DOB;
+  ADDRA           <= slv_reg6(8 downto 0);
+  ADDRB           <= slv_reg7(8 downto 0);
+  ENA             <= slv_reg8(0);
+  ENB             <= slv_reg9(0);
+  REGCEA          <= slv_reg10(0);
+  REGCEB          <= slv_reg11(0);
+  RSTA            <= slv_reg12(0);
+  RSTB            <= slv_reg13(0);
+  DIA             <= slv_reg14;
+  DIB             <= slv_reg15;
+  WEA             <= slv_reg16(3 downto 0);
+  WEB             <= slv_reg17(3 downto 0);
   ------------------------------------------
   -- Example code to read/write user logic slave model s/w accessible registers
   --
@@ -235,7 +242,7 @@ begin
         slv_reg4 <= (others => '0');
 --      slv_reg5 <= (others => '0');
 --      slv_reg6 <= (others => '0');
-        slv_reg7 <= (others => '0');
+--      slv_reg7 <= (others => '0');
         slv_reg8 <= (others => '0');
         slv_reg9 <= (others => '0');
         slv_reg10 <= (others => '0');
@@ -305,11 +312,11 @@ begin
 --            end if;
 --          end loop;
           when "00000001000000000000000000000000" =>
-            for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
-              if ( Bus2IP_BE(byte_index) = '1' ) then
-                slv_reg7(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
-              end if;
-            end loop;
+--          for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
+--            if ( Bus2IP_BE(byte_index) = '1' ) then
+--              slv_reg7(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
+--            end if;
+--          end loop;
           when "00000000100000000000000000000000" =>
             for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
               if ( Bus2IP_BE(byte_index) = '1' ) then

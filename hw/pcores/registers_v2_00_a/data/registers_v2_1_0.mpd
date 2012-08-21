@@ -42,11 +42,20 @@ PORT address_out_2 = "", DIR = O, VEC = [31:0]
 PORT address_out_3 = "", DIR = O, VEC = [31:0]
 PORT go = "", DIR = O
 PORT ready = "", DIR = I
-PORT bram_di_bus = "", DIR = I, VEC = [31:0]
-PORT bram_do_bus = "", DIR = O, VEC = [31:0]
-PORT bram_addr_bus = "", DIR = O, VEC = [8:0]
-PORT bram_we_bus = "", DIR = O, VEC = [3:0]
-PORT bram_en = "", DIR = O
+PORT DOA = "", DIR = I, VEC = [31:0]
+PORT DOB = "", DIR = I, VEC = [31:0]
+PORT ADDRA = "", DIR = O, VEC = [8:0]
+PORT ADDRB = "", DIR = O, VEC = [8:0]
+PORT ENA = "", DIR = O
+PORT ENB = "", DIR = O
+PORT REGCEA = "", DIR = O
+PORT REGCEB = "", DIR = O
+PORT RSTA = "", DIR = O
+PORT RSTB = "", DIR = O
+PORT DIA = "", DIR = O, VEC = [31:0]
+PORT DIB = "", DIR = O, VEC = [31:0]
+PORT WEA = "", DIR = O, VEC = [3:0]
+PORT WEB = "", DIR = O, VEC = [3:0]
 
 PORT S_AXI_ACLK = "", DIR = I, SIGIS = CLK, BUS = S_AXI
 PORT S_AXI_ARESETN = ARESETN, DIR = I, SIGIS = RST, BUS = S_AXI

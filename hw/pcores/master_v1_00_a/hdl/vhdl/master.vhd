@@ -79,14 +79,14 @@ use master_v1_00_a.user_logic;
 -- Entity section
 ------------------------------------------------------------------------------
 -- Definition of Generics:
---   C_S_AXI_DATA_WIDTH           -- 
---   C_S_AXI_ADDR_WIDTH           -- 
---   C_S_AXI_MIN_SIZE             -- 
---   C_USE_WSTRB                  -- 
---   C_DPHASE_TIMEOUT             -- 
+--   C_S_AXI_DATA_WIDTH           --
+--   C_S_AXI_ADDR_WIDTH           --
+--   C_S_AXI_MIN_SIZE             --
+--   C_USE_WSTRB                  --
+--   C_DPHASE_TIMEOUT             --
 --   C_BASEADDR                   -- AXI4LITE slave: base address
 --   C_HIGHADDR                   -- AXI4LITE slave: high address
---   C_FAMILY                     -- 
+--   C_FAMILY                     --
 --   C_NUM_REG                    -- Number of software accessible registers
 --   C_NUM_MEM                    -- Number of address-ranges
 --   C_SLV_AWIDTH                 -- Slave interface address bus width
@@ -99,57 +99,57 @@ use master_v1_00_a.user_logic;
 --   C_ADDR_PIPE_DEPTH            -- Depth of Address pipelining
 --
 -- Definition of Ports:
---   S_AXI_ACLK                   -- 
---   S_AXI_ARESETN                -- 
---   S_AXI_AWADDR                 -- 
---   S_AXI_AWVALID                -- 
---   S_AXI_WDATA                  -- 
---   S_AXI_WSTRB                  -- 
---   S_AXI_WVALID                 -- 
---   S_AXI_BREADY                 -- 
---   S_AXI_ARADDR                 -- 
---   S_AXI_ARVALID                -- 
---   S_AXI_RREADY                 -- 
---   S_AXI_ARREADY                -- 
---   S_AXI_RDATA                  -- 
---   S_AXI_RRESP                  -- 
---   S_AXI_RVALID                 -- 
---   S_AXI_WREADY                 -- 
---   S_AXI_BRESP                  -- 
---   S_AXI_BVALID                 -- 
---   S_AXI_AWREADY                -- 
---   m_axi_aclk                   -- 
---   m_axi_aresetn                -- 
---   md_error                     -- 
---   m_axi_arready                -- 
---   m_axi_arvalid                -- 
---   m_axi_araddr                 -- 
---   m_axi_arlen                  -- 
---   m_axi_arsize                 -- 
---   m_axi_arburst                -- 
---   m_axi_arprot                 -- 
---   m_axi_arcache                -- 
---   m_axi_rready                 -- 
---   m_axi_rvalid                 -- 
---   m_axi_rdata                  -- 
---   m_axi_rresp                  -- 
---   m_axi_rlast                  -- 
---   m_axi_awready                -- 
---   m_axi_awvalid                -- 
---   m_axi_awaddr                 -- 
---   m_axi_awlen                  -- 
---   m_axi_awsize                 -- 
---   m_axi_awburst                -- 
---   m_axi_awprot                 -- 
---   m_axi_awcache                -- 
---   m_axi_wready                 -- 
---   m_axi_wvalid                 -- 
---   m_axi_wdata                  -- 
---   m_axi_wstrb                  -- 
---   m_axi_wlast                  -- 
---   m_axi_bready                 -- 
---   m_axi_bvalid                 -- 
---   m_axi_bresp                  -- 
+--   S_AXI_ACLK                   --
+--   S_AXI_ARESETN                --
+--   S_AXI_AWADDR                 --
+--   S_AXI_AWVALID                --
+--   S_AXI_WDATA                  --
+--   S_AXI_WSTRB                  --
+--   S_AXI_WVALID                 --
+--   S_AXI_BREADY                 --
+--   S_AXI_ARADDR                 --
+--   S_AXI_ARVALID                --
+--   S_AXI_RREADY                 --
+--   S_AXI_ARREADY                --
+--   S_AXI_RDATA                  --
+--   S_AXI_RRESP                  --
+--   S_AXI_RVALID                 --
+--   S_AXI_WREADY                 --
+--   S_AXI_BRESP                  --
+--   S_AXI_BVALID                 --
+--   S_AXI_AWREADY                --
+--   m_axi_aclk                   --
+--   m_axi_aresetn                --
+--   md_error                     --
+--   m_axi_arready                --
+--   m_axi_arvalid                --
+--   m_axi_araddr                 --
+--   m_axi_arlen                  --
+--   m_axi_arsize                 --
+--   m_axi_arburst                --
+--   m_axi_arprot                 --
+--   m_axi_arcache                --
+--   m_axi_rready                 --
+--   m_axi_rvalid                 --
+--   m_axi_rdata                  --
+--   m_axi_rresp                  --
+--   m_axi_rlast                  --
+--   m_axi_awready                --
+--   m_axi_awvalid                --
+--   m_axi_awaddr                 --
+--   m_axi_awlen                  --
+--   m_axi_awsize                 --
+--   m_axi_awburst                --
+--   m_axi_awprot                 --
+--   m_axi_awcache                --
+--   m_axi_wready                 --
+--   m_axi_wvalid                 --
+--   m_axi_wdata                  --
+--   m_axi_wstrb                  --
+--   m_axi_wlast                  --
+--   m_axi_bready                 --
+--   m_axi_bvalid                 --
+--   m_axi_bresp                  --
 ------------------------------------------------------------------------------
 
 entity master is
@@ -185,13 +185,18 @@ entity master is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_in_0 : in std_logic_vector(31 downto 0);
-    address_in_1 : in std_logic_vector(31 downto 0);
-    address_in_2 : in std_logic_vector(31 downto 0);
-    address_in_3 : in std_logic_vector(31 downto 0);
-	 go : in std_logic;
-	 ready : out std_logic;
-	 DEBUG_signal_master : out std_logic_vector(250 downto 0);
+    address_in_0                                      : in  std_logic_vector(31 downto 0);
+    address_in_1                                      : in  std_logic_vector(31 downto 0);
+    address_in_2                                      : in  std_logic_vector(31 downto 0);
+    address_in_3                                      : in  std_logic_vector(31 downto 0);
+    go                                                : in  std_logic;
+    ready                                             : out std_logic;
+    DEBUG_signal_master                               : out std_logic_vector(250 downto 0);
+    DOA, DOB                                          : out std_logic_vector (31 downto 0);
+    ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);
+    CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;
+    DIA, DIB                                          : in  std_logic_vector (31 downto 0);
+    WEA, WEB                                          : in  std_logic_vector (3 downto 0);
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -277,7 +282,7 @@ architecture IMP of master is
   constant USER_MST_BASEADDR              : std_logic_vector     := C_BASEADDR or X"00000000";
   constant USER_MST_HIGHADDR              : std_logic_vector     := C_BASEADDR or X"000000FF";
 
-  constant IPIF_ARD_ADDR_RANGE_ARRAY      : SLV64_ARRAY_TYPE     := 
+  constant IPIF_ARD_ADDR_RANGE_ARRAY      : SLV64_ARRAY_TYPE     :=
     (
       ZERO_ADDR_PAD & USER_MST_BASEADDR,  -- user logic master space base address
       ZERO_ADDR_PAD & USER_MST_HIGHADDR   -- user logic master space high address
@@ -287,7 +292,7 @@ architecture IMP of master is
   constant USER_NUM_REG                   : integer              := USER_MST_NUM_REG;
   constant TOTAL_IPIF_CE                  : integer              := USER_NUM_REG;
 
-  constant IPIF_ARD_NUM_CE_ARRAY          : INTEGER_ARRAY_TYPE   := 
+  constant IPIF_ARD_NUM_CE_ARRAY          : INTEGER_ARRAY_TYPE   :=
     (
       0  =>  USER_MST_NUM_REG             -- number of ce for user logic master space
     );
@@ -298,7 +303,7 @@ architecture IMP of master is
   constant USER_MST_AWIDTH                : integer              := C_M_AXI_ADDR_WIDTH;
 
   ------------------------------------------
-  -- Width of the master data bus 
+  -- Width of the master data bus
   ------------------------------------------
   constant USER_MST_DWIDTH                : integer              := C_M_AXI_DATA_WIDTH;
 
@@ -570,14 +575,30 @@ begin
     (
       -- MAP USER PORTS BELOW THIS LINE ------------------
       --USER ports mapped here
-		address_in_0 => address_in_0,
-      address_in_1 => address_in_1,
-      address_in_2 => address_in_2,
-      address_in_3 => address_in_3,
-      go => go,
-      ready => ready,
-		DEBUG_signal => DEBUG_signal_master,
-		-- MAP USER PORTS ABOVE THIS LINE ------------------
+      address_in_0     => address_in_0,
+      address_in_1     => address_in_1,
+      address_in_2     => address_in_2,
+      address_in_3     => address_in_3,
+      go               => go,
+      ready            => ready,
+      DEBUG_signal     => DEBUG_signal_master,
+      DOA              => DOA,
+      DOB              => DOB,
+      ADDRA            => ADDRA,
+      ADDRB            => ADDRB,
+      CLKA             => CLKA,
+      CLKB             => CLKB,
+      ENA              => ENA,
+      ENB              => ENB,
+      REGCEA           => REGCEA,
+      REGCEB           => REGCEB,
+      RSTA             => RSTA,
+      RSTB             => RSTB,
+      DIA              => DIA,
+      DIB              => DIB,
+      WEA              => WEA,
+      WEB              => WEB,
+      -- MAP USER PORTS ABOVE THIS LINE ------------------
 
       Bus2IP_Clk                     => ipif_Bus2IP_Clk,
       Bus2IP_Resetn                  => ipif_Bus2IP_Resetn,

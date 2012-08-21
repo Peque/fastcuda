@@ -4,9 +4,9 @@
 ## Date:              Wed Apr 25 14:06:06 2012 (by Create and Import Peripheral Wizard)
 ##############################################################################
 
-lib proc_common_v3_00_a  all 
-lib axi_lite_ipif_v1_01_a  all 
-lib axi_master_burst_v1_00_a  all 
+lib proc_common_v3_00_a  all
+lib axi_lite_ipif_v1_01_a  all
+lib axi_master_burst_v1_00_a  all
 lib master_v1_00_a thread vhdl
 lib master_v1_00_a controller vhdl
 lib master_v1_00_a ready_proc vhdl
@@ -15,5 +15,6 @@ lib master_v1_00_a decod_proc vhdl
 lib master_v1_00_a filt_proc vhdl
 lib master_v1_00_a ack_proc vhdl
 lib master_v1_00_a wr_req_proc vhdl
+lib master_v1_00_a smem vhdl
 lib master_v1_00_a user_logic vhdl
 lib master_v1_00_a master vhdl

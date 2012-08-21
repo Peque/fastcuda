@@ -83,35 +83,35 @@ use proc_common_v3_00_a.srl_fifo_f;
 --   IP2Bus_RdAck                 -- IP to Bus read transfer acknowledgement
 --   IP2Bus_WrAck                 -- IP to Bus write transfer acknowledgement
 --   IP2Bus_Error                 -- IP to Bus error response
---   ip2bus_mstrd_req             -- 
---   ip2bus_mstwr_req             -- 
---   ip2bus_mst_addr              -- 
---   ip2bus_mst_be                -- 
---   ip2bus_mst_length            -- 
---   ip2bus_mst_type              -- 
---   ip2bus_mst_lock              -- 
---   ip2bus_mst_reset             -- 
---   bus2ip_mst_cmdack            -- 
---   bus2ip_mst_cmplt             -- 
---   bus2ip_mst_error             -- 
---   bus2ip_mst_rearbitrate       -- 
---   bus2ip_mst_cmd_timeout       -- 
---   bus2ip_mstrd_d               -- 
---   bus2ip_mstrd_rem             -- 
---   bus2ip_mstrd_sof_n           -- 
---   bus2ip_mstrd_eof_n           -- 
---   bus2ip_mstrd_src_rdy_n       -- 
---   bus2ip_mstrd_src_dsc_n       -- 
---   ip2bus_mstrd_dst_rdy_n       -- 
---   ip2bus_mstrd_dst_dsc_n       -- 
---   ip2bus_mstwr_d               -- 
---   ip2bus_mstwr_rem             -- 
---   ip2bus_mstwr_src_rdy_n       -- 
---   ip2bus_mstwr_src_dsc_n       -- 
---   ip2bus_mstwr_sof_n           -- 
---   ip2bus_mstwr_eof_n           -- 
---   bus2ip_mstwr_dst_rdy_n       -- 
---   bus2ip_mstwr_dst_dsc_n       -- 
+--   ip2bus_mstrd_req             --
+--   ip2bus_mstwr_req             --
+--   ip2bus_mst_addr              --
+--   ip2bus_mst_be                --
+--   ip2bus_mst_length            --
+--   ip2bus_mst_type              --
+--   ip2bus_mst_lock              --
+--   ip2bus_mst_reset             --
+--   bus2ip_mst_cmdack            --
+--   bus2ip_mst_cmplt             --
+--   bus2ip_mst_error             --
+--   bus2ip_mst_rearbitrate       --
+--   bus2ip_mst_cmd_timeout       --
+--   bus2ip_mstrd_d               --
+--   bus2ip_mstrd_rem             --
+--   bus2ip_mstrd_sof_n           --
+--   bus2ip_mstrd_eof_n           --
+--   bus2ip_mstrd_src_rdy_n       --
+--   bus2ip_mstrd_src_dsc_n       --
+--   ip2bus_mstrd_dst_rdy_n       --
+--   ip2bus_mstrd_dst_dsc_n       --
+--   ip2bus_mstwr_d               --
+--   ip2bus_mstwr_rem             --
+--   ip2bus_mstwr_src_rdy_n       --
+--   ip2bus_mstwr_src_dsc_n       --
+--   ip2bus_mstwr_sof_n           --
+--   ip2bus_mstwr_eof_n           --
+--   bus2ip_mstwr_dst_rdy_n       --
+--   bus2ip_mstwr_dst_dsc_n       --
 ------------------------------------------------------------------------------
 
 entity user_logic is
@@ -134,14 +134,19 @@ entity user_logic is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_in_0 : in std_logic_vector(31 downto 0); --register0
-    address_in_1 : in std_logic_vector(31 downto 0); --register1
-    address_in_2 : in std_logic_vector(31 downto 0); --register2
-    address_in_3 : in std_logic_vector(31 downto 0); --register3
-	 go : in std_logic;                               --register4
-	 ready : out std_logic;                           --register5
-	 DEBUG_signal : out std_logic_vector(250 downto 0);
-	  -- ADD USER PORTS ABOVE THIS LINE ------------------
+    address_in_0                                      : in  std_logic_vector(31 downto 0);
+    address_in_1                                      : in  std_logic_vector(31 downto 0);
+    address_in_2                                      : in  std_logic_vector(31 downto 0);
+    address_in_3                                      : in  std_logic_vector(31 downto 0);
+    go                                                : in  std_logic;
+    ready                                             : out std_logic;
+    DEBUG_signal                                      : out std_logic_vector(250 downto 0);
+    DOA, DOB                                          : out std_logic_vector (31 downto 0);
+    ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);
+    CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;
+    DIA, DIB                                          : in  std_logic_vector (31 downto 0);
+    WEA, WEB                                          : in  std_logic_vector (3 downto 0);
+    -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
     -- Bus protocol ports, do not add to or delete
@@ -207,7 +212,7 @@ architecture IMP of user_logic is
 --FILT_PROC --> da el dato a quien corresponda, según addr count
 --ACK_PROC --> genera los ack bis (para mantener la sincronización)
 --WR_REQ_PROC0, 1, 2 y 3 --> controla los wr req
- 
+
     COMPONENT thread
     PORT(
          clk : IN  std_logic;
@@ -227,8 +232,8 @@ architecture IMP of user_logic is
 			DATA_DEBUG : OUT  std_logic_vector(31 downto 0)
         );
     END COMPONENT;
-    
-    
+
+
     COMPONENT controller
     PORT(
          -- from/to thread
@@ -288,8 +293,8 @@ architecture IMP of user_logic is
 --         bus2ip_mstwr_dst_dsc_n         : in  std_logic
         );
     END COMPONENT;
-    
-	 
+
+
 	 COMPONENT ready_proc --pone las señales de ready a '1'
     PORT(
          clk : IN  std_logic;
@@ -310,8 +315,8 @@ architecture IMP of user_logic is
          s_rd_req_mi : OUT std_logic
         );
     END COMPONENT;
-	 
-	 
+
+
 	 COMPONENT decod_proc --detecta cuándo merece la pena hacer un burst
     PORT(
          clk : IN  std_logic;
@@ -342,15 +347,15 @@ architecture IMP of user_logic is
 			identif : out std_logic_vector(3 downto 0)
         );
     END COMPONENT;
-	 
-	 
+
+
 	 COMPONENT filt_proc --da el dato a quien corresponda, según addr count
     PORT(
          clk : IN  std_logic;
          resetn : IN  std_logic;
 			s_burst_type : in std_logic;
          bus2ip_mstrd_src_rdy_n : in std_logic;
-         s_address_count : in std_logic_vector(31 downto 0);			  
+         s_address_count : in std_logic_vector(31 downto 0);
          s_address_m0 : in std_logic_vector(31 downto 0);
          s_address_m1 : in std_logic_vector(31 downto 0);
          s_address_m2 : in std_logic_vector(31 downto 0);
@@ -372,8 +377,8 @@ architecture IMP of user_logic is
 			s_ack_m3 : out std_logic
         );
     END COMPONENT;
-	 
-	 
+
+
 	 COMPONENT ack_proc --genera los ack bis (para mantener la sincronización)
     PORT(
          clk : IN  std_logic;
@@ -388,7 +393,7 @@ architecture IMP of user_logic is
 			s_data_in_m1 : in  std_logic_vector(31 downto 0);
 			s_data_in_m2 : in  std_logic_vector(31 downto 0);
 			s_data_in_m3 : in  std_logic_vector(31 downto 0);
-			s_ack_m_bis : out std_logic;			
+			s_ack_m_bis : out std_logic;
 			s_ack_m0_bis : out std_logic;
 			s_ack_m1_bis : out std_logic;
 			s_ack_m2_bis : out std_logic;
@@ -399,8 +404,8 @@ architecture IMP of user_logic is
 			s_data_in_m3_bis : out std_logic_vector(31 downto 0)
         );
     END COMPONENT;
-	 
-	 
+
+
 	 COMPONENT wr_req_proc --controla los wr req
     PORT(
          clk : IN  std_logic;
@@ -411,8 +416,19 @@ architecture IMP of user_logic is
          s_wr_req_mi : out std_logic
         );
     END COMPONENT;
-	 
- 
+
+
+  component smem
+    port (
+      DOA, DOB                                          : out std_logic_vector (31 downto 0);
+      ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);
+      CLKA, CLKB, ENA, ENB, REGCEA, REGCEB,RSTA, RSTB   : in  std_logic;
+      DIA, DIB                                          : in  std_logic_vector (31 downto 0);
+      WEA, WEB                                          : in  std_logic_vector (3 downto 0)
+    );
+  end component;
+
+
   --USER signal declarations added here, as needed for user logic
 
   --signals for controller:
@@ -425,7 +441,7 @@ architecture IMP of user_logic is
   signal s_address_count : std_logic_vector(31 downto 0);
   signal burst_length : std_logic_vector(11 downto 0);
   signal data_to_write_burst : std_logic_vector(16*32-1 downto 0);
-  
+
   --signals for thread0:
   -- from/to memory controller
   signal s_data_in_m0 : std_logic_vector(31 downto 0);
@@ -438,7 +454,7 @@ architecture IMP of user_logic is
   signal s_ready_r0 : std_logic;
   signal s_address_a_r0 : std_logic_vector(31 downto 0);
   signal s_data_debug0 : std_logic_vector(31 downto 0);
-  
+
   --signals for thread1:
   -- from/to memory controller
   signal s_data_in_m1 : std_logic_vector(31 downto 0);
@@ -451,7 +467,7 @@ architecture IMP of user_logic is
   signal s_ready_r1 : std_logic;
   signal s_address_a_r1 : std_logic_vector(31 downto 0);
   signal s_data_debug1 : std_logic_vector(31 downto 0);
-  
+
   --signals for thread2:
   -- from/to memory controller
   signal s_data_in_m2 : std_logic_vector(31 downto 0);
@@ -464,7 +480,7 @@ architecture IMP of user_logic is
   signal s_ready_r2 : std_logic;
   signal s_address_a_r2 : std_logic_vector(31 downto 0);
   signal s_data_debug2 : std_logic_vector(31 downto 0);
-  
+
   --signals for thread3:
   -- from/to memory controller
   signal s_data_in_m3 : std_logic_vector(31 downto 0);
@@ -477,14 +493,14 @@ architecture IMP of user_logic is
   signal s_ready_r3 : std_logic;
   signal s_address_a_r3 : std_logic_vector(31 downto 0);
   signal s_data_debug3 : std_logic_vector(31 downto 0);
-  
+
   --signals for rd_req_processes
   signal s_rd_req_m0_bis : std_logic;
   signal s_rd_req_m1_bis : std_logic;
   signal s_rd_req_m2_bis : std_logic;
   signal s_rd_req_m3_bis : std_logic;
-  
-  --signals for ready_processes 
+
+  --signals for ready_processes
   type ready_proc_t is (ZERO, ONE);
     --signals for ready_process0
   signal s_ready_proc0 : ready_proc_t;
@@ -498,7 +514,7 @@ architecture IMP of user_logic is
     --signals for ready_process3
   signal s_ready_proc3 : ready_proc_t;
   signal ready3 : std_logic;
-  
+
   --signals for ack_processes
   type ack_t_proc_t is (ZERO, ONE);
   signal s_ack_t_proc : ack_t_proc_t;
@@ -512,18 +528,18 @@ architecture IMP of user_logic is
   signal s_data_in_m1_bis : std_logic_vector(31 downto 0);
   signal s_data_in_m2_bis : std_logic_vector(31 downto 0);
   signal s_data_in_m3_bis : std_logic_vector(31 downto 0);
-  
+
   --signals for wr_req_processes
   signal s_wr_req_m0_bis : std_logic;
   signal s_wr_req_m1_bis : std_logic;
   signal s_wr_req_m2_bis : std_logic;
   signal s_wr_req_m3_bis : std_logic;
-  
+
   --other signals:
   signal s_burst_type : std_logic;
   signal s_data_read_burst : std_logic_vector(16*32-1 downto 0);
   signal identif : std_logic_vector(3 downto 0);
-  
+
   signal DEBUG_bus2ip_mstrd_src_rdy_n : std_logic;
   signal DEBUG_ip2bus_mstwr_req : std_logic;
   signal DEBUG_bus2ip_mst_error : std_logic;
@@ -532,8 +548,8 @@ architecture IMP of user_logic is
   signal DEBUG_ip2bus_mstwr_sof_n : std_logic;
   signal DEBUG_ip2bus_mstwr_eof_n : std_logic;
 
-  
-  
+
+
   ------------------------------------------
   -- Signals for user logic slave model s/w accessible register example
   ------------------------------------------
@@ -545,14 +561,14 @@ architecture IMP of user_logic is
   signal slv_read_ack                   : std_logic;
   signal slv_write_ack                  : std_logic;
 
- 
+
 begin
 
   --USER logic implementation added here
 
   ------------------------------------------
   -- Example code to read/write user logic slave model s/w accessible registers
-  -- 
+  --
   -- Note:
   -- The example code presented here is to show you one way of reading/writing
   -- software accessible registers implemented in the user logic slave model.
@@ -560,13 +576,13 @@ begin
   -- to one software accessible register by the top level template. For example,
   -- if you have four 32 bit software accessible registers in the user logic,
   -- you are basically operating on the following memory mapped registers:
-  -- 
+  --
   --    Bus2IP_WrCE/Bus2IP_RdCE   Memory Mapped Register
   --                     "1000"   C_BASEADDR + 0x0
   --                     "0100"   C_BASEADDR + 0x4
   --                     "0010"   C_BASEADDR + 0x8
   --                     "0001"   C_BASEADDR + 0xC
-  -- 
+  --
   ------------------------------------------
   slv_reg_write_sel <= Bus2IP_WrCE(1 downto 0);
   slv_reg_read_sel  <= Bus2IP_RdCE(1 downto 0);
@@ -618,7 +634,7 @@ begin
 
   --------------------------------------------------
   -- Threads instantiation
- 
+
    thread0: thread PORT MAP (
           clk => Bus2IP_Clk,
           resetn => Bus2IP_Resetn,
@@ -635,8 +651,8 @@ begin
           address_a_r => address_in_0,
 			 DATA_DEBUG => s_data_debug0
         );
-		  
-  --------------------------------------------------		  
+
+  --------------------------------------------------
 	thread1: thread PORT MAP (
           clk => Bus2IP_Clk,
           resetn => Bus2IP_Resetn,
@@ -653,7 +669,7 @@ begin
           address_a_r => address_in_1,
 			 DATA_DEBUG => s_data_debug1
         );
-		  
+
   --------------------------------------------------
   	thread2: thread PORT MAP (
           clk => Bus2IP_Clk,
@@ -671,7 +687,7 @@ begin
           address_a_r => address_in_2,
 			 DATA_DEBUG => s_data_debug2
         );
-		  
+
   --------------------------------------------------
   	thread3: thread PORT MAP (
           clk => Bus2IP_Clk,
@@ -689,14 +705,40 @@ begin
           address_a_r => address_in_3,
 			 DATA_DEBUG => s_data_debug3
         );
-  
+
   --------------------------------------------------
-  
-  
+
+
+  ------------------------------------------
+  -- instantiate shared memory
+  ------------------------------------------
+
+  shared_mem : smem port map (
+
+    DOA => DOA,
+    DOB => DOB,
+    ADDRA => ADDRA,
+    ADDRB => ADDRB,
+    CLKA => CLKA,
+    CLKB => CLKB,
+    DIA => DIA,
+    DIB => DIB,
+    ENA => ENA,
+    ENB => ENB,
+    REGCEA => REGCEA,
+    REGCEB => REGCEB,
+    RSTA => RSTA,
+    RSTB => RSTB,
+    WEA => WEA,
+    WEB => WEB
+
+  );
+
+
   --------------------------------------------------
   -- Controller instantiation
- 
-   controller0: controller PORT MAP ( 
+
+   controller0: controller PORT MAP (
          -- from/to thread
          data_t2c => s_data_out_m,
          data_c2t => s_data_in_m,
@@ -713,7 +755,7 @@ begin
 			----
 			DEBUG_ESTADO => DEBUG_ESTADO,
          -- from/to bus
-         Bus2IP_Clk                     => Bus2IP_Clk,              
+         Bus2IP_Clk                     => Bus2IP_Clk,
          Bus2IP_Resetn                  => Bus2IP_Resetn,
 --         Bus2IP_Data                    => Bus2IP_Data,
 --         Bus2IP_BE                      => Bus2IP_BE,
@@ -751,16 +793,16 @@ begin
          ip2bus_mstwr_sof_n             => DEBUG_ip2bus_mstwr_sof_n,-----------------------------------
          ip2bus_mstwr_eof_n             => DEBUG_ip2bus_mstwr_eof_n,-----------------------------------
          bus2ip_mstwr_dst_rdy_n         => bus2ip_mstwr_dst_rdy_n
---         bus2ip_mstwr_dst_dsc_n         => bus2ip_mstwr_dst_dsc_n  
-        );    
-		  
+--         bus2ip_mstwr_dst_dsc_n         => bus2ip_mstwr_dst_dsc_n
+        );
+
   --------------------------------------------------
-  
-  
+
+
   --------------------------------------------------
   -- Ready processes instantiation (one per thread)
   -- pone las señales de ready a '1'
-  
+
   ready_proc0: ready_proc PORT MAP (
           clk => Bus2IP_Clk,
           resetn => Bus2IP_Resetn,
@@ -791,17 +833,17 @@ begin
           s_ready_ri => s_ready_r3,
           readyi => ready3
         );
-  
-  ----		  
+
+  ----
   ready <= ready0 and ready1 and ready2 and ready3;
-  
+
   --------------------------------------------------
 
 
   --------------------------------------------------
   -- Read requests processes instantiation (one per thread)
   -- controla los rd req
-  
+
   rd_req_proc0: rd_req_proc PORT MAP (
           clk => Bus2IP_Clk,
           resetn => Bus2IP_Resetn,
@@ -842,13 +884,13 @@ begin
         );
 
   --------------------------------------------------
-  
-  
-  
+
+
+
   --------------------------------------------------
   -- Decod. process instantiation
   -- detecta cuándo merece la pena hacer un burst
-  
+
   decod_proc0: decod_proc PORT MAP (
           clk => Bus2IP_Clk,
           resetn => Bus2IP_Resetn,
@@ -880,11 +922,11 @@ begin
 
   --------------------------------------------------
 
-  
+
   --------------------------------------------------
   -- Filt. process instantiation
   -- da el dato a quien corresponda, según addr count
-  
+
   filt_proc0: filt_proc PORT MAP (
           clk => Bus2IP_Clk,
 			 resetn => Bus2IP_Resetn,
@@ -913,12 +955,12 @@ begin
         );
 
   --------------------------------------------------
-  
-  
+
+
   --------------------------------------------------
   -- Ack. process instantiation
   -- genera los ack bis (para mantener la sincronización)
-  
+
   ack_proc0: ack_proc PORT MAP (
           clk => Bus2IP_Clk,
 			 resetn => Bus2IP_Resetn,
@@ -942,17 +984,17 @@ begin
           s_data_in_m2_bis => s_data_in_m2_bis,
           s_data_in_m3_bis => s_data_in_m3_bis
         );
-  
+
   ----
   s_ack_t <= s_ack_m0_bis and s_ack_m1_bis and s_ack_m2_bis and s_ack_m3_bis and s_ack_m_bis;
 
   --------------------------------------------------
-  
-  
+
+
   --------------------------------------------------
   -- Write requests processes instantiation (one per thread)
   -- controla los wr req
-  
+
   wr_req_proc0: wr_req_proc PORT MAP (
           clk => Bus2IP_Clk,
           resetn => Bus2IP_Resetn,
@@ -993,8 +1035,8 @@ begin
         );
 
   --------------------------------------------------
-  
-  
+
+
   --------------------------------------------------
   -- debugging issues
 
@@ -1053,7 +1095,7 @@ begin
 						DEBUG_ESTADO&'1'; --5+1
 									------------
 											--251
-                      
+
 
   ------------------------------------------
   -- Example code to drive IP to Bus signals

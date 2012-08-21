@@ -1,3 +1,4 @@
+--
 -- smem.vhd
 --
 -- Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
@@ -21,18 +22,27 @@
 
 
 
-
 library ieee;
 use ieee.std_logic_1164.all;
 
-library unisim;
-use unisim.vcomponents.all;
-
-
+library unimacro;
+use unimacro.vcomponents.all;
 
 
 entity smem is
+
+	port (
+
+		DOA, DOB                                          : out std_logic_vector (31 downto 0);   -- Output port data
+		ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);    -- Input port address
+		CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
+		DIA, DIB                                          : in  std_logic_vector (31 downto 0);   -- Input port-B data
+		WEA, WEB                                          : in  std_logic_vector (3 downto 0)     -- Input port-B write enable
+
+	);
+
 end smem;
+
 
 architecture smem_arch of smem is begin
 
@@ -41,7 +51,7 @@ architecture smem_arch of smem is begin
 	generic map (
 
 		-- Memory size and target device family
-		BRAM_SIZE => "9Kb",
+		BRAM_SIZE => "18Kb",
 		DEVICE => "SPARTAN6",
 
 		-- Optional port output register
