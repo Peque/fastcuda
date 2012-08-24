@@ -98,17 +98,17 @@ entity user_logic is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_out_0                                     : out std_logic_vector(31 downto 0);
-    address_out_1                                     : out std_logic_vector(31 downto 0);
-    address_out_2                                     : out std_logic_vector(31 downto 0);
-    address_out_3                                     : out std_logic_vector(31 downto 0);
-    go                                                : out std_logic;
-    ready                                             : in  std_logic;
-    DOA, DOB                                          : in  std_logic_vector (31 downto 0);
-    ADDRA, ADDRB                                      : out std_logic_vector (8 downto 0);
-    ENA, ENB, REGCEA, REGCEB, RSTA, RSTB              : out std_logic;
-    DIA, DIB                                          : out std_logic_vector (31 downto 0);
-    WEA, WEB                                          : out std_logic_vector (3 downto 0);
+    address_out_0                  : out std_logic_vector(31 downto 0);
+    address_out_1                  : out std_logic_vector(31 downto 0);
+    address_out_2                  : out std_logic_vector(31 downto 0);
+    address_out_3                  : out std_logic_vector(31 downto 0);
+    go                             : out std_logic;
+    ready                          : in  std_logic;
+    DOA, DOB                       : in  std_logic_vector(31 downto 0);
+    ADDRA, ADDRB                   : out std_logic_vector(8 downto 0);
+    ENA, ENB, RSTA, RSTB           : out std_logic;
+    DIA, DIB                       : out std_logic_vector(31 downto 0);
+    WEA, WEB                       : out std_logic_vector(3 downto 0);
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -198,14 +198,12 @@ begin
   ADDRB           <= slv_reg7(8 downto 0);
   ENA             <= slv_reg8(0);
   ENB             <= slv_reg9(0);
-  REGCEA          <= slv_reg10(0);
-  REGCEB          <= slv_reg11(0);
-  RSTA            <= slv_reg12(0);
-  RSTB            <= slv_reg13(0);
-  DIA             <= slv_reg14;
-  DIB             <= slv_reg15;
-  WEA             <= slv_reg16(3 downto 0);
-  WEB             <= slv_reg17(3 downto 0);
+  RSTA            <= slv_reg10(0);
+  RSTB            <= slv_reg11(0);
+  DIA             <= slv_reg12;
+  DIB             <= slv_reg13;
+  WEA             <= slv_reg14(3 downto 0);
+  WEB             <= slv_reg15(3 downto 0);
   ------------------------------------------
   -- Example code to read/write user logic slave model s/w accessible registers
   --

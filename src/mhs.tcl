@@ -281,8 +281,6 @@ xadd_hw_ipinst_port $registers_0_handle ADDRA smem_ADDRA
 xadd_hw_ipinst_port $registers_0_handle ADDRB smem_ADDRB
 xadd_hw_ipinst_port $registers_0_handle ENA smem_ENA
 xadd_hw_ipinst_port $registers_0_handle ENB smem_ENB
-xadd_hw_ipinst_port $registers_0_handle REGCEA smem_REGCEA
-xadd_hw_ipinst_port $registers_0_handle REGCEB smem_REGCEB
 xadd_hw_ipinst_port $registers_0_handle RSTA smem_RSTA
 xadd_hw_ipinst_port $registers_0_handle RSTB smem_RSTB
 xadd_hw_ipinst_port $registers_0_handle DIA smem_DIA
@@ -310,8 +308,6 @@ xadd_hw_ipinst_port $master_0_handle ADDRA smem_ADDRA
 xadd_hw_ipinst_port $master_0_handle ADDRB smem_ADDRB
 xadd_hw_ipinst_port $master_0_handle ENA smem_ENA
 xadd_hw_ipinst_port $master_0_handle ENB smem_ENB
-xadd_hw_ipinst_port $master_0_handle REGCEA smem_REGCEA
-xadd_hw_ipinst_port $master_0_handle REGCEB smem_REGCEB
 xadd_hw_ipinst_port $master_0_handle RSTA smem_RSTA
 xadd_hw_ipinst_port $master_0_handle RSTB smem_RSTB
 xadd_hw_ipinst_port $master_0_handle DIA smem_DIA

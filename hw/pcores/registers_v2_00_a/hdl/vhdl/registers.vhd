@@ -138,17 +138,17 @@ entity registers is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_out_0                                     : out std_logic_vector(31 downto 0);
-    address_out_1                                     : out std_logic_vector(31 downto 0);
-    address_out_2                                     : out std_logic_vector(31 downto 0);
-    address_out_3                                     : out std_logic_vector(31 downto 0);
-    go                                                : out std_logic;
-    ready                                             : in  std_logic;
-    DOA, DOB                                          : in  std_logic_vector (31 downto 0);
-    ADDRA, ADDRB                                      : out std_logic_vector (8 downto 0);
-    ENA, ENB, REGCEA, REGCEB, RSTA, RSTB              : out std_logic;
-    DIA, DIB                                          : out std_logic_vector (31 downto 0);
-    WEA, WEB                                          : out std_logic_vector (3 downto 0);
+    address_out_0                  : out std_logic_vector(31 downto 0);
+    address_out_1                  : out std_logic_vector(31 downto 0);
+    address_out_2                  : out std_logic_vector(31 downto 0);
+    address_out_3                  : out std_logic_vector(31 downto 0);
+    go                             : out std_logic;
+    ready                          : in  std_logic;
+    DOA, DOB                       : in  std_logic_vector(31 downto 0);
+    ADDRA, ADDRB                   : out std_logic_vector(8 downto 0);
+    ENA, ENB, RSTA, RSTB           : out std_logic;
+    DIA, DIB                       : out std_logic_vector(31 downto 0);
+    WEA, WEB                       : out std_logic_vector(3 downto 0);
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -325,8 +325,6 @@ begin
       ADDRB            => ADDRB,
       ENA              => ENA,
       ENB              => ENB,
-      REGCEA           => REGCEA,
-      REGCEB           => REGCEB,
       RSTA             => RSTA,
       RSTB             => RSTB,
       DIA              => DIA,

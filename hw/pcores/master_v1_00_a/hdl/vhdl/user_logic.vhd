@@ -134,18 +134,18 @@ entity user_logic is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_in_0                                      : in  std_logic_vector(31 downto 0);
-    address_in_1                                      : in  std_logic_vector(31 downto 0);
-    address_in_2                                      : in  std_logic_vector(31 downto 0);
-    address_in_3                                      : in  std_logic_vector(31 downto 0);
-    go                                                : in  std_logic;
-    ready                                             : out std_logic;
-    DEBUG_signal                                      : out std_logic_vector(250 downto 0);
-    DOA, DOB                                          : out std_logic_vector (31 downto 0);
-    ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);
-    CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;
-    DIA, DIB                                          : in  std_logic_vector (31 downto 0);
-    WEA, WEB                                          : in  std_logic_vector (3 downto 0);
+    address_in_0                      : in  std_logic_vector(31 downto 0);
+    address_in_1                      : in  std_logic_vector(31 downto 0);
+    address_in_2                      : in  std_logic_vector(31 downto 0);
+    address_in_3                      : in  std_logic_vector(31 downto 0);
+    go                                : in  std_logic;
+    ready                             : out std_logic;
+    DEBUG_signal                      : out std_logic_vector(250 downto 0);
+    DOA, DOB                          : out std_logic_vector(31 downto 0);
+    ADDRA, ADDRB                      : in  std_logic_vector(8 downto 0);
+    CLKA, CLKB, ENA, ENB, RSTA, RSTB  : in  std_logic;
+    DIA, DIB                          : in  std_logic_vector(31 downto 0);
+    WEA, WEB                          : in  std_logic_vector(3 downto 0);
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -420,11 +420,11 @@ architecture IMP of user_logic is
 
   component smem
     port (
-      DOA, DOB                                          : out std_logic_vector (31 downto 0);
-      ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);
-      CLKA, CLKB, ENA, ENB, REGCEA, REGCEB,RSTA, RSTB   : in  std_logic;
-      DIA, DIB                                          : in  std_logic_vector (31 downto 0);
-      WEA, WEB                                          : in  std_logic_vector (3 downto 0)
+      DOA, DOB                           : out std_logic_vector(31 downto 0);
+      ADDRA, ADDRB                       : in  std_logic_vector(8 downto 0);
+      CLKA, CLKB, ENA, ENB, RSTA, RSTB   : in  std_logic;
+      DIA, DIB                           : in  std_logic_vector(31 downto 0);
+      WEA, WEB                           : in  std_logic_vector(3 downto 0)
     );
   end component;
 
@@ -725,8 +725,6 @@ begin
     DIB => DIB,
     ENA => ENA,
     ENB => ENB,
-    REGCEA => REGCEA,
-    REGCEB => REGCEB,
     RSTA => RSTA,
     RSTB => RSTB,
     WEA => WEA,

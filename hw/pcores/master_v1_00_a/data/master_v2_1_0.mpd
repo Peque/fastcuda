@@ -57,8 +57,6 @@ PORT ADDRA = "", DIR = I, VEC = [8:0]
 PORT ADDRB = "", DIR = I, VEC = [8:0]
 PORT ENA = "", DIR = I
 PORT ENB = "", DIR = I
-PORT REGCEA = "", DIR = I
-PORT REGCEB = "", DIR = I
 PORT RSTA = "", DIR = I
 PORT RSTB = "", DIR = I
 PORT DIA = "", DIR = I, VEC = [31:0]
