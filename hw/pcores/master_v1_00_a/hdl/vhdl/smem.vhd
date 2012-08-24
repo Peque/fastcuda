@@ -37,11 +37,11 @@ entity smem is
 
 	port (
 
-		DOA, DOB                                          : out std_logic_vector(31 downto 0);    -- Output port data
-		ADDRA, ADDRB                                      : in  std_logic_vector(8 downto 0);     -- Input port address
-		CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
-		DIA, DIB                                          : in  std_logic_vector(31 downto 0);    -- Input port-B data
-		WEA, WEB                                          : in  std_logic_vector(3 downto 0)      -- Input port-B write enable
+		DOA, DOB                          : out std_logic_vector(31 downto 0);    -- Output port data
+		ADDRA, ADDRB                      : in  std_logic_vector(8 downto 0);     -- Input port address
+		CLKA, CLKB, ENA, ENB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
+		DIA, DIB                          : in  std_logic_vector(31 downto 0);    -- Input port-B data
+		WEA, WEB                          : in  std_logic_vector(3 downto 0)      -- Input port-B write enable
 
 	);
 
@@ -52,8 +52,9 @@ end smem;
 architecture smem_arch of smem is
 
 
-	constant DIP_signal        : std_logic_vector(3 downto 0) := "0000";
-	constant LOWADDR_signal    : std_logic_vector(4 downto 0) := "00000";
+	constant DIP_value        : std_logic_vector(3 downto 0) := "0000";
+	constant LOWADDR_value    : std_logic_vector(4 downto 0) := "00000";
+	constant REGCE_value      : std_logic := '0';
 
 
 begin
@@ -182,19 +183,19 @@ begin
 		DOPA                 => open,            -- We are not using parity bits
 		DOPB                 => open,            -- We are not using parity bits
 		ADDRA(13 downto 5)   => ADDRA,           -- Input port-A address
-		ADDRA(4 downto 0)    => LOWADDR_signal,  -- Set low adress bits to 0
+		ADDRA(4 downto 0)    => LOWADDR_value,   -- Set low adress bits to 0
 		ADDRB(13 downto 5)   => ADDRB,           -- Input port-B address
-		ADDRB(4 downto 0)    => LOWADDR_signal,  -- Set low adress bits to 0
+		ADDRB(4 downto 0)    => LOWADDR_value,   -- Set low adress bits to 0
 		CLKA                 => CLKA,            -- Input port-A clock
 		CLKB                 => CLKB,            -- Input port-B clock
 		DIA                  => DIA,             -- Input port-A data
 		DIB                  => DIB,             -- Input port-B data
-		DIPA                 => DIP_signal,      -- Input parity bits always set to 0 (not using them)
-		DIPB                 => DIP_signal,      -- Input parity bits always set to 0 (not using them)
+		DIPA                 => DIP_value,       -- Input parity bits always set to 0 (not using them)
+		DIPB                 => DIP_value,       -- Input parity bits always set to 0 (not using them)
 		ENA                  => ENA,             -- Input port-A enable
 		ENB                  => ENB,             -- Input port-B enable
-		REGCEA               => REGCEA,          -- Input port-A output register enable
-		REGCEB               => REGCEB,          -- Input port-B output register enable
+		REGCEA               => REGCE_value,     -- Input port-A output register enable
+		REGCEB               => REGCE_value,     -- Input port-B output register enable
 		RSTA                 => RSTA,            -- Input port-A reset
 		RSTB                 => RSTB,            -- Input port-B reset
 		WEA                  => WEA,             -- Input port-A write enable

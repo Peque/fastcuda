@@ -40,22 +40,22 @@ architecture smem_tb_arch of smem_tb is
 
 		port (
 
-			DOA, DOB                                          : out std_logic_vector(31 downto 0);   -- Output port data
-			ADDRA, ADDRB                                      : in  std_logic_vector(8 downto 0);    -- Input port address
-			CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
-			DIA, DIB                                          : in  std_logic_vector(31 downto 0);   -- Input port-B data
-			WEA, WEB                                          : in  std_logic_vector(3 downto 0)
+			DOA, DOB                          : out std_logic_vector(31 downto 0);   -- Output port data
+			ADDRA, ADDRB                      : in  std_logic_vector(8 downto 0);    -- Input port address
+			CLKA, CLKB, ENA, ENB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
+			DIA, DIB                          : in  std_logic_vector(31 downto 0);   -- Input port-B data
+			WEA, WEB                          : in  std_logic_vector(3 downto 0)
 
 		);
 
 	end component;
 
 
-	signal DOA, DOB                                          : std_logic_vector(31 downto 0);
-	signal ADDRA, ADDRB                                      : std_logic_vector(8 downto 0) := "000000000";
-	signal CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : std_logic := '0';
-	signal DIA, DIB                                          : std_logic_vector(31 downto 0) := x"00000000";
-	signal WEA, WEB                                          : std_logic_vector(3 downto 0) := "0000";
+	signal DOA, DOB                          : std_logic_vector(31 downto 0);
+	signal ADDRA, ADDRB                      : std_logic_vector(8 downto 0) := "000000000";
+	signal CLKA, CLKB, ENA, ENB, RSTA, RSTB  : std_logic := '0';
+	signal DIA, DIB                          : std_logic_vector(31 downto 0) := x"00000000";
+	signal WEA, WEB                          : std_logic_vector(3 downto 0) := "0000";
 
 
 begin
@@ -75,8 +75,6 @@ begin
 		DIB => DIB,        -- Input port-B data
 		ENA => ENA,        -- Input port-A enable
 		ENB => ENB,        -- Input port-B enable
-		REGCEA => REGCEA,  -- Input port-A output register enable
-		REGCEB => REGCEB,  -- Input port-B output register enable
 		RSTA => RSTA,      -- Input port-A reset
 		RSTB => RSTB,      -- Input port-B reset
 		WEA => WEA,        -- Input port-A write enable
