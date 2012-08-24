@@ -25,52 +25,71 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+library unisim;
+use unisim.vcomponents.all;
+
 library unimacro;
 use unimacro.vcomponents.all;
+
 
 
 entity smem is
 
 	port (
 
-		DOA, DOB                                          : out std_logic_vector (31 downto 0);   -- Output port data
-		ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);    -- Input port address
+		DOA, DOB                                          : out std_logic_vector(31 downto 0);    -- Output port data
+		ADDRA, ADDRB                                      : in  std_logic_vector(8 downto 0);     -- Input port address
 		CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
-		DIA, DIB                                          : in  std_logic_vector (31 downto 0);   -- Input port-B data
-		WEA, WEB                                          : in  std_logic_vector (3 downto 0)     -- Input port-B write enable
+		DIA, DIB                                          : in  std_logic_vector(31 downto 0);    -- Input port-B data
+		WEA, WEB                                          : in  std_logic_vector(3 downto 0)      -- Input port-B write enable
 
 	);
 
 end smem;
 
 
-architecture smem_arch of smem is begin
 
-	BRAM_TDP_MACRO_inst : BRAM_TDP_MACRO
+architecture smem_arch of smem is
+
+
+	constant DIP_signal        : std_logic_vector(3 downto 0) := "0000";
+	constant LOWADDR_signal    : std_logic_vector(4 downto 0) := "00000";
+
+
+begin
+
+	RAMB16BWER_inst : RAMB16BWER
 
 	generic map (
 
-		-- Memory size and target device family
-		BRAM_SIZE => "18Kb",
-		DEVICE => "SPARTAN6",
+		-- Configurable data with for ports A and B
+		DATA_WIDTH_A => 36,
+		DATA_WIDTH_B => 36,
+
+		-- Enable RST capability
+		EN_RSTRAM_A => TRUE,
+		EN_RSTRAM_B => TRUE,
+
+		-- Reset type
+		RSTTYPE => "SYNC",
 
 		-- Optional port output register
 		DOA_REG => 0,
 		DOB_REG => 0,
+		-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
+		RST_PRIORITY_A => "SR",
+		RST_PRIORITY_B => "SR",
 
 		-- Initial values on ports
 		INIT_A => X"000000000",
 		INIT_B => X"000000000",
 		INIT_FILE => "NONE",
 
-		-- Read and write width (must be equal)
-		READ_WIDTH_A  => 32,
-		WRITE_WIDTH_A => 32,
-		READ_WIDTH_B  => 32,
-		WRITE_WIDTH_B => 32,
-
 		-- Warning produced and affected outputs/memory location go unknown
 		SIM_COLLISION_CHECK => "ALL",
+
+		-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
+		SIM_DEVICE => "SPARTAN6",
 
 		-- Output value on the DO ports upon the assertion of the syncronous reset signal
 		SRVAL_A => X"000000000",
@@ -158,22 +177,28 @@ architecture smem_arch of smem is begin
 
 	) port map (
 
-		DOA => DOA,        -- Output port-A data
-		DOB => DOB,        -- Output port-B data
-		ADDRA => ADDRA,    -- Input port-A address
-		ADDRB => ADDRB,    -- Input port-B address
-		CLKA => CLKA,      -- Input port-A clock
-		CLKB => CLKB,      -- Input port-B clock
-		DIA => DIA,        -- Input port-A data
-		DIB => DIB,        -- Input port-B data
-		ENA => ENA,        -- Input port-A enable
-		ENB => ENB,        -- Input port-B enable
-		REGCEA => REGCEA,  -- Input port-A output register enable
-		REGCEB => REGCEB,  -- Input port-B output register enable
-		RSTA => RSTA,      -- Input port-A reset
-		RSTB => RSTB,      -- Input port-B reset
-		WEA => WEA,        -- Input port-A write enable
-		WEB => WEB         -- Input port-B write enable
+		DOA                  => DOA,             -- Output port-A data
+		DOB                  => DOB,             -- Output port-B data
+		DOPA                 => open,            -- We are not using parity bits
+		DOPB                 => open,            -- We are not using parity bits
+		ADDRA(13 downto 5)   => ADDRA,           -- Input port-A address
+		ADDRA(4 downto 0)    => LOWADDR_signal,  -- Set low adress bits to 0
+		ADDRB(13 downto 5)   => ADDRB,           -- Input port-B address
+		ADDRB(4 downto 0)    => LOWADDR_signal,  -- Set low adress bits to 0
+		CLKA                 => CLKA,            -- Input port-A clock
+		CLKB                 => CLKB,            -- Input port-B clock
+		DIA                  => DIA,             -- Input port-A data
+		DIB                  => DIB,             -- Input port-B data
+		DIPA                 => DIP_signal,      -- Input parity bits always set to 0 (not using them)
+		DIPB                 => DIP_signal,      -- Input parity bits always set to 0 (not using them)
+		ENA                  => ENA,             -- Input port-A enable
+		ENB                  => ENB,             -- Input port-B enable
+		REGCEA               => REGCEA,          -- Input port-A output register enable
+		REGCEB               => REGCEB,          -- Input port-B output register enable
+		RSTA                 => RSTA,            -- Input port-A reset
+		RSTB                 => RSTB,            -- Input port-B reset
+		WEA                  => WEA,             -- Input port-A write enable
+		WEB                  => WEB              -- Input port-B write enable
 
 	);
 

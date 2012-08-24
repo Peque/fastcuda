@@ -32,6 +32,7 @@ entity smem_tb is
 end smem_tb;
 
 
+
 architecture smem_tb_arch of smem_tb is
 
 
@@ -39,22 +40,22 @@ architecture smem_tb_arch of smem_tb is
 
 		port (
 
-			DOA, DOB                                          : out std_logic_vector (31 downto 0);   -- Output port data
-			ADDRA, ADDRB                                      : in  std_logic_vector (8 downto 0);    -- Input port address
+			DOA, DOB                                          : out std_logic_vector(31 downto 0);   -- Output port data
+			ADDRA, ADDRB                                      : in  std_logic_vector(8 downto 0);    -- Input port address
 			CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
-			DIA, DIB                                          : in  std_logic_vector (31 downto 0);   -- Input port-B data
-			WEA, WEB                                          : in  std_logic_vector (3 downto 0)
+			DIA, DIB                                          : in  std_logic_vector(31 downto 0);   -- Input port-B data
+			WEA, WEB                                          : in  std_logic_vector(3 downto 0)
 
 		);
 
 	end component;
 
 
-	signal DOA, DOB                                          : std_logic_vector (31 downto 0);
-	signal ADDRA, ADDRB                                      : std_logic_vector (8 downto 0) := "000000000";
+	signal DOA, DOB                                          : std_logic_vector(31 downto 0);
+	signal ADDRA, ADDRB                                      : std_logic_vector(8 downto 0) := "000000000";
 	signal CLKA, CLKB, ENA, ENB, REGCEA, REGCEB, RSTA, RSTB  : std_logic := '0';
-	signal DIA, DIB                                          : std_logic_vector (31 downto 0) := x"00000000";
-	signal WEA, WEB                                          : std_logic_vector (3 downto 0) := "0000";
+	signal DIA, DIB                                          : std_logic_vector(31 downto 0) := x"00000000";
+	signal WEA, WEB                                          : std_logic_vector(3 downto 0) := "0000";
 
 
 begin
