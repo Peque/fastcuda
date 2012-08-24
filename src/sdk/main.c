@@ -38,12 +38,24 @@ typedef volatile int32_t * pdata_32;
 #define REG_DATA_32(ADDR_OFFSET) *((pdata_32) (REG_BASE_ADDR + (ADDR_OFFSET) * 4))
 
 // Naming conventions:
-#define addr_0     REG_DATA_32(0)
-#define addr_1     REG_DATA_32(1)
-#define addr_2     REG_DATA_32(2)
-#define addr_3     REG_DATA_32(3)
-#define go_flag    REG_DATA_32(4)
-#define ready_flag REG_DATA_32(5)
+#define addr_0       REG_DATA_32(0)
+#define addr_1       REG_DATA_32(1)
+#define addr_2       REG_DATA_32(2)
+#define addr_3       REG_DATA_32(3)
+#define go_flag      REG_DATA_32(4)
+#define ready_flag   REG_DATA_32(5)
+#define DOA          REG_DATA_32(6)
+#define DOB          REG_DATA_32(7)
+#define ADDRA        REG_DATA_32(8)
+#define ADDRB        REG_DATA_32(9)
+#define ENA          REG_DATA_32(10)
+#define ENB          REG_DATA_32(11)
+#define RSTA         REG_DATA_32(12)
+#define RSTB         REG_DATA_32(13)
+#define DIA          REG_DATA_32(14)
+#define DIB          REG_DATA_32(15)
+#define WEA          REG_DATA_32(16)
+#define WEB          REG_DATA_32(17)
 
 // We need this header to avoid compiling errors...
 void xil_printf(const char *, ...);
@@ -87,9 +99,27 @@ int main(void)
 	xil_printf("Threads have finished!\n");
 
 	// Display DDR2 data once the threads have finished
-	xil_printf("DDR2 data after the threads have finished:\n");
-	for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i), DDR2_DATA_32(i));
-	for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i+100), DDR2_DATA_32(i+100));
+	//xil_printf("DDR2 data after the threads have finished:\n");
+	//for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i), DDR2_DATA_32(i));
+	//for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i+100), DDR2_DATA_32(i+100));
+
+	ENA = ENB = 1;
+	RSTA = RSTB = 0;
+
+	DIA = 0xAAAAAAAA;
+	DIB = 0xBBBBBBBB;
+
+	ADDRA = 100;
+	ADDRB = 200;
+
+	WEA = 0b1111;
+	WEB = 0b1111;
+
+	ADDRA = 200;
+	ADDRB = 100;
+
+	xil_printf("Data read in port A => %x\n", DOA);
+	xil_printf("Data read in port B => %x\n", DOB);
 
 	return 0;
 }
