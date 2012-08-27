@@ -37,11 +37,13 @@ entity smem is
 
 	port (
 
-		DOA, DOB                          : out std_logic_vector(31 downto 0);    -- Output port data
-		ADDRA, ADDRB                      : in  std_logic_vector(8 downto 0);     -- Input port address
-		CLKA, CLKB, ENA, ENB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
-		DIA, DIB                          : in  std_logic_vector(31 downto 0);    -- Input port-B data
-		WEA, WEB                          : in  std_logic_vector(3 downto 0)      -- Input port-B write enable
+		DO_0, DO_1, DO_2, DO_3           : out std_logic_vector(31 downto 0);    -- Data output ports
+		DI_0, DI_1, DI_2, DI_3           : in  std_logic_vector(31 downto 0);    -- Data input ports
+		ADDR_0, ADDR_1, ADDR_2, ADDR_3   : in  std_logic_vector(9 downto 0);     -- Address input ports
+		WE_0, WE_1, WE_2, WE_3           : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
+		CLK_EVEN, CLK_ODD, RST           : in  std_logic;                        -- Clock and reset input ports
+		REQ_0, REQ_1, REQ_2, REQ_3       : in  std_logic;                        -- Request input ports
+		RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic                         -- Ready output ports
 
 	);
 
@@ -52,14 +54,38 @@ end smem;
 architecture smem_arch of smem is
 
 
-	constant DIP_value        : std_logic_vector(3 downto 0) := "0000";
-	constant LOWADDR_value    : std_logic_vector(4 downto 0) := "00000";
-	constant REGCE_value      : std_logic := '0';
+	constant DIP_value         : std_logic_vector(3 downto 0) := "0000";
+	constant LOWADDR_value     : std_logic_vector(4 downto 0) := "00000";
+	constant REGCE_value       : std_logic := '0';
+	constant EN_value          : std_logic := '1';
+
+
+	signal k0_needs_attention  : std_logic := '0';
+	signal k0_requested_port   : std_logic_vector(0 downto 0) := "0";
+
+	signal k1_needs_attention  : std_logic := '0';
+	signal k1_requested_port   : std_logic_vector(0 downto 0) := "0";
+
+	signal k2_needs_attention  : std_logic := '0';
+	signal k2_requested_port   : std_logic_vector(0 downto 0) := "0";
+
+	signal k3_needs_attention  : std_logic := '0';
+	signal k3_requested_port   : std_logic_vector(0 downto 0) := "0";
+
+	signal p0_busy             : std_logic := '0';
+	signal p1_busy             : std_logic := '0';
+	signal p2_busy             : std_logic := '0';
+	signal p3_busy             : std_logic := '0';
+
+	signal EN_0                : std_logic := '1';
+	signal EN_1                : std_logic := '1';
+	signal EN_2                : std_logic := '1';
+	signal EN_3                : std_logic := '1';
 
 
 begin
 
-	RAMB16BWER_inst : RAMB16BWER
+	RAMB16BWER_0 : RAMB16BWER
 
 	generic map (
 
@@ -178,30 +204,178 @@ begin
 
 	) port map (
 
-		DOA                  => DOA,             -- Output port-A data
-		DOB                  => DOB,             -- Output port-B data
-		DOPA                 => open,            -- We are not using parity bits
-		DOPB                 => open,            -- We are not using parity bits
-		ADDRA(13 downto 5)   => ADDRA,           -- Input port-A address
-		ADDRA(4 downto 0)    => LOWADDR_value,   -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDRB,           -- Input port-B address
-		ADDRB(4 downto 0)    => LOWADDR_value,   -- Set low adress bits to 0
-		CLKA                 => CLKA,            -- Input port-A clock
-		CLKB                 => CLKB,            -- Input port-B clock
-		DIA                  => DIA,             -- Input port-A data
-		DIB                  => DIB,             -- Input port-B data
-		DIPA                 => DIP_value,       -- Input parity bits always set to 0 (not using them)
-		DIPB                 => DIP_value,       -- Input parity bits always set to 0 (not using them)
-		ENA                  => ENA,             -- Input port-A enable
-		ENB                  => ENB,             -- Input port-B enable
-		REGCEA               => REGCE_value,     -- Input port-A output register enable
-		REGCEB               => REGCE_value,     -- Input port-B output register enable
-		RSTA                 => RSTA,            -- Input port-A reset
-		RSTB                 => RSTB,            -- Input port-B reset
-		WEA                  => WEA,             -- Input port-A write enable
-		WEB                  => WEB              -- Input port-B write enable
+		DOA                  => DO_0,             -- Output port-A data
+		DOB                  => DO_1,             -- Output port-B data
+		DOPA                 => open,             -- We are not using parity bits
+		DOPB                 => open,             -- We are not using parity bits
+		ADDRA(13 downto 5)   => ADDR_0(8 downto 0),           -- Input port-A address
+		ADDRA(4 downto 0)    => LOWADDR_value,    -- Set low adress bits to 0
+		ADDRB(13 downto 5)   => ADDR_1(8 downto 0),           -- Input port-B address
+		ADDRB(4 downto 0)    => LOWADDR_value,    -- Set low adress bits to 0
+		CLKA                 => CLK_EVEN,         -- Input port-A clock
+		CLKB                 => CLK_ODD,          -- Input port-B clock
+		DIA                  => DI_0,             -- Input port-A data
+		DIB                  => DI_1,             -- Input port-B data
+		DIPA                 => DIP_value,        -- Input parity bits always set to 0 (not using them)
+		DIPB                 => DIP_value,        -- Input parity bits always set to 0 (not using them)
+		ENA                  => EN_0,             -- Input port-A enable
+		ENB                  => EN_1,             -- Input port-B enable
+		REGCEA               => REGCE_value,      -- Input port-A output register enable
+		REGCEB               => REGCE_value,      -- Input port-B output register enable
+		RSTA                 => RST,              -- Input port-A reset
+		RSTB                 => RST,              -- Input port-B reset
+		WEA                  => WE_0,             -- Input port-A write enable
+		WEB                  => WE_1              -- Input port-B write enable
 
 	);
 
-end smem_arch;
+	RAMB16BWER_1 : RAMB16BWER
 
+	generic map (
+
+		-- Configurable data with for ports A and B
+		DATA_WIDTH_A => 36,
+		DATA_WIDTH_B => 36,
+
+		-- Enable RST capability
+		EN_RSTRAM_A => TRUE,
+		EN_RSTRAM_B => TRUE,
+
+		-- Reset type
+		RSTTYPE => "SYNC",
+
+		-- Optional port output register
+		DOA_REG => 0,
+		DOB_REG => 0,
+		-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
+		RST_PRIORITY_A => "SR",
+		RST_PRIORITY_B => "SR",
+
+		-- Initial values on ports
+		INIT_A => X"000000000",
+		INIT_B => X"000000000",
+		INIT_FILE => "NONE",
+
+		-- Warning produced and affected outputs/memory location go unknown
+		SIM_COLLISION_CHECK => "ALL",
+
+		-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
+		SIM_DEVICE => "SPARTAN6",
+
+		-- Output value on the DO ports upon the assertion of the syncronous reset signal
+		SRVAL_A => X"000000000",
+		SRVAL_B => X"000000000",
+
+		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
+		WRITE_MODE_A => "NO_CHANGE",
+		WRITE_MODE_B => "NO_CHANGE",
+
+		-- Initial contents of the RAM
+		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_13 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_14 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_15 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_16 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_17 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_18 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_19 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_1A => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_1B => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_1C => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_1D => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_1E => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_1F => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_20 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_21 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_22 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_23 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_24 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_25 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_26 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_27 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_28 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_29 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_2A => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_2B => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_2C => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_2D => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_2E => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_2F => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_30 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_31 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_32 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_33 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_34 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_35 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_36 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_37 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_38 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_39 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_3A => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_3B => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_3C => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_3D => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_3E => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000",
+
+		-- Parity bits initialization
+		INITP_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
+		INITP_07 => X"0000000000000000000000000000000000000000000000000000000000000000"
+
+	) port map (
+
+		DOA                  => DO_2,             -- Output port-A data
+		DOB                  => DO_3,             -- Output port-B data
+		DOPA                 => open,             -- We are not using parity bits
+		DOPB                 => open,             -- We are not using parity bits
+		ADDRA(13 downto 5)   => ADDR_2(8 downto 0),           -- Input port-A address
+		ADDRA(4 downto 0)    => LOWADDR_value,    -- Set low adress bits to 0
+		ADDRB(13 downto 5)   => ADDR_3(8 downto 0),           -- Input port-B address
+		ADDRB(4 downto 0)    => LOWADDR_value,    -- Set low adress bits to 0
+		CLKA                 => CLK_EVEN,         -- Input port-A clock
+		CLKB                 => CLK_ODD,          -- Input port-B clock
+		DIA                  => DI_2,             -- Input port-A data
+		DIB                  => DI_3,             -- Input port-B data
+		DIPA                 => DIP_value,        -- Input parity bits always set to 0 (not using them)
+		DIPB                 => DIP_value,        -- Input parity bits always set to 0 (not using them)
+		ENA                  => EN_2,             -- Input port-A enable
+		ENB                  => EN_3,             -- Input port-B enable
+		REGCEA               => REGCE_value,      -- Input port-A output register enable
+		REGCEB               => REGCE_value,      -- Input port-B output register enable
+		RSTA                 => RST,              -- Input port-A reset
+		RSTB                 => RST,              -- Input port-B reset
+		WEA                  => WE_2,             -- Input port-A write enable
+		WEB                  => WE_3              -- Input port-B write enable
+
+	);
+
+	EN_0 <= REQ_0;
+	EN_1 <= REQ_1;
+	EN_2 <= REQ_2;
+	EN_3 <= REQ_3;
+
+end smem_arch;

@@ -40,22 +40,26 @@ architecture smem_tb_arch of smem_tb is
 
 		port (
 
-			DOA, DOB                          : out std_logic_vector(31 downto 0);   -- Output port data
-			ADDRA, ADDRB                      : in  std_logic_vector(8 downto 0);    -- Input port address
-			CLKA, CLKB, ENA, ENB, RSTA, RSTB  : in  std_logic;                        -- Input port clock, enable, output register enable and reset
-			DIA, DIB                          : in  std_logic_vector(31 downto 0);   -- Input port-B data
-			WEA, WEB                          : in  std_logic_vector(3 downto 0)
+			DO_0, DO_1, DO_2, DO_3           : out std_logic_vector(31 downto 0);    -- Data output ports
+			DI_0, DI_1, DI_2, DI_3           : in  std_logic_vector(31 downto 0);    -- Data input ports
+			ADDR_0, ADDR_1, ADDR_2, ADDR_3   : in  std_logic_vector(9 downto 0);     -- Address input ports
+			WE_0, WE_1, WE_2, WE_3           : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
+			CLK_EVEN, CLK_ODD, RST           : in  std_logic;                        -- Clock and reset input ports
+			REQ_0, REQ_1, REQ_2, REQ_3       : in  std_logic;                        -- Request input ports
+			RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic                         -- Ready output ports
 
 		);
 
 	end component;
 
 
-	signal DOA, DOB                          : std_logic_vector(31 downto 0);
-	signal ADDRA, ADDRB                      : std_logic_vector(8 downto 0) := "000000000";
-	signal CLKA, CLKB, ENA, ENB, RSTA, RSTB  : std_logic := '0';
-	signal DIA, DIB                          : std_logic_vector(31 downto 0) := x"00000000";
-	signal WEA, WEB                          : std_logic_vector(3 downto 0) := "0000";
+	signal DO_0, DO_1, DO_2, DO_3            : std_logic_vector(31 downto 0);
+	signal DI_0, DI_1, DI_2, DI_3            : std_logic_vector(31 downto 0) := x"00000000";
+	signal ADDR_0, ADDR_1, ADDR_2, ADDR_3    : std_logic_vector(9 downto 0) := "0000000000";
+	signal WE_0, WE_1, WE_2, WE_3            : std_logic_vector(3 downto 0) := "0000";
+	signal CLK_EVEN, CLK_ODD, RST            : std_logic := '0';
+	signal REQ_0, REQ_1, REQ_2, REQ_3        : std_logic := '0';
+	signal RDY_0, RDY_1, RDY_2, RDY_3        : std_logic := '0';
 
 
 begin
@@ -65,20 +69,39 @@ begin
 
 	port map (
 
-		DOA => DOA,        -- Output port-A data
-		DOB => DOB,        -- Output port-B data
-		ADDRA => ADDRA,    -- Input port-A address
-		ADDRB => ADDRB,    -- Input port-B address
-		CLKA => CLKA,      -- Input port-A clock
-		CLKB => CLKB,      -- Input port-B clock
-		DIA => DIA,        -- Input port-A data
-		DIB => DIB,        -- Input port-B data
-		ENA => ENA,        -- Input port-A enable
-		ENB => ENB,        -- Input port-B enable
-		RSTA => RSTA,      -- Input port-A reset
-		RSTB => RSTB,      -- Input port-B reset
-		WEA => WEA,        -- Input port-A write enable
-		WEB => WEB         -- Input port-B write enable
+		DO_0 => DO_0,
+		DO_1 => DO_1,
+		DO_2 => DO_2,
+		DO_3 => DO_3,
+
+		ADDR_0 => ADDR_0,
+		ADDR_1 => ADDR_1,
+		ADDR_2 => ADDR_2,
+		ADDR_3 => ADDR_3,
+
+		CLK_EVEN => CLK_EVEN,
+		CLK_ODD => CLK_ODD,
+		RST => RST,
+
+		DI_0 => DI_0,
+		DI_1 => DI_1,
+		DI_2 => DI_2,
+		DI_3 => DI_3,
+
+		WE_0 => WE_0,
+		WE_1 => WE_1,
+		WE_2 => WE_2,
+		WE_3 => WE_3,
+
+		REQ_0 => REQ_0,
+		REQ_1 => REQ_1,
+		REQ_2 => REQ_2,
+		REQ_3 => REQ_3,
+
+		RDY_0 => RDY_0,
+		RDY_1 => RDY_1,
+		RDY_2 => RDY_2,
+		RDY_3 => RDY_3
 
 	);
 
@@ -87,11 +110,11 @@ begin
 
 		clock_loop : loop
 
-			CLKA <= '0';
-			CLKB <= '1';
+			CLK_EVEN <= '0';
+			CLK_ODD <= '1';
 			wait for 5 ns;
-			CLKA <= '1';
-			CLKB <= '0';
+			CLK_EVEN <= '1';
+			CLK_ODD <= '0';
 			wait for 5 ns;
 
 		end loop clock_loop;
@@ -103,25 +126,44 @@ begin
 
 		wait for 100 ns; -- Wait until global set/reset completes
 
-		ENA <= '1';
-		ENB <= '1';
-
 		wait for 1 ns;
 
-		DIA <= x"F0F0F0F0";
-		DIB <= x"FFFFFFFF";
-		ADDRA <= "000000000";
-		ADDRB <= "111111111";
-		WEA <= "1111";
-		WEB <= "1111";
+		DI_0 <= x"AAAAAAAA";
+		DI_1 <= x"BBBBBBBB";
+		DI_3 <= x"CCCCCCCC";
+		DI_2 <= x"DDDDDDDD";
+
+		ADDR_0 <= "0000000000";
+		ADDR_1 <= "0111111111";
+		ADDR_2 <= "1000000000";
+		ADDR_3 <= "1111111111";
+
+		WE_0 <= "1111";
+		WE_1 <= "1111";
+		WE_2 <= "1111";
+		WE_3 <= "1111";
+
+		REQ_0 <= '1';
+		REQ_1 <= '1';
+		REQ_2 <= '1';
+		REQ_3 <= '1';
 
 		wait for 5 ns;
 
-		WEA <= "0000";
+		WE_0 <= "0000";
+		WE_2 <= "0000";
 
 		wait for 5 ns;
 
-		WEB <= "0000";
+		WE_1 <= "0000";
+		WE_3 <= "0000";
+
+		wait for 20 ns;
+
+		REQ_0 <= '0';
+		REQ_1 <= '0';
+		REQ_2 <= '0';
+		REQ_3 <= '0';
 
 
 		wait;
