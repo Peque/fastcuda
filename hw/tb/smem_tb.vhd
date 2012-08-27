@@ -1,5 +1,5 @@
 --
--- smem.vhd
+-- smem_tb.vhd
 --
 -- Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
 --
@@ -26,6 +26,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use ieee.numeric_std.all;
+
 
 
 entity smem_tb is
@@ -130,8 +131,8 @@ begin
 
 		DI_0 <= x"AAAAAAAA";
 		DI_1 <= x"BBBBBBBB";
-		DI_3 <= x"CCCCCCCC";
-		DI_2 <= x"DDDDDDDD";
+		DI_2 <= x"CCCCCCCC";
+		DI_3 <= x"DDDDDDDD";
 
 		ADDR_0 <= "0000000000";
 		ADDR_1 <= "0111111111";
@@ -157,13 +158,6 @@ begin
 
 		WE_1 <= "0000";
 		WE_3 <= "0000";
-
-		wait for 20 ns;
-
-		REQ_0 <= '0';
-		REQ_1 <= '0';
-		REQ_2 <= '0';
-		REQ_3 <= '0';
 
 
 		wait;
