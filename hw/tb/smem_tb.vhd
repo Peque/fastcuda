@@ -47,7 +47,7 @@ architecture smem_tb_arch of smem_tb is
 			WE_0, WE_1, WE_2, WE_3           : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
 			CLK_EVEN, CLK_ODD, RST           : in  std_logic;                        -- Clock and reset input ports
 			REQ_0, REQ_1, REQ_2, REQ_3       : in  std_logic;                        -- Request input ports
-			RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic                         -- Ready output ports
+			RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic_vector(1 downto 0)      -- Ready output ports
 
 		);
 
@@ -60,7 +60,7 @@ architecture smem_tb_arch of smem_tb is
 	signal WE_0, WE_1, WE_2, WE_3            : std_logic_vector(3 downto 0) := "0000";
 	signal CLK_EVEN, CLK_ODD, RST            : std_logic := '0';
 	signal REQ_0, REQ_1, REQ_2, REQ_3        : std_logic := '0';
-	signal RDY_0, RDY_1, RDY_2, RDY_3        : std_logic := '0';
+	signal RDY_0, RDY_1, RDY_2, RDY_3        : std_logic_vector(1 downto 0) := "00";
 
 
 begin
@@ -130,37 +130,26 @@ begin
 		wait for 1 ns;
 
 		DI_0 <= x"AAAAAAAA";
-		DI_1 <= x"BBBBBBBB";
-		DI_2 <= x"CCCCCCCC";
-		DI_3 <= x"DDDDDDDD";
 
 		ADDR_0 <= "0000000000";
-		ADDR_1 <= "0111111111";
-		ADDR_2 <= "1000000000";
-		ADDR_3 <= "1111111111";
 
 		WE_0 <= "1111";
-		WE_1 <= "1111";
-		WE_2 <= "1111";
-		WE_3 <= "1111";
 
 		REQ_0 <= '1';
-		REQ_1 <= '1';
-		REQ_2 <= '1';
-		REQ_3 <= '1';
+		wait until RDY_0(0) = '1';
+		REQ_0 <= '0';
+		wait until RDY_0(1) = '1';
 
-		wait for 5 ns;
+		wait for 10 ns;
 
 		WE_0 <= "0000";
-		WE_2 <= "0000";
 
-		wait for 5 ns;
+		REQ_0 <= '1';
 
-		WE_1 <= "0000";
-		WE_3 <= "0000";
-
-
-		wait;
+		REQ_0 <= '1';
+		wait until RDY_0(0) = '1';
+		REQ_0 <= '0';
+		wait until RDY_0(1) = '1';
 
 	end process testbench;
 

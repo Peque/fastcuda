@@ -35,6 +35,12 @@ use unimacro.vcomponents.all;
 
 entity smem is
 
+	generic (
+
+		TIME_TO_FINISH_WRITING  : integer := 1000  -- Time until the port finish writing and it can be freed (in picoseconds)
+
+	);
+
 	port (
 
 		DO_0, DO_1, DO_2, DO_3           : out std_logic_vector(31 downto 0);    -- Data output ports
@@ -43,7 +49,7 @@ entity smem is
 		WE_0, WE_1, WE_2, WE_3           : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
 		CLK_EVEN, CLK_ODD, RST           : in  std_logic;                        -- Clock and reset input ports
 		REQ_0, REQ_1, REQ_2, REQ_3       : in  std_logic;                        -- Request input ports
-		RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic                         -- Ready output ports
+		RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic_vector(1 downto 0) := "00"                  -- Ready output ports
 
 	);
 
@@ -72,48 +78,239 @@ architecture smem_arch of smem is
 	--
 	--   DO_#_[A|B]           Data output of BRAM # in port [A|B]
 	--
+	--   update_output_#      On change, the output selection for kernel # is updated
+	--
 
 	signal k0_needs_attention  : std_logic := '0';
+	signal k0_being_served     : std_logic := '0';
+	signal k0_has_been_served  : std_logic := '1';
 	signal k0_given_port       : std_logic := '0';
 	signal k0_requested_bram   : std_logic_vector(0 downto 0) := "0";
-	signal k0_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 	signal k1_needs_attention  : std_logic := '0';
+	signal k1_being_served     : std_logic := '0';
+	signal k1_has_been_served  : std_logic := '1';
 	signal k1_given_port       : std_logic := '0';
 	signal k1_requested_bram   : std_logic_vector(0 downto 0) := "0";
-	signal k1_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 	signal k2_needs_attention  : std_logic := '0';
+	signal k2_being_served     : std_logic := '0';
+	signal k2_has_been_served  : std_logic := '1';
 	signal k2_given_port       : std_logic := '0';
 	signal k2_requested_bram   : std_logic_vector(0 downto 0) := "0";
-	signal k2_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 	signal k3_needs_attention  : std_logic := '0';
+	signal k3_being_served     : std_logic := '0';
+	signal k3_has_been_served  : std_logic := '1';
 	signal k3_given_port       : std_logic := '0';
 	signal k3_requested_bram   : std_logic_vector(0 downto 0) := "0";
-	signal k3_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 
-	signal p0_busy             : std_logic := '0';
-	signal p0_enabled          : std_logic := '0';
+	signal bram_0_A_busy       : std_logic := '0';
+	signal bram_0_B_busy       : std_logic := '0';
+	signal bram_1_A_busy       : std_logic := '0';
+	signal bram_1_B_busy       : std_logic := '0';
 
-	signal p1_busy             : std_logic := '0';
-	signal p1_enabled          : std_logic := '0';
-
-	signal p2_busy             : std_logic := '0';
-	signal p2_enabled          : std_logic := '0';
-
-	signal p3_busy             : std_logic := '0';
-	signal p3_enabled          : std_logic := '0';
 
 	signal DO_0_A              : std_logic_vector(31 downto 0) := X"00000000";
 	signal DO_0_B              : std_logic_vector(31 downto 0) := X"00000000";
+	signal DI_0_A              : std_logic_vector(31 downto 0) := X"00000000";
+	signal DI_0_B              : std_logic_vector(31 downto 0) := X"00000000";
+	signal ADDR_0_A            : std_logic_vector(8 downto 0) := "000000000";
+	signal ADDR_0_B            : std_logic_vector(8 downto 0) := "000000000";
+	signal WE_0_A              : std_logic_vector(3 downto 0) := "0000";
+	signal WE_0_B              : std_logic_vector(3 downto 0) := "0000";
+	signal EN_0_A              : std_logic := '0';
+	signal EN_0_B              : std_logic := '0';
 
 	signal DO_1_A              : std_logic_vector(31 downto 0) := X"00000000";
 	signal DO_1_B              : std_logic_vector(31 downto 0) := X"00000000";
+	signal DI_1_A              : std_logic_vector(31 downto 0) := X"00000000";
+	signal DI_1_B              : std_logic_vector(31 downto 0) := X"00000000";
+	signal ADDR_1_A            : std_logic_vector(8 downto 0) := "000000000";
+	signal ADDR_1_B            : std_logic_vector(8 downto 0) := "000000000";
+	signal WE_1_A              : std_logic_vector(3 downto 0) := "0000";
+	signal WE_1_B              : std_logic_vector(3 downto 0) := "0000";
+	signal EN_1_A              : std_logic := '0';
+	signal EN_1_B              : std_logic := '0';
+
+	signal update_output_0     : std_logic := '0';
+	signal update_output_1     : std_logic := '0';
+	signal update_output_2     : std_logic := '0';
+	signal update_output_3     : std_logic := '0';
 
 
 begin
+
+
+	-- TODO: review lines below (temporary workaround)
+	EN_0_A    <= '1';
+	EN_0_B    <= '1';
+	EN_1_A    <= '1';
+	EN_1_B    <= '1';
+	RDY_0(0)  <= k0_being_served;
+	RDY_1(0)  <= k1_being_served;
+	RDY_2(0)  <= k2_being_served;
+	RDY_3(0)  <= k3_being_served;
+	RDY_0(1)  <= k0_has_been_served;
+	RDY_1(1)  <= k1_has_been_served;
+	RDY_2(1)  <= k2_has_been_served;
+	RDY_3(1)  <= k3_has_been_served;
+
+
+	k0_requested_bram <= ADDR_0(9 downto 9);
+	k1_requested_bram <= ADDR_1(9 downto 9);
+	k2_requested_bram <= ADDR_2(9 downto 9);
+	k3_requested_bram <= ADDR_3(9 downto 9);
+
+
+	input_controller_0 : process (
+
+		bram_0_A_busy, bram_0_B_busy,
+		REQ_0, REQ_1, REQ_2, REQ_3,
+		CLK_EVEN, CLK_ODD,
+		k0_has_been_served, k1_has_been_served, k2_has_been_served, k3_has_been_served
+
+	)
+
+	begin
+
+		if (CLK_EVEN'event and CLK_EVEN = '1') then
+			if (k0_being_served = '1' and k0_given_port = '0') then
+				k0_being_served <= '0';
+			end if;
+			if (k1_being_served = '1' and k1_given_port = '0') then
+				k1_being_served <= '0';
+			end if;
+			if (k2_being_served = '1' and k2_given_port = '0') then
+				k2_being_served <= '0';
+			end if;
+			if (k3_being_served = '1' and k3_given_port = '0') then
+				k3_being_served <= '0';
+			end if;
+		elsif (CLK_ODD'event and CLK_ODD = '1') then
+			if (k0_being_served = '1' and k0_given_port = '1') then
+				k0_being_served <= '0';
+			end if;
+			if (k1_being_served = '1' and k1_given_port = '1') then
+				k1_being_served <= '0';
+			end if;
+			if (k2_being_served = '1' and k2_given_port = '1') then
+				k2_being_served <= '0';
+			end if;
+			if (k3_being_served = '1' and k3_given_port = '1') then
+				k3_being_served <= '0';
+			end if;
+		end if;
+
+		if (REQ_0 = '1' and k0_requested_bram = "0" and k0_being_served = '0' and k0_has_been_served = '1') then
+			if (bram_0_A_busy = '0') then
+				bram_0_A_busy <= '1';
+				DI_0_A <= DI_0;
+				ADDR_0_A <= ADDR_0(8 downto 0);
+				WE_0_A <= WE_0;
+				k0_given_port <= '0';
+				k0_being_served <= '1';
+			elsif (bram_0_B_busy = '0') then
+				bram_0_B_busy <= '1';
+				DI_0_B <= DI_0;
+				ADDR_0_B <= ADDR_0(8 downto 0);
+				WE_0_B <= WE_0;
+				k0_given_port <= '1';
+				k0_being_served <= '1';
+			end if;
+		end if;
+
+	end process input_controller_0;
+
+	ready_signal_trigger_0 : process begin
+		trigger_loop : loop
+			wait until k0_being_served'event;
+			if (k0_being_served = '0') then
+				update_output_0 <= not update_output_0;
+				k0_has_been_served <= '1' after 1 ns;
+			else
+				k0_has_been_served <= '0';
+			end if;
+		end loop trigger_loop;
+	end process ready_signal_trigger_0;
+
+	--
+	-- data_output_#
+	--
+	-- This process selects the corresponding output port that the kernel
+	-- needs depending on the requested bank (BRAM) and the assigned port
+	-- that is given by the input per-BRAM controller.
+	--
+
+	data_output_0 : process (update_output_0) begin
+		if (k0_requested_bram = "0") then
+			if (k0_given_port = '0') then
+				DO_0 <= DO_0_A;
+			else
+				DO_0 <= DO_0_B;
+			end if;
+		elsif (k0_requested_bram = "1") then
+			if (k0_given_port = '0') then
+				DO_0 <= DO_1_A;
+			else
+				DO_0 <= DO_1_B;
+			end if;
+		end if;
+	end process data_output_0;
+
+	data_output_1 : process (update_output_1) begin
+		if (k1_requested_bram = "0") then
+			if (k1_given_port = '0') then
+				DO_1 <= DO_0_A;
+			else
+				DO_1 <= DO_0_B;
+			end if;
+		elsif (k1_requested_bram = "1") then
+			if (k1_given_port = '0') then
+				DO_1 <= DO_1_A;
+			else
+				DO_1 <= DO_1_B;
+			end if;
+		end if;
+	end process data_output_1;
+
+	data_output_2 : process (update_output_2) begin
+		if (k2_requested_bram = "0") then
+			if (k2_given_port = '0') then
+				DO_2 <= DO_0_A;
+			else
+				DO_2 <= DO_0_B;
+			end if;
+		elsif (k2_requested_bram = "1") then
+			if (k2_given_port = '0') then
+				DO_2 <= DO_1_A;
+			else
+				DO_2 <= DO_1_B;
+			end if;
+		end if;
+	end process data_output_2;
+
+	data_output_3 : process (update_output_3) begin
+		if (k3_requested_bram = "0") then
+			if (k3_given_port = '0') then
+				DO_3 <= DO_0_A;
+			else
+				DO_3 <= DO_0_B;
+			end if;
+		elsif (k3_requested_bram = "1") then
+			if (k3_given_port = '0') then
+				DO_3 <= DO_1_A;
+			else
+				DO_3 <= DO_1_B;
+			end if;
+		end if;
+	end process data_output_3;
+
+
+	--
+	-- BRAM instantiation and configuration
+	--
 
 	RAMB16BWER_0 : RAMB16BWER
 
@@ -238,24 +435,24 @@ begin
 		DOB                  => DO_0_B,              -- Output port-B data
 		DOPA                 => open,                -- We are not using parity bits
 		DOPB                 => open,                -- We are not using parity bits
-		ADDRA(13 downto 5)   => ADDR_0(8 downto 0),  -- Input port-A address
+		ADDRA(13 downto 5)   => ADDR_0_A,            -- Input port-A address
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDR_1(8 downto 0),  -- Input port-B address
+		ADDRB(13 downto 5)   => ADDR_0_B,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		CLKA                 => CLK_EVEN,            -- Input port-A clock
 		CLKB                 => CLK_ODD,             -- Input port-B clock
-		DIA                  => DI_0,                -- Input port-A data
-		DIB                  => DI_1,                -- Input port-B data
+		DIA                  => DI_0_A,              -- Input port-A data
+		DIB                  => DI_0_B,              -- Input port-B data
 		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
 		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ENA                  => p0_enabled,          -- Input port-A enable
-		ENB                  => p1_enabled,          -- Input port-B enable
+		ENA                  => EN_0_A,              -- Input port-A enable
+		ENB                  => EN_0_B,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
 		REGCEB               => REGCE_value,         -- Input port-B output register enable
 		RSTA                 => RST,                 -- Input port-A reset
 		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => WE_0,                -- Input port-A write enable
-		WEB                  => WE_1                 -- Input port-B write enable
+		WEA                  => WE_0_A,              -- Input port-A write enable
+		WEB                  => WE_0_B               -- Input port-B write enable
 
 	);
 
@@ -382,106 +579,26 @@ begin
 		DOB                  => DO_1_B,              -- Output port-B data
 		DOPA                 => open,                -- We are not using parity bits
 		DOPB                 => open,                -- We are not using parity bits
-		ADDRA(13 downto 5)   => ADDR_2(8 downto 0),  -- Input port-A address
+		ADDRA(13 downto 5)   => ADDR_1_A,            -- Input port-A address
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDR_3(8 downto 0),  -- Input port-B address
+		ADDRB(13 downto 5)   => ADDR_1_B,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		CLKA                 => CLK_EVEN,            -- Input port-A clock
 		CLKB                 => CLK_ODD,             -- Input port-B clock
-		DIA                  => DI_2,                -- Input port-A data
-		DIB                  => DI_3,                -- Input port-B data
+		DIA                  => DI_1_A,              -- Input port-A data
+		DIB                  => DI_1_A,              -- Input port-B data
 		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
 		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ENA                  => p2_enabled,          -- Input port-A enable
-		ENB                  => p3_enabled,          -- Input port-B enable
+		ENA                  => EN_1_A,              -- Input port-A enable
+		ENB                  => EN_1_B,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
 		REGCEB               => REGCE_value,         -- Input port-B output register enable
 		RSTA                 => RST,                 -- Input port-A reset
 		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => WE_2,                -- Input port-A write enable
-		WEB                  => WE_3                 -- Input port-B write enable
+		WEA                  => WE_1_A,              -- Input port-A write enable
+		WEB                  => WE_1_B               -- Input port-B write enable
 
 	);
 
-	-- TODO: remove the lines bellow (temporary workaround)
-	p0_enabled <= '1';
-	p1_enabled <= '1';
-	p2_enabled <= '1';
-	p3_enabled <= '1';
-	k0_given_port <= '0';
-	k1_given_port <= '1';
-	k2_given_port <= '0';
-	k3_given_port <= '1';
-
-
-	k0_requested_bram <= ADDR_0(9 downto 9);
-	k1_requested_bram <= ADDR_1(9 downto 9);
-	k2_requested_bram <= ADDR_2(9 downto 9);
-	k3_requested_bram <= ADDR_3(9 downto 9);
-
-
-	data_output_0 : process (REQ_0, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k0_requested_bram = "0") then
-			if (k0_given_port = '0') then
-				DO_0 <= DO_0_A;
-			else
-				DO_0 <= DO_0_B;
-			end if;
-		else
-			if (k0_given_port = '0') then
-				DO_0 <= DO_1_A;
-			else
-				DO_0 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_0;
-
-	data_output_1 : process (REQ_1, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k1_requested_bram = "0") then
-			if (k1_given_port = '0') then
-				DO_1 <= DO_0_A;
-			else
-				DO_1 <= DO_0_B;
-			end if;
-		else
-			if (k1_given_port = '0') then
-				DO_1 <= DO_1_A;
-			else
-				DO_1 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_1;
-
-	data_output_2 : process (REQ_2, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k2_requested_bram = "0") then
-			if (k2_given_port = '0') then
-				DO_2 <= DO_0_A;
-			else
-				DO_2 <= DO_0_B;
-			end if;
-		else
-			if (k2_given_port = '0') then
-				DO_2 <= DO_1_A;
-			else
-				DO_2 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_2;
-
-	data_output_3 : process (REQ_3, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k3_requested_bram = "0") then
-			if (k3_given_port = '0') then
-				DO_3 <= DO_0_A;
-			else
-				DO_3 <= DO_0_B;
-			end if;
-		else
-			if (k3_given_port = '0') then
-				DO_3 <= DO_1_A;
-			else
-				DO_3 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_3;
 
 end smem_arch;
