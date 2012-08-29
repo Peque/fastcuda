@@ -37,13 +37,13 @@ entity smem is
 
 	port (
 
-		DO_0, DO_1, DO_2, DO_3           : out std_logic_vector(31 downto 0);    -- Data output ports
-		DI_0, DI_1, DI_2, DI_3           : in  std_logic_vector(31 downto 0);    -- Data input ports
-		ADDR_0, ADDR_1, ADDR_2, ADDR_3   : in  std_logic_vector(9 downto 0);     -- Address input ports
-		WE_0, WE_1, WE_2, WE_3           : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
-		CLK_EVEN, CLK_ODD, RST           : in  std_logic;                        -- Clock and reset input ports
-		REQ_0, REQ_1, REQ_2, REQ_3       : in  std_logic;                        -- Request input ports
-		RDY_0, RDY_1, RDY_2, RDY_3       : out std_logic                         -- Ready output ports
+		DO_0, DO_1, DO_2, DO_3             : out std_logic_vector(31 downto 0);    -- Data output ports
+		DI_0, DI_1, DI_2, DI_3             : in  std_logic_vector(31 downto 0);    -- Data input ports
+		ADDR_0, ADDR_1, ADDR_2, ADDR_3     : in  std_logic_vector(9 downto 0);     -- Address input ports
+		WE_0, WE_1, WE_2, WE_3             : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
+		BRAM_CLK, TRIG_CLK, RST            : in  std_logic;                        -- Clock and reset input ports
+		REQ_0, REQ_1, REQ_2, REQ_3         : in  std_logic;                        -- Request input ports
+		RDY_0, RDY_1, RDY_2, RDY_3         : out std_logic                         -- Ready output ports
 
 	);
 
@@ -123,10 +123,10 @@ begin
 
 
 	-- TODO: remove the lines bellow (temporary workaround)
-	p0_enabled <= '1';
-	p1_enabled <= '1';
-	p2_enabled <= '1';
-	p3_enabled <= '1';
+	EN_0_A <= '1';
+	EN_0_B <= '1';
+	EN_1_A <= '1';
+	EN_1_B <= '1';
 	k0_given_port <= '0';
 	k1_given_port <= '1';
 	k2_given_port <= '0';
@@ -137,71 +137,6 @@ begin
 	k1_requested_bram <= ADDR_1(9 downto 9);
 	k2_requested_bram <= ADDR_2(9 downto 9);
 	k3_requested_bram <= ADDR_3(9 downto 9);
-
-
-	data_output_0 : process (REQ_0, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k0_requested_bram = "0") then
-			if (k0_given_port = '0') then
-				DO_0 <= DO_0_A;
-			else
-				DO_0 <= DO_0_B;
-			end if;
-		else
-			if (k0_given_port = '0') then
-				DO_0 <= DO_1_A;
-			else
-				DO_0 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_0;
-
-	data_output_1 : process (REQ_1, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k1_requested_bram = "0") then
-			if (k1_given_port = '0') then
-				DO_1 <= DO_0_A;
-			else
-				DO_1 <= DO_0_B;
-			end if;
-		else
-			if (k1_given_port = '0') then
-				DO_1 <= DO_1_A;
-			else
-				DO_1 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_1;
-
-	data_output_2 : process (REQ_2, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k2_requested_bram = "0") then
-			if (k2_given_port = '0') then
-				DO_2 <= DO_0_A;
-			else
-				DO_2 <= DO_0_B;
-			end if;
-		else
-			if (k2_given_port = '0') then
-				DO_2 <= DO_1_A;
-			else
-				DO_2 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_2;
-
-	data_output_3 : process (REQ_3, CLK_EVEN) begin  -- TODO: CLK_EVEN no needed in the final design
-		if (k3_requested_bram = "0") then
-			if (k3_given_port = '0') then
-				DO_3 <= DO_0_A;
-			else
-				DO_3 <= DO_0_B;
-			end if;
-		else
-			if (k3_given_port = '0') then
-				DO_3 <= DO_1_A;
-			else
-				DO_3 <= DO_1_B;
-			end if;
-		end if;
-	end process data_output_3;
 
 
 	RAMB16BWER_0 : RAMB16BWER
@@ -242,8 +177,8 @@ begin
 		SRVAL_B => X"000000000",
 
 		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
-		WRITE_MODE_A => "NO_CHANGE",
-		WRITE_MODE_B => "NO_CHANGE",
+		WRITE_MODE_A => "READ_FIRST",
+		WRITE_MODE_B => "READ_FIRST",
 
 		-- Initial contents of the RAM
 		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
@@ -335,8 +270,8 @@ begin
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		ADDRB(13 downto 5)   => ADDR_0_B,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		CLKA                 => CLK_EVEN,            -- Input port-A clock
-		CLKB                 => CLK_ODD,             -- Input port-B clock
+		CLKA                 => BRAM_CLK,            -- Input port-A clock
+		CLKB                 => BRAM_CLK,            -- Input port-B clock
 		ENA                  => EN_0_A,              -- Input port-A enable
 		ENB                  => EN_0_B,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
@@ -386,8 +321,8 @@ begin
 		SRVAL_B => X"000000000",
 
 		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
-		WRITE_MODE_A => "NO_CHANGE",
-		WRITE_MODE_B => "NO_CHANGE",
+		WRITE_MODE_A => "READ_FIRST",
+		WRITE_MODE_B => "READ_FIRST",
 
 		-- Initial contents of the RAM
 		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
@@ -479,8 +414,8 @@ begin
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		ADDRB(13 downto 5)   => ADDR_1_B,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		CLKA                 => CLK_EVEN,            -- Input port-A clock
-		CLKB                 => CLK_ODD,             -- Input port-B clock
+		CLKA                 => BRAM_CLK,            -- Input port-A clock
+		CLKB                 => BRAM_CLK,            -- Input port-B clock
 		ENA                  => EN_1_A,              -- Input port-A enable
 		ENB                  => EN_1_B,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
