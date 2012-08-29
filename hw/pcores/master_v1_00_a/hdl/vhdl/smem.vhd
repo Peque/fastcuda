@@ -43,7 +43,7 @@ entity smem is
 		WE_0, WE_1, WE_2, WE_3             : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
 		BRAM_CLK, TRIG_CLK, RST            : in  std_logic;                        -- Clock and reset input ports
 		REQ_0, REQ_1, REQ_2, REQ_3         : in  std_logic;                        -- Request input ports
-		RDY                                : out std_logic                         -- Ready output port
+		RDY_0, RDY_1, RDY_2, RDY_3         : out std_logic                         -- Ready output port
 
 	);
 
@@ -82,21 +82,25 @@ architecture smem_arch of smem is
 
 	signal k0_needs_attention  : std_logic := '0';
 	signal k0_given_port       : std_logic := '0';
+	signal k0_ready            : std_logic := '1';
 	signal k0_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k0_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 	signal k1_needs_attention  : std_logic := '0';
 	signal k1_given_port       : std_logic := '0';
+	signal k1_ready            : std_logic := '1';
 	signal k1_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k1_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 	signal k2_needs_attention  : std_logic := '0';
 	signal k2_given_port       : std_logic := '0';
+	signal k2_ready            : std_logic := '1';
 	signal k2_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k2_output_sel       : std_logic_vector(1 downto 0) := "00";
 
 	signal k3_needs_attention  : std_logic := '0';
 	signal k3_given_port       : std_logic := '0';
+	signal k3_ready            : std_logic := '1';
 	signal k3_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k3_output_sel       : std_logic_vector(1 downto 0) := "00";
 
@@ -154,6 +158,11 @@ begin
 	k2_requested_bram <= ADDR_2(9 downto 9);
 	k3_requested_bram <= ADDR_3(9 downto 9);
 
+	RDY_0 <= k0_ready;
+	RDY_1 <= k1_ready;
+	RDY_2 <= k2_ready;
+	RDY_3 <= k3_ready;
+
 
 	bram_0_controller : process (TRIG_CLK)
 
@@ -161,19 +170,21 @@ begin
 
 		if (TRIG_CLK = '1') then
 
-			RDY <= '0';
-
 			if (k0_requested_bram = "0" and REQ_0 = '1') then
 
 				DI_0_A <= DI_0;
 				DO_0 <= DO_0_A;
 				ADDR_0_A <= ADDR_0(8 downto 0);
 				WE_0_A <= WE_0;
+				k0_ready <= '0';
 
 			end if;
 
 		else
-			RDY <= '1';
+			if (k0_ready = '0') then k0_ready <= '1'; end if;
+			if (k1_ready = '0') then k1_ready <= '1'; end if;
+			if (k2_ready = '0') then k2_ready <= '1'; end if;
+			if (k3_ready = '0') then k3_ready <= '1'; end if;
 		end if;
 
 	end process bram_0_controller;
