@@ -43,7 +43,7 @@ entity smem is
 		WE_0, WE_1, WE_2, WE_3             : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
 		BRAM_CLK, TRIG_CLK, RST            : in  std_logic;                        -- Clock and reset input ports
 		REQ_0, REQ_1, REQ_2, REQ_3         : in  std_logic;                        -- Request input ports
-		RDY_0, RDY_1, RDY_2, RDY_3         : out std_logic                         -- Ready output ports
+		RDY                                : out std_logic                         -- Ready output port
 
 	);
 
@@ -73,6 +73,11 @@ architecture smem_arch of smem is
 	--   ADDR_#_[A|B]         Address input of BRAM # in port [A|B]
 	--   WE_#_[A|B]           Byte write enable input of BRAM # in port [A|B]
 	--   EN_#_[A|B]           Enable input of BRAM # in port [A|B]
+	--
+	--   bram_#_controller_din_[A|B]
+	--   bram_#_controller_dout_[A|B]
+	--   bram_#_controller_addr_[A|B]
+	--   bram_#_controller_we_[A|B]
 	--
 
 	signal k0_needs_attention  : std_logic := '0';
@@ -119,6 +124,17 @@ architecture smem_arch of smem is
 	signal EN_1_B              : std_logic := '0';
 
 
+	signal bram_0_controller_di_A     : std_logic_vector(31 downto 0) := X"00000000";
+	signal bram_0_controller_do_A     : std_logic_vector(31 downto 0) := X"00000000";
+	signal bram_0_controller_addr_A   : std_logic_vector(8 downto 0) := "000000000";
+	signal bram_0_controller_we_A     : std_logic_vector(3 downto 0) := "0000";
+
+	signal bram_0_controller_di_B     : std_logic_vector(31 downto 0) := X"00000000";
+	signal bram_0_controller_do_B     : std_logic_vector(31 downto 0) := X"00000000";
+	signal bram_0_controller_addr_B   : std_logic_vector(8 downto 0) := "000000000";
+	signal bram_0_controller_we_B     : std_logic_vector(3 downto 0) := "0000";
+
+
 begin
 
 
@@ -137,6 +153,30 @@ begin
 	k1_requested_bram <= ADDR_1(9 downto 9);
 	k2_requested_bram <= ADDR_2(9 downto 9);
 	k3_requested_bram <= ADDR_3(9 downto 9);
+
+
+	bram_0_controller : process (TRIG_CLK)
+
+	begin
+
+		if (TRIG_CLK = '1') then
+
+			RDY <= '0';
+
+			if (k0_requested_bram = "0" and REQ_0 = '1') then
+
+				DI_0_A <= DI_0;
+				DO_0 <= DO_0_A;
+				ADDR_0_A <= ADDR_0(8 downto 0);
+				WE_0_A <= WE_0;
+
+			end if;
+
+		else
+			RDY <= '1';
+		end if;
+
+	end process bram_0_controller;
 
 
 	RAMB16BWER_0 : RAMB16BWER
