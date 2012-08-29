@@ -152,6 +152,9 @@ begin
 		REQ_3 <= '1';
 
 		wait until RDY_0 = '0';
+
+		REQ_0 <= '0';
+
 		wait until RDY_0 = '1';
 
 		WE_0 <= "0000";
@@ -159,7 +162,12 @@ begin
 		WE_1 <= "0000";
 		WE_3 <= "0000";
 
+		REQ_0 <= '1';
+
 		wait until RDY_0 = '0';
+
+		REQ_0 <= '0';
+
 		wait until RDY_0 = '1';
 
 

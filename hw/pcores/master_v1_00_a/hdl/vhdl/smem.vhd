@@ -164,27 +164,48 @@ begin
 	RDY_3 <= k3_ready;
 
 
-	bram_0_controller : process (TRIG_CLK)
-
-	begin
+	bram_0_controller : process (TRIG_CLK) begin
 
 		if (TRIG_CLK = '1') then
 
 			if (k0_requested_bram = "0" and REQ_0 = '1') then
 
 				DI_0_A <= DI_0;
-				DO_0 <= DO_0_A;
 				ADDR_0_A <= ADDR_0(8 downto 0);
 				WE_0_A <= WE_0;
 				k0_ready <= '0';
+				k0_output_sel <= "00";
 
 			end if;
 
 		else
+
+			if (k0_output_sel = "00") then DO_0 <= DO_0_A; elsif
+			   (k0_output_sel = "01") then DO_0 <= DO_0_B; elsif
+			   (k0_output_sel = "10") then DO_0 <= DO_1_A; elsif
+			   (k0_output_sel = "11") then DO_0 <= DO_1_B;
+			end if;
+			if (k1_output_sel = "00") then DO_1 <= DO_0_A; elsif
+			   (k1_output_sel = "01") then DO_1 <= DO_0_B; elsif
+			   (k1_output_sel = "10") then DO_1 <= DO_1_A; elsif
+			   (k1_output_sel = "11") then DO_1 <= DO_1_B;
+			end if;
+			if (k2_output_sel = "00") then DO_2 <= DO_0_A; elsif
+			   (k2_output_sel = "01") then DO_2 <= DO_0_B; elsif
+			   (k2_output_sel = "10") then DO_2 <= DO_1_A; elsif
+			   (k2_output_sel = "11") then DO_2 <= DO_1_B;
+			end if;
+			if (k3_output_sel = "00") then DO_3 <= DO_0_A; elsif
+			   (k3_output_sel = "01") then DO_3 <= DO_0_B; elsif
+			   (k3_output_sel = "10") then DO_3 <= DO_1_A; elsif
+			   (k3_output_sel = "11") then DO_3 <= DO_1_B;
+			end if;
+
 			if (k0_ready = '0') then k0_ready <= '1'; end if;
 			if (k1_ready = '0') then k1_ready <= '1'; end if;
 			if (k2_ready = '0') then k2_ready <= '1'; end if;
 			if (k3_ready = '0') then k3_ready <= '1'; end if;
+
 		end if;
 
 	end process bram_0_controller;
