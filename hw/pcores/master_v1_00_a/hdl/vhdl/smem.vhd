@@ -164,51 +164,218 @@ begin
 	RDY_3 <= k3_ready;
 
 
-	bram_0_controller : process (TRIG_CLK) begin
+	input_controller : process (TRIG_CLK)
+
+		variable bram_0_A_busy    : std_logic := '0';
+		variable bram_0_B_busy    : std_logic := '0';
+		variable bram_1_A_busy    : std_logic := '0';
+		variable bram_1_B_busy    : std_logic := '0';
+
+	begin
 
 		if (TRIG_CLK = '1') then
 
 			if (k0_requested_bram = "0" and REQ_0 = '1') then
 
-				DI_0_A <= DI_0;
-				ADDR_0_A <= ADDR_0(8 downto 0);
-				WE_0_A <= WE_0;
-				k0_ready <= '0';
-				k0_output_sel <= "00";
+				if (bram_0_A_busy = '0') then
+					DI_0_A <= DI_0;
+					ADDR_0_A <= ADDR_0(8 downto 0);
+					WE_0_A <= WE_0;
+					k0_ready <= '0';
+					k0_output_sel <= "00";
+					bram_0_A_busy := '1';
+				elsif (bram_0_B_busy = '0') then
+					DI_0_B <= DI_0;
+					ADDR_0_B <= ADDR_0(8 downto 0);
+					WE_0_B <= WE_0;
+					k0_ready <= '0';
+					k0_output_sel <= "01";
+					bram_0_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k1_requested_bram = "0" and REQ_1 = '1') then
+
+				if (bram_0_A_busy = '0') then
+					DI_0_A <= DI_1;
+					ADDR_0_A <= ADDR_1(8 downto 0);
+					WE_0_A <= WE_1;
+					k1_ready <= '0';
+					k1_output_sel <= "00";
+					bram_0_A_busy := '1';
+				elsif (bram_0_B_busy = '0') then
+					DI_0_B <= DI_1;
+					ADDR_0_B <= ADDR_1(8 downto 0);
+					WE_0_B <= WE_1;
+					k1_ready <= '0';
+					k1_output_sel <= "01";
+					bram_0_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k2_requested_bram = "0" and REQ_2 = '1') then
+
+				if (bram_0_A_busy = '0') then
+					DI_0_A <= DI_2;
+					ADDR_0_A <= ADDR_2(8 downto 0);
+					WE_0_A <= WE_2;
+					k2_ready <= '0';
+					k2_output_sel <= "00";
+					bram_0_A_busy := '1';
+				elsif (bram_0_B_busy = '0') then
+					DI_0_B <= DI_2;
+					ADDR_0_B <= ADDR_2(8 downto 0);
+					WE_0_B <= WE_2;
+					k2_ready <= '0';
+					k2_output_sel <= "01";
+					bram_0_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k3_requested_bram = "0" and REQ_3 = '1') then
+
+				if (bram_0_A_busy = '0') then
+					DI_0_A <= DI_3;
+					ADDR_0_A <= ADDR_3(8 downto 0);
+					WE_0_A <= WE_3;
+					k3_ready <= '0';
+					k3_output_sel <= "00";
+					bram_0_A_busy := '1';
+				elsif (bram_0_B_busy = '0') then
+					DI_0_B <= DI_3;
+					ADDR_0_B <= ADDR_3(8 downto 0);
+					WE_0_B <= WE_3;
+					k3_ready <= '0';
+					k3_output_sel <= "01";
+					bram_0_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k0_requested_bram = "1" and REQ_0 = '1') then
+
+				if (bram_1_A_busy = '0') then
+					DI_1_A <= DI_0;
+					ADDR_1_A <= ADDR_0(8 downto 0);
+					WE_1_A <= WE_0;
+					k0_ready <= '0';
+					k0_output_sel <= "10";
+					bram_1_A_busy := '1';
+				elsif (bram_1_B_busy = '0') then
+					DI_1_B <= DI_0;
+					ADDR_1_B <= ADDR_0(8 downto 0);
+					WE_1_B <= WE_0;
+					k0_ready <= '0';
+					k0_output_sel <= "11";
+					bram_1_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k1_requested_bram = "1" and REQ_1 = '1') then
+
+				if (bram_1_A_busy = '0') then
+					DI_1_A <= DI_1;
+					ADDR_1_A <= ADDR_1(8 downto 0);
+					WE_1_A <= WE_1;
+					k1_ready <= '0';
+					k1_output_sel <= "10";
+					bram_1_A_busy := '1';
+				elsif (bram_1_B_busy = '0') then
+					DI_1_B <= DI_1;
+					ADDR_1_B <= ADDR_1(8 downto 0);
+					WE_1_B <= WE_1;
+					k1_ready <= '0';
+					k1_output_sel <= "11";
+					bram_1_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k2_requested_bram = "1" and REQ_2 = '1') then
+
+				if (bram_1_A_busy = '0') then
+					DI_1_A <= DI_2;
+					ADDR_1_A <= ADDR_2(8 downto 0);
+					WE_1_A <= WE_2;
+					k2_ready <= '0';
+					k2_output_sel <= "10";
+					bram_1_A_busy := '1';
+				elsif (bram_1_B_busy = '0') then
+					DI_1_B <= DI_2;
+					ADDR_1_B <= ADDR_2(8 downto 0);
+					WE_1_B <= WE_2;
+					k2_ready <= '0';
+					k2_output_sel <= "11";
+					bram_1_B_busy := '1';
+				end if;
+
+			end if;
+
+			if (k3_requested_bram = "1" and REQ_3 = '1') then
+
+				if (bram_1_A_busy = '0') then
+					DI_1_A <= DI_3;
+					ADDR_1_A <= ADDR_3(8 downto 0);
+					WE_1_A <= WE_3;
+					k3_ready <= '0';
+					k3_output_sel <= "10";
+					bram_1_A_busy := '1';
+				elsif (bram_1_B_busy = '0') then
+					DI_1_B <= DI_3;
+					ADDR_1_B <= ADDR_3(8 downto 0);
+					WE_1_B <= WE_3;
+					k3_ready <= '0';
+					k3_output_sel <= "11";
+					bram_1_B_busy := '1';
+				end if;
 
 			end if;
 
 		else
-
-			if (k0_output_sel = "00") then DO_0 <= DO_0_A; elsif
-			   (k0_output_sel = "01") then DO_0 <= DO_0_B; elsif
-			   (k0_output_sel = "10") then DO_0 <= DO_1_A; elsif
-			   (k0_output_sel = "11") then DO_0 <= DO_1_B;
-			end if;
-			if (k1_output_sel = "00") then DO_1 <= DO_0_A; elsif
-			   (k1_output_sel = "01") then DO_1 <= DO_0_B; elsif
-			   (k1_output_sel = "10") then DO_1 <= DO_1_A; elsif
-			   (k1_output_sel = "11") then DO_1 <= DO_1_B;
-			end if;
-			if (k2_output_sel = "00") then DO_2 <= DO_0_A; elsif
-			   (k2_output_sel = "01") then DO_2 <= DO_0_B; elsif
-			   (k2_output_sel = "10") then DO_2 <= DO_1_A; elsif
-			   (k2_output_sel = "11") then DO_2 <= DO_1_B;
-			end if;
-			if (k3_output_sel = "00") then DO_3 <= DO_0_A; elsif
-			   (k3_output_sel = "01") then DO_3 <= DO_0_B; elsif
-			   (k3_output_sel = "10") then DO_3 <= DO_1_A; elsif
-			   (k3_output_sel = "11") then DO_3 <= DO_1_B;
-			end if;
 
 			if (k0_ready = '0') then k0_ready <= '1'; end if;
 			if (k1_ready = '0') then k1_ready <= '1'; end if;
 			if (k2_ready = '0') then k2_ready <= '1'; end if;
 			if (k3_ready = '0') then k3_ready <= '1'; end if;
 
+			bram_0_A_busy := '0';
+			bram_0_B_busy := '0';
+			bram_1_A_busy := '0';
+			bram_1_B_busy := '0';
+
 		end if;
 
-	end process bram_0_controller;
+	end process input_controller;
+
+
+	output_controller : process (TRIG_CLK) begin
+
+		if (k0_output_sel = "00") then DO_0 <= DO_0_A; elsif
+		   (k0_output_sel = "01") then DO_0 <= DO_0_B; elsif
+		   (k0_output_sel = "10") then DO_0 <= DO_1_A; elsif
+		   (k0_output_sel = "11") then DO_0 <= DO_1_B;
+		end if;
+		if (k1_output_sel = "00") then DO_1 <= DO_0_A; elsif
+		   (k1_output_sel = "01") then DO_1 <= DO_0_B; elsif
+		   (k1_output_sel = "10") then DO_1 <= DO_1_A; elsif
+		   (k1_output_sel = "11") then DO_1 <= DO_1_B;
+		end if;
+		if (k2_output_sel = "00") then DO_2 <= DO_0_A; elsif
+		   (k2_output_sel = "01") then DO_2 <= DO_0_B; elsif
+		   (k2_output_sel = "10") then DO_2 <= DO_1_A; elsif
+		   (k2_output_sel = "11") then DO_2 <= DO_1_B;
+		end if;
+		if (k3_output_sel = "00") then DO_3 <= DO_0_A; elsif
+		   (k3_output_sel = "01") then DO_3 <= DO_0_B; elsif
+		   (k3_output_sel = "10") then DO_3 <= DO_1_A; elsif
+		   (k3_output_sel = "11") then DO_3 <= DO_1_B;
+		end if;
+
+	end process output_controller;
 
 
 	RAMB16BWER_0 : RAMB16BWER

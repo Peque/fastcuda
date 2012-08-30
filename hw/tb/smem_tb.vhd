@@ -125,31 +125,16 @@ begin
 	end process clock_gen;
 
 
-	testbench : process begin
+	thread_0 : process begin
 
 		wait for 100 ns; -- Wait until global set/reset completes
 
 		wait for 1 ns;
 
 		DI_0 <= x"AAAAAAAA";
-		DI_1 <= x"BBBBBBBB";
-		DI_2 <= x"CCCCCCCC";
-		DI_3 <= x"DDDDDDDD";
-
-		ADDR_0 <= "0000000000";
-		ADDR_1 <= "0111111111";
-		ADDR_2 <= "1000000000";
-		ADDR_3 <= "1111111111";
-
+		ADDR_0 <= "1000000000";
 		WE_0 <= "1111";
-		WE_1 <= "1111";
-		WE_2 <= "1111";
-		WE_3 <= "1111";
-
 		REQ_0 <= '1';
-		REQ_1 <= '1';
-		REQ_2 <= '1';
-		REQ_3 <= '1';
 
 		wait until RDY_0 = '0';
 
@@ -158,10 +143,6 @@ begin
 		wait until RDY_0 = '1';
 
 		WE_0 <= "0000";
-		WE_2 <= "0000";
-		WE_1 <= "0000";
-		WE_3 <= "0000";
-
 		REQ_0 <= '1';
 
 		wait until RDY_0 = '0';
@@ -173,7 +154,100 @@ begin
 
 		wait;
 
-	end process testbench;
+	end process thread_0;
+
+	thread_1 : process begin
+
+		wait for 100 ns; -- Wait until global set/reset completes
+
+		wait for 1 ns;
+
+		DI_1 <= x"BBBBBBBB";
+		ADDR_1 <= "1000000001";
+		WE_1 <= "1111";
+		REQ_1 <= '1';
+
+		wait until RDY_1 = '0';
+
+		REQ_1 <= '0';
+
+		wait until RDY_1 = '1';
+
+		WE_1 <= "0000";
+		REQ_1 <= '1';
+
+		wait until RDY_1 = '0';
+
+		REQ_1 <= '0';
+
+		wait until RDY_1 = '1';
+
+
+		wait;
+
+	end process thread_1;
+
+	thread_2 : process begin
+
+		wait for 100 ns; -- Wait until global set/reset completes
+
+		wait for 1 ns;
+
+		DI_2 <= x"CCCCCCCC";
+		ADDR_2 <= "1000000010";
+		WE_2 <= "1111";
+		REQ_2 <= '1';
+
+		wait until RDY_2 = '0';
+
+		REQ_2 <= '0';
+
+		wait until RDY_2 = '1';
+
+		WE_2 <= "0000";
+		REQ_2 <= '1';
+
+		wait until RDY_2 = '0';
+
+		REQ_2 <= '0';
+
+		wait until RDY_2 = '1';
+
+
+		wait;
+
+	end process thread_2;
+
+	thread_3 : process begin
+
+		wait for 100 ns; -- Wait until global set/reset completes
+
+		wait for 1 ns;
+
+		DI_3 <= x"DDDDDDDD";
+		ADDR_3 <= "1000000011";
+		WE_3 <= "1111";
+		REQ_3 <= '1';
+
+		wait until RDY_3 = '0';
+
+		REQ_3 <= '0';
+
+		wait until RDY_3 = '1';
+
+		WE_3 <= "0000";
+		REQ_3 <= '1';
+
+		wait until RDY_3 = '0';
+
+		REQ_3 <= '0';
+
+		wait until RDY_3 = '1';
+
+
+		wait;
+
+	end process thread_3;
 
 
 end smem_tb_arch;
