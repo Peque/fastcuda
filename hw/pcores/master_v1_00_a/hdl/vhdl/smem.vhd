@@ -35,12 +35,6 @@ use unimacro.vcomponents.all;
 
 entity smem is
 
-	generic (
-
-		TIME_TO_FINISH_WRITING  : integer := 1000  -- Time until the port finish writing and it can be freed (in picoseconds)
-
-	);
-
 	port (
 
 		DO_0, DO_1, DO_2, DO_3             : out std_logic_vector(31 downto 0);    -- Data output ports
@@ -84,8 +78,6 @@ architecture smem_arch of smem is
 	--   bram_#_controller_dout_[A|B]
 	--   bram_#_controller_addr_[A|B]
 	--   bram_#_controller_we_[A|B]
-	--
-	--   update_output_#      On change, the output selection for kernel # is updated
 	--
 
 	signal k0_ready            : std_logic := '1';
@@ -142,6 +134,7 @@ begin
 	EN_0_B <= '1';
 	EN_1_A <= '1';
 	EN_1_B <= '1';
+
 
 	k0_requested_bram <= ADDR_0(9 downto 9);
 	k1_requested_bram <= ADDR_1(9 downto 9);

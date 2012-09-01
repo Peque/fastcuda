@@ -244,12 +244,8 @@ begin
 
 		wait until RDY_3 = '1';
 
-		REQ_0 <= '1';
 
-		REQ_0 <= '1';
-		wait until RDY_0(0) = '1';
-		REQ_0 <= '0';
-		wait until RDY_0(1) = '1';
+		wait;
 
 	end process thread_3;
 
