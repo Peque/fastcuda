@@ -63,7 +63,7 @@ architecture smem_tb_arch of smem_tb is
 	signal RDY_0, RDY_1, RDY_2, RDY_3         : std_logic := '0';
 	signal run_same_bram_access               : std_logic := '0';
 	signal run_same_address_access            : std_logic := '0';
-	signal run_fast_access                    : std_logic := '0';
+	signal run_parallel_access                : std_logic := '0';
 
 
 begin
@@ -141,7 +141,7 @@ begin
 
 		wait for 20 ns;
 
-		run_fast_access <= '1';
+		run_parallel_access <= '1';
 
 	end process test_bench;
 
@@ -173,6 +173,28 @@ begin
 		wait until run_same_address_access = '1';
 
 		ADDR_0 <= "1000000000";
+		WE_0 <= "0000";
+		REQ_0 <= '1';
+
+		wait until RDY_0 = '0';
+
+		REQ_0 <= '0';
+
+		wait until RDY_0 = '1';
+
+		wait until run_parallel_access = '1';
+
+		DI_0 <= x"11111111";
+		ADDR_0 <= "0000000000";
+		WE_0 <= "1111";
+		REQ_0 <= '1';
+
+		wait until RDY_0 = '0';
+
+		REQ_0 <= '0';
+
+		wait until RDY_0 = '1';
+
 		WE_0 <= "0000";
 		REQ_0 <= '1';
 
@@ -222,6 +244,28 @@ begin
 
 		wait until RDY_1 = '1';
 
+		wait until run_parallel_access = '1';
+
+		DI_1 <= x"22222222";
+		ADDR_1 <= "0000000001";
+		WE_1 <= "1111";
+		REQ_1 <= '1';
+
+		wait until RDY_1 = '0';
+
+		REQ_1 <= '0';
+
+		wait until RDY_1 = '1';
+
+		WE_1 <= "0000";
+		REQ_1 <= '1';
+
+		wait until RDY_1 = '0';
+
+		REQ_1 <= '0';
+
+		wait until RDY_1 = '1';
+
 		wait;
 
 	end process thread_1;
@@ -262,6 +306,28 @@ begin
 
 		wait until RDY_2 = '1';
 
+		wait until run_parallel_access = '1';
+
+		DI_2 <= x"33333333";
+		ADDR_2 <= "1000000000";
+		WE_2 <= "1111";
+		REQ_2 <= '1';
+
+		wait until RDY_2 = '0';
+
+		REQ_2 <= '0';
+
+		wait until RDY_2 = '1';
+
+		WE_2 <= "0000";
+		REQ_2 <= '1';
+
+		wait until RDY_2 = '0';
+
+		REQ_2 <= '0';
+
+		wait until RDY_2 = '1';
+
 		wait;
 
 	end process thread_2;
@@ -293,6 +359,28 @@ begin
 		wait until run_same_address_access = '1';
 
 		ADDR_3 <= "1000000000";
+		WE_3 <= "0000";
+		REQ_3 <= '1';
+
+		wait until RDY_3 = '0';
+
+		REQ_3 <= '0';
+
+		wait until RDY_3 = '1';
+
+		wait until run_parallel_access = '1';
+
+		DI_3 <= x"44444444";
+		ADDR_3 <= "1000000001";
+		WE_3 <= "1111";
+		REQ_3 <= '1';
+
+		wait until RDY_3 = '0';
+
+		REQ_3 <= '0';
+
+		wait until RDY_3 = '1';
+
 		WE_3 <= "0000";
 		REQ_3 <= '1';
 

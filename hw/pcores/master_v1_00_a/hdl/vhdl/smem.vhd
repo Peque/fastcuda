@@ -176,32 +176,26 @@ begin
 
 			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
 				k1_duplicated := '1';
-				k1_output_sel <= k0_output_sel;
 			end if;
 
 			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
 				k2_duplicated := '1';
-				k2_output_sel <= k0_output_sel;
 			end if;
 
 			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
 				k2_duplicated := '1';
-				k2_output_sel <= k1_output_sel;
 			end if;
 
 			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
 				k3_duplicated := '1';
-				k3_output_sel <= k0_output_sel;
 			end if;
 
 			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
 				k3_duplicated := '1';
-				k3_output_sel <= k1_output_sel;
 			end if;
 
 			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
 				k3_duplicated := '1';
-				k3_output_sel <= k2_output_sel;
 			end if;
 
 			if (k0_requested_bram = "0" and REQ_0 = '1' and k0_duplicated = '0') then
@@ -342,26 +336,32 @@ begin
 
 			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
 				k1_ready_var := k0_ready_var;
+				k1_output_sel <= k0_output_sel;
 			end if;
 
 			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
 				k2_ready_var := k0_ready_var;
+				k2_output_sel <= k0_output_sel;
 			end if;
 
 			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
 				k2_ready_var := k1_ready_var;
+				k2_output_sel <= k1_output_sel;
 			end if;
 
 			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
 				k3_ready_var := k0_ready_var;
+				k3_output_sel <= k0_output_sel;
 			end if;
 
 			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
 				k3_ready_var := k1_ready_var;
+				k3_output_sel <= k1_output_sel;
 			end if;
 
 			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
 				k3_ready_var := k2_ready_var;
+				k3_output_sel <= k2_output_sel;
 			end if;
 
 			k0_ready <= k0_ready_var;
@@ -380,6 +380,11 @@ begin
 			bram_0_B_busy := '0';
 			bram_1_A_busy := '0';
 			bram_1_B_busy := '0';
+
+			k0_duplicated := '0';
+			k1_duplicated := '0';
+			k2_duplicated := '0';
+			k3_duplicated := '0';
 
 		end if;
 
