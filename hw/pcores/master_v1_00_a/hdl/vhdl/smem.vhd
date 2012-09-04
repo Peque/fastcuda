@@ -155,20 +155,65 @@ begin
 		variable bram_1_A_busy    : std_logic := '0';
 		variable bram_1_B_busy    : std_logic := '0';
 
+		variable k0_duplicated    : std_logic := '0';
+		variable k1_duplicated    : std_logic := '0';
+		variable k2_duplicated    : std_logic := '0';
+		variable k3_duplicated    : std_logic := '0';
+
+		variable k0_ready_var     : std_logic;
+		variable k1_ready_var     : std_logic;
+		variable k2_ready_var     : std_logic;
+		variable k3_ready_var     : std_logic;
+
 	begin
 
 		if (TRIG_CLK = '1') then
 
-			if (k0_requested_bram = "0" and REQ_0 = '1') then
+			k0_ready_var := k0_ready;
+			k1_ready_var := k1_ready;
+			k2_ready_var := k2_ready;
+			k3_ready_var := k3_ready;
+
+			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
+				k1_duplicated := '1';
+				k1_output_sel <= k0_output_sel;
+			end if;
+
+			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
+				k2_duplicated := '1';
+				k2_output_sel <= k0_output_sel;
+			end if;
+
+			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
+				k2_duplicated := '1';
+				k2_output_sel <= k1_output_sel;
+			end if;
+
+			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
+				k3_duplicated := '1';
+				k3_output_sel <= k0_output_sel;
+			end if;
+
+			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
+				k3_duplicated := '1';
+				k3_output_sel <= k1_output_sel;
+			end if;
+
+			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
+				k3_duplicated := '1';
+				k3_output_sel <= k2_output_sel;
+			end if;
+
+			if (k0_requested_bram = "0" and REQ_0 = '1' and k0_duplicated = '0') then
 
 				if (bram_0_A_busy = '0') then
 					bram_0_A_input_sel <= "00";
-					k0_ready <= '0';
+					k0_ready_var := '0';
 					k0_output_sel <= "00";
 					bram_0_A_busy := '1';
 				elsif (bram_0_B_busy = '0') then
 					bram_0_B_input_sel <= "00";
-					k0_ready <= '0';
+					k0_ready_var := '0';
 					k0_output_sel <= "01";
 					bram_0_B_busy := '1';
 				else
@@ -176,16 +221,16 @@ begin
 
 			end if;
 
-			if (k1_requested_bram = "0" and REQ_1 = '1') then
+			if (k1_requested_bram = "0" and REQ_1 = '1' and k1_duplicated = '0') then
 
 				if (bram_0_A_busy = '0') then
 					bram_0_A_input_sel <= "01";
-					k1_ready <= '0';
+					k1_ready_var := '0';
 					k1_output_sel <= "00";
 					bram_0_A_busy := '1';
 				elsif (bram_0_B_busy = '0') then
 					bram_0_B_input_sel <= "01";
-					k1_ready <= '0';
+					k1_ready_var := '0';
 					k1_output_sel <= "01";
 					bram_0_B_busy := '1';
 				else
@@ -193,16 +238,16 @@ begin
 
 			end if;
 
-			if (k2_requested_bram = "0" and REQ_2 = '1') then
+			if (k2_requested_bram = "0" and REQ_2 = '1' and k2_duplicated = '0') then
 
 				if (bram_0_A_busy = '0') then
 					bram_0_A_input_sel <= "10";
-					k2_ready <= '0';
+					k2_ready_var := '0';
 					k2_output_sel <= "00";
 					bram_0_A_busy := '1';
 				elsif (bram_0_B_busy = '0') then
 					bram_0_B_input_sel <= "10";
-					k2_ready <= '0';
+					k2_ready_var := '0';
 					k2_output_sel <= "01";
 					bram_0_B_busy := '1';
 				else
@@ -210,16 +255,16 @@ begin
 
 			end if;
 
-			if (k3_requested_bram = "0" and REQ_3 = '1') then
+			if (k3_requested_bram = "0" and REQ_3 = '1' and k3_duplicated = '0') then
 
 				if (bram_0_A_busy = '0') then
 					bram_0_A_input_sel <= "11";
-					k3_ready <= '0';
+					k3_ready_var := '0';
 					k3_output_sel <= "00";
 					bram_0_A_busy := '1';
 				elsif (bram_0_B_busy = '0') then
 					bram_0_B_input_sel <= "11";
-					k3_ready <= '0';
+					k3_ready_var := '0';
 					k3_output_sel <= "01";
 					bram_0_B_busy := '1';
 				else
@@ -227,16 +272,16 @@ begin
 
 			end if;
 
-			if (k0_requested_bram = "1" and REQ_0 = '1') then
+			if (k0_requested_bram = "1" and REQ_0 = '1' and k0_duplicated = '0') then
 
 				if (bram_1_A_busy = '0') then
 					bram_1_A_input_sel <= "00";
-					k0_ready <= '0';
+					k0_ready_var := '0';
 					k0_output_sel <= "10";
 					bram_1_A_busy := '1';
 				elsif (bram_1_B_busy = '0') then
 					bram_1_B_input_sel <= "00";
-					k0_ready <= '0';
+					k0_ready_var := '0';
 					k0_output_sel <= "11";
 					bram_1_B_busy := '1';
 				else
@@ -244,16 +289,16 @@ begin
 
 			end if;
 
-			if (k1_requested_bram = "1" and REQ_1 = '1') then
+			if (k1_requested_bram = "1" and REQ_1 = '1' and k1_duplicated = '0') then
 
 				if (bram_1_A_busy = '0') then
 					bram_1_A_input_sel <= "01";
-					k1_ready <= '0';
+					k1_ready_var := '0';
 					k1_output_sel <= "10";
 					bram_1_A_busy := '1';
 				elsif (bram_1_B_busy = '0') then
 					bram_1_B_input_sel <= "01";
-					k1_ready <= '0';
+					k1_ready_var := '0';
 					k1_output_sel <= "11";
 					bram_1_B_busy := '1';
 				else
@@ -261,16 +306,16 @@ begin
 
 			end if;
 
-			if (k2_requested_bram = "1" and REQ_2 = '1') then
+			if (k2_requested_bram = "1" and REQ_2 = '1' and k2_duplicated = '0') then
 
 				if (bram_1_A_busy = '0') then
 					bram_1_A_input_sel <= "10";
-					k2_ready <= '0';
+					k2_ready_var := '0';
 					k2_output_sel <= "10";
 					bram_1_A_busy := '1';
 				elsif (bram_1_B_busy = '0') then
 					bram_1_B_input_sel <= "10";
-					k2_ready <= '0';
+					k2_ready_var := '0';
 					k2_output_sel <= "11";
 					bram_1_B_busy := '1';
 				else
@@ -278,22 +323,51 @@ begin
 
 			end if;
 
-			if (k3_requested_bram = "1" and REQ_3 = '1') then
+			if (k3_requested_bram = "1" and REQ_3 = '1' and k3_duplicated = '0') then
 
 				if (bram_1_A_busy = '0') then
 					bram_1_A_input_sel <= "11";
-					k3_ready <= '0';
+					k3_ready_var := '0';
 					k3_output_sel <= "10";
 					bram_1_A_busy := '1';
 				elsif (bram_1_B_busy = '0') then
 					bram_1_B_input_sel <= "11";
-					k3_ready <= '0';
+					k3_ready_var := '0';
 					k3_output_sel <= "11";
 					bram_1_B_busy := '1';
 				else
 				end if;
 
 			end if;
+
+			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
+				k1_ready_var := k0_ready_var;
+			end if;
+
+			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
+				k2_ready_var := k0_ready_var;
+			end if;
+
+			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
+				k2_ready_var := k1_ready_var;
+			end if;
+
+			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
+				k3_ready_var := k0_ready_var;
+			end if;
+
+			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
+				k3_ready_var := k1_ready_var;
+			end if;
+
+			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
+				k3_ready_var := k2_ready_var;
+			end if;
+
+			k0_ready <= k0_ready_var;
+			k1_ready <= k1_ready_var;
+			k2_ready <= k2_ready_var;
+			k3_ready <= k3_ready_var;
 
 		else
 

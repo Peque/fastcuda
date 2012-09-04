@@ -61,6 +61,9 @@ architecture smem_tb_arch of smem_tb is
 	signal BRAM_CLK, TRIG_CLK, RST            : std_logic := '0';
 	signal REQ_0, REQ_1, REQ_2, REQ_3         : std_logic := '0';
 	signal RDY_0, RDY_1, RDY_2, RDY_3         : std_logic := '0';
+	signal run_same_bram_access               : std_logic := '0';
+	signal run_same_address_access            : std_logic := '0';
+	signal run_fast_access                    : std_logic := '0';
 
 
 begin
@@ -125,11 +128,27 @@ begin
 	end process clock_gen;
 
 
-	thread_0 : process begin
+	test_bench : process begin
 
 		wait for 100 ns; -- Wait until global set/reset completes
-
 		wait for 1 ns;
+
+		run_same_bram_access <= '1';
+
+		wait for 50 ns;
+
+		run_same_address_access <= '1';
+
+		wait for 20 ns;
+
+		run_fast_access <= '1';
+
+	end process test_bench;
+
+
+	thread_0 : process begin
+
+		wait until run_same_bram_access = '1';
 
 		DI_0 <= x"AAAAAAAA";
 		ADDR_0 <= "1000000000";
@@ -151,6 +170,17 @@ begin
 
 		wait until RDY_0 = '1';
 
+		wait until run_same_address_access = '1';
+
+		ADDR_0 <= "1000000000";
+		WE_0 <= "0000";
+		REQ_0 <= '1';
+
+		wait until RDY_0 = '0';
+
+		REQ_0 <= '0';
+
+		wait until RDY_0 = '1';
 
 		wait;
 
@@ -158,9 +188,7 @@ begin
 
 	thread_1 : process begin
 
-		wait for 100 ns; -- Wait until global set/reset completes
-
-		wait for 1 ns;
+		wait until run_same_bram_access = '1';
 
 		DI_1 <= x"BBBBBBBB";
 		ADDR_1 <= "1000000001";
@@ -182,6 +210,17 @@ begin
 
 		wait until RDY_1 = '1';
 
+		wait until run_same_address_access = '1';
+
+		ADDR_1 <= "1000000000";
+		WE_1 <= "0000";
+		REQ_1 <= '1';
+
+		wait until RDY_1 = '0';
+
+		REQ_1 <= '0';
+
+		wait until RDY_1 = '1';
 
 		wait;
 
@@ -189,9 +228,7 @@ begin
 
 	thread_2 : process begin
 
-		wait for 100 ns; -- Wait until global set/reset completes
-
-		wait for 1 ns;
+		wait until run_same_bram_access = '1';
 
 		DI_2 <= x"CCCCCCCC";
 		ADDR_2 <= "1000000010";
@@ -213,6 +250,17 @@ begin
 
 		wait until RDY_2 = '1';
 
+		wait until run_same_address_access = '1';
+
+		ADDR_2 <= "1000000000";
+		WE_2 <= "0000";
+		REQ_2 <= '1';
+
+		wait until RDY_2 = '0';
+
+		REQ_2 <= '0';
+
+		wait until RDY_2 = '1';
 
 		wait;
 
@@ -220,9 +268,7 @@ begin
 
 	thread_3 : process begin
 
-		wait for 100 ns; -- Wait until global set/reset completes
-
-		wait for 1 ns;
+		wait until run_same_bram_access = '1';
 
 		DI_3 <= x"DDDDDDDD";
 		ADDR_3 <= "1000000011";
@@ -244,6 +290,17 @@ begin
 
 		wait until RDY_3 = '1';
 
+		wait until run_same_address_access = '1';
+
+		ADDR_3 <= "1000000000";
+		WE_3 <= "0000";
+		REQ_3 <= '1';
+
+		wait until RDY_3 = '0';
+
+		REQ_3 <= '0';
+
+		wait until RDY_3 = '1';
 
 		wait;
 
