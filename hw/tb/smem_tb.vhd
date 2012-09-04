@@ -131,7 +131,6 @@ begin
 	test_bench : process begin
 
 		wait for 100 ns; -- Wait until global set/reset completes
-		wait for 1 ns;
 
 		run_same_bram_access <= '1';
 
