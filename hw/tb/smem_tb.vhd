@@ -61,9 +61,7 @@ architecture smem_tb_arch of smem_tb is
 	signal BRAM_CLK, TRIG_CLK, RST            : std_logic := '0';
 	signal REQ_0, REQ_1, REQ_2, REQ_3         : std_logic := '0';
 	signal RDY_0, RDY_1, RDY_2, RDY_3         : std_logic := '0';
-	signal run_same_bram_access               : std_logic := '0';
-	signal run_same_address_access            : std_logic := '0';
-	signal run_parallel_access                : std_logic := '0';
+	signal test_bench_state                   : std_logic_vector(1 downto 0) := "00";
 
 
 begin
@@ -132,22 +130,22 @@ begin
 
 		wait for 100 ns; -- Wait until global set/reset completes
 
-		run_same_bram_access <= '1';
+		test_bench_state <= "01";
 
 		wait for 50 ns;
 
-		run_same_address_access <= '1';
+		test_bench_state <= "10";
 
 		wait for 20 ns;
 
-		run_parallel_access <= '1';
+		test_bench_state <= "11";
 
 	end process test_bench;
 
 
 	thread_0 : process begin
 
-		wait until run_same_bram_access = '1';
+		wait until test_bench_state = "01";
 
 		DI_0 <= x"AAAAAAAA";
 		ADDR_0 <= "1000000000";
@@ -169,7 +167,7 @@ begin
 
 		wait until RDY_0 = '1';
 
-		wait until run_same_address_access = '1';
+		wait until test_bench_state = "10";
 
 		ADDR_0 <= "1000000000";
 		WE_0 <= "0000";
@@ -181,7 +179,7 @@ begin
 
 		wait until RDY_0 = '1';
 
-		wait until run_parallel_access = '1';
+		wait until test_bench_state = "11";
 
 		DI_0 <= x"11111111";
 		ADDR_0 <= "0000000000";
@@ -209,7 +207,7 @@ begin
 
 	thread_1 : process begin
 
-		wait until run_same_bram_access = '1';
+		wait until test_bench_state = "01";
 
 		DI_1 <= x"BBBBBBBB";
 		ADDR_1 <= "1000000001";
@@ -231,7 +229,7 @@ begin
 
 		wait until RDY_1 = '1';
 
-		wait until run_same_address_access = '1';
+		wait until test_bench_state = "10";
 
 		ADDR_1 <= "1000000000";
 		WE_1 <= "0000";
@@ -243,7 +241,7 @@ begin
 
 		wait until RDY_1 = '1';
 
-		wait until run_parallel_access = '1';
+		wait until test_bench_state = "11";
 
 		DI_1 <= x"22222222";
 		ADDR_1 <= "0000000001";
@@ -271,7 +269,7 @@ begin
 
 	thread_2 : process begin
 
-		wait until run_same_bram_access = '1';
+		wait until test_bench_state = "01";
 
 		DI_2 <= x"CCCCCCCC";
 		ADDR_2 <= "1000000010";
@@ -293,7 +291,7 @@ begin
 
 		wait until RDY_2 = '1';
 
-		wait until run_same_address_access = '1';
+		wait until test_bench_state = "10";
 
 		ADDR_2 <= "1000000000";
 		WE_2 <= "0000";
@@ -305,7 +303,7 @@ begin
 
 		wait until RDY_2 = '1';
 
-		wait until run_parallel_access = '1';
+		wait until test_bench_state = "11";
 
 		DI_2 <= x"33333333";
 		ADDR_2 <= "1000000000";
@@ -333,7 +331,7 @@ begin
 
 	thread_3 : process begin
 
-		wait until run_same_bram_access = '1';
+		wait until test_bench_state = "01";
 
 		DI_3 <= x"DDDDDDDD";
 		ADDR_3 <= "1000000011";
@@ -355,7 +353,7 @@ begin
 
 		wait until RDY_3 = '1';
 
-		wait until run_same_address_access = '1';
+		wait until test_bench_state = "10";
 
 		ADDR_3 <= "1000000000";
 		WE_3 <= "0000";
@@ -367,7 +365,7 @@ begin
 
 		wait until RDY_3 = '1';
 
-		wait until run_parallel_access = '1';
+		wait until test_bench_state = "11";
 
 		DI_3 <= x"44444444";
 		ADDR_3 <= "1000000001";
