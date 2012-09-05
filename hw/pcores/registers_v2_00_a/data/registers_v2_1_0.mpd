@@ -42,18 +42,31 @@ PORT address_out_2 = "", DIR = O, VEC = [31:0]
 PORT address_out_3 = "", DIR = O, VEC = [31:0]
 PORT go = "", DIR = O
 PORT ready = "", DIR = I
-PORT DOA = "", DIR = I, VEC = [31:0]
-PORT DOB = "", DIR = I, VEC = [31:0]
-PORT ADDRA = "", DIR = O, VEC = [8:0]
-PORT ADDRB = "", DIR = O, VEC = [8:0]
-PORT ENA = "", DIR = O
-PORT ENB = "", DIR = O
-PORT RSTA = "", DIR = O
-PORT RSTB = "", DIR = O
-PORT DIA = "", DIR = O, VEC = [31:0]
-PORT DIB = "", DIR = O, VEC = [31:0]
-PORT WEA = "", DIR = O, VEC = [3:0]
-PORT WEB = "", DIR = O, VEC = [3:0]
+PORT DO_0 = "", DIR = I, VEC = [31:0]
+PORT DO_1 = "", DIR = I, VEC = [31:0]
+PORT DO_2 = "", DIR = I, VEC = [31:0]
+PORT DO_3 = "", DIR = I, VEC = [31:0]
+PORT DI_0 = "", DIR = O, VEC = [31:0]
+PORT DI_1 = "", DIR = O, VEC = [31:0]
+PORT DI_2 = "", DIR = O, VEC = [31:0]
+PORT DI_3 = "", DIR = O, VEC = [31:0]
+PORT ADDR_0 = "", DIR = O, VEC = [9:0]
+PORT ADDR_1 = "", DIR = O, VEC = [9:0]
+PORT ADDR_2 = "", DIR = O, VEC = [9:0]
+PORT ADDR_3 = "", DIR = O, VEC = [9:0]
+PORT RST = "", DIR = O
+PORT WE_0 = "", DIR = O, VEC = [3:0]
+PORT WE_1 = "", DIR = O, VEC = [3:0]
+PORT WE_2 = "", DIR = O, VEC = [3:0]
+PORT WE_3 = "", DIR = O, VEC = [3:0]
+PORT REQ_0 = "", DIR = O
+PORT REQ_1 = "", DIR = O
+PORT REQ_2 = "", DIR = O
+PORT REQ_3 = "", DIR = O
+PORT RDY_0 = "", DIR = I
+PORT RDY_1 = "", DIR = I
+PORT RDY_2 = "", DIR = I
+PORT RDY_3 = "", DIR = I
 
 PORT S_AXI_ACLK = "", DIR = I, SIGIS = CLK, BUS = S_AXI
 PORT S_AXI_ARESETN = ARESETN, DIR = I, SIGIS = RST, BUS = S_AXI

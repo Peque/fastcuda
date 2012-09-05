@@ -141,11 +141,13 @@ entity user_logic is
     go                                : in  std_logic;
     ready                             : out std_logic;
     DEBUG_signal                      : out std_logic_vector(250 downto 0);
-    DOA, DOB                          : out std_logic_vector(31 downto 0);
-    ADDRA, ADDRB                      : in  std_logic_vector(8 downto 0);
-    CLKA, CLKB, ENA, ENB, RSTA, RSTB  : in  std_logic;
-    DIA, DIB                          : in  std_logic_vector(31 downto 0);
-    WEA, WEB                          : in  std_logic_vector(3 downto 0);
+    DO_0, DO_1, DO_2, DO_3            : out std_logic_vector(31 downto 0);
+    DI_0, DI_1, DI_2, DI_3            : in  std_logic_vector(31 downto 0);
+    ADDR_0, ADDR_1, ADDR_2, ADDR_3    : in  std_logic_vector(9 downto 0);
+    BRAM_CLK, TRIG_CLK, RST           : in  std_logic;
+    WE_0, WE_1, WE_2, WE_3            : in  std_logic_vector(3 downto 0);
+    REQ_0, REQ_1, REQ_2, REQ_3        : in  std_logic;
+    RDY_0, RDY_1, RDY_2, RDY_3        : out std_logic;
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -420,11 +422,13 @@ architecture IMP of user_logic is
 
   component smem
     port (
-      DOA, DOB                           : out std_logic_vector(31 downto 0);
-      ADDRA, ADDRB                       : in  std_logic_vector(8 downto 0);
-      CLKA, CLKB, ENA, ENB, RSTA, RSTB   : in  std_logic;
-      DIA, DIB                           : in  std_logic_vector(31 downto 0);
-      WEA, WEB                           : in  std_logic_vector(3 downto 0)
+      DO_0, DO_1, DO_2, DO_3            : out std_logic_vector(31 downto 0);
+      DI_0, DI_1, DI_2, DI_3            : in  std_logic_vector(31 downto 0);
+      ADDR_0, ADDR_1, ADDR_2, ADDR_3    : in  std_logic_vector(9 downto 0);
+      BRAM_CLK, TRIG_CLK, RST           : in  std_logic;
+      WE_0, WE_1, WE_2, WE_3            : in  std_logic_vector(3 downto 0);
+      REQ_0, REQ_1, REQ_2, REQ_3        : in  std_logic;
+      RDY_0, RDY_1, RDY_2, RDY_3        : out std_logic
     );
   end component;
 
@@ -715,20 +719,33 @@ begin
 
   shared_mem : smem port map (
 
-    DOA => DOA,
-    DOB => DOB,
-    ADDRA => ADDRA,
-    ADDRB => ADDRB,
-    CLKA => CLKA,
-    CLKB => CLKB,
-    DIA => DIA,
-    DIB => DIB,
-    ENA => ENA,
-    ENB => ENB,
-    RSTA => RSTA,
-    RSTB => RSTB,
-    WEA => WEA,
-    WEB => WEB
+    DO_0      => DO_0,
+    DO_1      => DO_1,
+    DO_2      => DO_2,
+    DO_3      => DO_3,
+    DI_0      => DI_0,
+    DI_1      => DI_1,
+    DI_2      => DI_2,
+    DI_3      => DI_3,
+    ADDR_0    => ADDR_0,
+    ADDR_1    => ADDR_1,
+    ADDR_2    => ADDR_2,
+    ADDR_3    => ADDR_3,
+    BRAM_CLK  => BRAM_CLK,
+    TRIG_CLK  => TRIG_CLK,
+    RST       => RST,
+    WE_0      => WE_0,
+    WE_1      => WE_1,
+    WE_2      => WE_2,
+    WE_3      => WE_3,
+    REQ_0     => REQ_0,
+    REQ_1     => REQ_1,
+    REQ_2     => REQ_2,
+    REQ_3     => REQ_3,
+    RDY_0     => RDY_0,
+    RDY_1     => RDY_1,
+    RDY_2     => RDY_2,
+    RDY_3     => RDY_3
 
   );
 

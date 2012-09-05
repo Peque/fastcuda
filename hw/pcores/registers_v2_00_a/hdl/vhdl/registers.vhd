@@ -138,17 +138,19 @@ entity registers is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_out_0                  : out std_logic_vector(31 downto 0);
-    address_out_1                  : out std_logic_vector(31 downto 0);
-    address_out_2                  : out std_logic_vector(31 downto 0);
-    address_out_3                  : out std_logic_vector(31 downto 0);
-    go                             : out std_logic;
-    ready                          : in  std_logic;
-    DOA, DOB                       : in  std_logic_vector(31 downto 0);
-    ADDRA, ADDRB                   : out std_logic_vector(8 downto 0);
-    ENA, ENB, RSTA, RSTB           : out std_logic;
-    DIA, DIB                       : out std_logic_vector(31 downto 0);
-    WEA, WEB                       : out std_logic_vector(3 downto 0);
+    address_out_0                     : out std_logic_vector(31 downto 0);
+    address_out_1                     : out std_logic_vector(31 downto 0);
+    address_out_2                     : out std_logic_vector(31 downto 0);
+    address_out_3                     : out std_logic_vector(31 downto 0);
+    go                                : out std_logic;
+    ready                             : in  std_logic;
+    DO_0, DO_1, DO_2, DO_3            : in  std_logic_vector(31 downto 0);
+    DI_0, DI_1, DI_2, DI_3            : out std_logic_vector(31 downto 0);
+    ADDR_0, ADDR_1, ADDR_2, ADDR_3    : out std_logic_vector(9 downto 0);
+    RST                               : out std_logic;
+    WE_0, WE_1, WE_2, WE_3            : out std_logic_vector(3 downto 0);
+    REQ_0, REQ_1, REQ_2, REQ_3        : out std_logic;
+    RDY_0, RDY_1, RDY_2, RDY_3        : in  std_logic;
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -319,18 +321,31 @@ begin
       address_out_3    => address_out_3,
       go               => go,
       ready            => ready,
-      DOA              => DOA,
-      DOB              => DOB,
-      ADDRA            => ADDRA,
-      ADDRB            => ADDRB,
-      ENA              => ENA,
-      ENB              => ENB,
-      RSTA             => RSTA,
-      RSTB             => RSTB,
-      DIA              => DIA,
-      DIB              => DIB,
-      WEA              => WEA,
-      WEB              => WEB,
+      DO_0             => DO_0,
+      DO_1             => DO_1,
+      DO_2             => DO_2,
+      DO_3             => DO_3,
+      DI_0             => DI_0,
+      DI_1             => DI_1,
+      DI_2             => DI_2,
+      DI_3             => DI_3,
+      ADDR_0           => ADDR_0,
+      ADDR_1           => ADDR_1,
+      ADDR_2           => ADDR_2,
+      ADDR_3           => ADDR_3,
+      RST              => RST,
+      WE_0             => WE_0,
+      WE_1             => WE_1,
+      WE_2             => WE_2,
+      WE_3             => WE_3,
+      REQ_0            => REQ_0,
+      REQ_1            => REQ_1,
+      REQ_2            => REQ_2,
+      REQ_3            => REQ_3,
+      RDY_0            => RDY_0,
+      RDY_1            => RDY_1,
+      RDY_2            => RDY_2,
+      RDY_3            => RDY_3,
       -- MAP USER PORTS ABOVE THIS LINE ------------------
 
       Bus2IP_Clk                     => ipif_Bus2IP_Clk,

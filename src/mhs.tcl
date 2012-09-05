@@ -149,9 +149,15 @@ xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT2_GROUP PLL0
 xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT2 clk_100_0000MHz_PLL0
 #   Clock 3
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_FREQ 100000000
-xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_PHASE 180
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_PHASE 90
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_GROUP PLL0
-xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT3 clk_100_0000MHz_180_PLL0
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT3_BUF FALSE
+xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT3 clk_100_0000MHz_90_PLL0_nobuf
+#   Clock 4
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT4_FREQ 100000000
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT4_GROUP PLL0
+xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKOUT4_BUF FALSE
+xadd_hw_ipinst_port $clock_generator_0_handle CLKOUT4 clk_100_0000MHz_PLL0_nobuf
 
 # Connect MB_0 instructions and data LMBs to reset and clock signals:
 xadd_hw_ipinst_port $mblaze_0_ilmb_handle SYS_RST psys_reset_0_BUS_STRUCT_RESET
@@ -275,18 +281,31 @@ xadd_hw_ipinst_port $registers_0_handle address_out_2 master_0_address_in_2
 xadd_hw_ipinst_port $registers_0_handle address_out_3 master_0_address_in_3
 xadd_hw_ipinst_port $registers_0_handle go master_0_go
 xadd_hw_ipinst_port $registers_0_handle ready master_0_ready
-xadd_hw_ipinst_port $registers_0_handle DOA smem_DOA
-xadd_hw_ipinst_port $registers_0_handle DOB smem_DOB
-xadd_hw_ipinst_port $registers_0_handle ADDRA smem_ADDRA
-xadd_hw_ipinst_port $registers_0_handle ADDRB smem_ADDRB
-xadd_hw_ipinst_port $registers_0_handle ENA smem_ENA
-xadd_hw_ipinst_port $registers_0_handle ENB smem_ENB
-xadd_hw_ipinst_port $registers_0_handle RSTA smem_RSTA
-xadd_hw_ipinst_port $registers_0_handle RSTB smem_RSTB
-xadd_hw_ipinst_port $registers_0_handle DIA smem_DIA
-xadd_hw_ipinst_port $registers_0_handle DIB smem_DIB
-xadd_hw_ipinst_port $registers_0_handle WEA smem_WEA
-xadd_hw_ipinst_port $registers_0_handle WEB smem_WEB
+xadd_hw_ipinst_port $registers_0_handle DO_0 smem_DO_0
+xadd_hw_ipinst_port $registers_0_handle DO_1 smem_DO_1
+xadd_hw_ipinst_port $registers_0_handle DO_2 smem_DO_2
+xadd_hw_ipinst_port $registers_0_handle DO_3 smem_DO_3
+xadd_hw_ipinst_port $registers_0_handle DI_0 smem_DI_0
+xadd_hw_ipinst_port $registers_0_handle DI_1 smem_DI_1
+xadd_hw_ipinst_port $registers_0_handle DI_2 smem_DI_2
+xadd_hw_ipinst_port $registers_0_handle DI_3 smem_DI_3
+xadd_hw_ipinst_port $registers_0_handle ADDR_0 smem_ADDR_0
+xadd_hw_ipinst_port $registers_0_handle ADDR_1 smem_ADDR_1
+xadd_hw_ipinst_port $registers_0_handle ADDR_2 smem_ADDR_2
+xadd_hw_ipinst_port $registers_0_handle ADDR_3 smem_ADDR_3
+xadd_hw_ipinst_port $registers_0_handle RST smem_RST
+xadd_hw_ipinst_port $registers_0_handle WE_0 smem_WE_0
+xadd_hw_ipinst_port $registers_0_handle WE_1 smem_WE_1
+xadd_hw_ipinst_port $registers_0_handle WE_2 smem_WE_2
+xadd_hw_ipinst_port $registers_0_handle WE_3 smem_WE_3
+xadd_hw_ipinst_port $registers_0_handle REQ_0 smem_REQ_0
+xadd_hw_ipinst_port $registers_0_handle REQ_1 smem_REQ_1
+xadd_hw_ipinst_port $registers_0_handle REQ_2 smem_REQ_2
+xadd_hw_ipinst_port $registers_0_handle REQ_3 smem_REQ_3
+xadd_hw_ipinst_port $registers_0_handle RDY_0 smem_RDY_0
+xadd_hw_ipinst_port $registers_0_handle RDY_1 smem_RDY_1
+xadd_hw_ipinst_port $registers_0_handle RDY_2 smem_RDY_2
+xadd_hw_ipinst_port $registers_0_handle RDY_3 smem_RDY_3
 
 #
 # Master
@@ -302,20 +321,33 @@ xadd_hw_ipinst_port $master_0_handle address_in_2 master_0_address_in_2
 xadd_hw_ipinst_port $master_0_handle address_in_3 master_0_address_in_3
 xadd_hw_ipinst_port $master_0_handle go master_0_go
 xadd_hw_ipinst_port $master_0_handle ready master_0_ready
-xadd_hw_ipinst_port $master_0_handle DOA smem_DOA
-xadd_hw_ipinst_port $master_0_handle DOB smem_DOB
-xadd_hw_ipinst_port $master_0_handle ADDRA smem_ADDRA
-xadd_hw_ipinst_port $master_0_handle ADDRB smem_ADDRB
-xadd_hw_ipinst_port $master_0_handle ENA smem_ENA
-xadd_hw_ipinst_port $master_0_handle ENB smem_ENB
-xadd_hw_ipinst_port $master_0_handle RSTA smem_RSTA
-xadd_hw_ipinst_port $master_0_handle RSTB smem_RSTB
-xadd_hw_ipinst_port $master_0_handle DIA smem_DIA
-xadd_hw_ipinst_port $master_0_handle DIB smem_DIB
-xadd_hw_ipinst_port $master_0_handle WEA smem_WEA
-xadd_hw_ipinst_port $master_0_handle WEB smem_WEB
-xadd_hw_ipinst_port $master_0_handle CLKA clk_100_0000MHz_PLL0
-xadd_hw_ipinst_port $master_0_handle CLKB clk_100_0000MHz_180_PLL0
+xadd_hw_ipinst_port $master_0_handle DO_0 smem_DO_0
+xadd_hw_ipinst_port $master_0_handle DO_1 smem_DO_1
+xadd_hw_ipinst_port $master_0_handle DO_2 smem_DO_2
+xadd_hw_ipinst_port $master_0_handle DO_3 smem_DO_3
+xadd_hw_ipinst_port $master_0_handle DI_0 smem_DI_0
+xadd_hw_ipinst_port $master_0_handle DI_1 smem_DI_1
+xadd_hw_ipinst_port $master_0_handle DI_2 smem_DI_2
+xadd_hw_ipinst_port $master_0_handle DI_3 smem_DI_3
+xadd_hw_ipinst_port $master_0_handle ADDR_0 smem_ADDR_0
+xadd_hw_ipinst_port $master_0_handle ADDR_1 smem_ADDR_1
+xadd_hw_ipinst_port $master_0_handle ADDR_2 smem_ADDR_2
+xadd_hw_ipinst_port $master_0_handle ADDR_3 smem_ADDR_3
+xadd_hw_ipinst_port $master_0_handle BRAM_CLK clk_100_0000MHz_PLL0_nobuf
+xadd_hw_ipinst_port $master_0_handle TRIG_CLK clk_100_0000MHz_90_PLL0_nobuf
+xadd_hw_ipinst_port $master_0_handle RST smem_RST
+xadd_hw_ipinst_port $master_0_handle WE_0 smem_WE_0
+xadd_hw_ipinst_port $master_0_handle WE_1 smem_WE_1
+xadd_hw_ipinst_port $master_0_handle WE_2 smem_WE_2
+xadd_hw_ipinst_port $master_0_handle WE_3 smem_WE_3
+xadd_hw_ipinst_port $master_0_handle REQ_0 smem_REQ_0
+xadd_hw_ipinst_port $master_0_handle REQ_1 smem_REQ_1
+xadd_hw_ipinst_port $master_0_handle REQ_2 smem_REQ_2
+xadd_hw_ipinst_port $master_0_handle REQ_3 smem_REQ_3
+xadd_hw_ipinst_port $master_0_handle RDY_0 smem_RDY_0
+xadd_hw_ipinst_port $master_0_handle RDY_1 smem_RDY_1
+xadd_hw_ipinst_port $master_0_handle RDY_2 smem_RDY_2
+xadd_hw_ipinst_port $master_0_handle RDY_3 smem_RDY_3
 
 #
 # MB_0 debug module
