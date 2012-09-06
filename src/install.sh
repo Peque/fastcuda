@@ -99,14 +99,14 @@ echo "Configuration file created."
 # Atlys AXI BSB Support
 #
 echo "Downloading Atlys AXI BSB Support..."
-wget -P $CONFIG_DIR https://www.digilentinc.com/Data/Products/ATLYS/Atlys_BSB_Support_v_3_4.zip
+wget -P $CONFIG_DIR https://www.digilentinc.com/Data/Products/ATLYS/Atlys_BSB_Support_v_3_6.zip
 echo "Extracting Atlys BSB Support..."
-unzip -d $CONFIG_DIR $CONFIG_DIR/Atlys_BSB_Support_v_3_4.zip
+unzip -d $CONFIG_DIR $CONFIG_DIR/Atlys_BSB_Support_v_3_6.zip
 echo "Saving Atlys BSB Support..."
-mv $CONFIG_DIR/Atlys_BSB_Support_v_3_4/Atlys_AXI_BSB_Support/ $CONFIG_DIR
+mv $CONFIG_DIR/Atlys_BSB_Support_v_3_6/Atlys_AXI_BSB_Support/ $CONFIG_DIR
 echo "Cleaning files..."
-rm -rf $CONFIG_DIR/Atlys_BSB_Support_v_3_4/
-rm $CONFIG_DIR/Atlys_BSB_Support_v_3_4.zip
+rm -rf $CONFIG_DIR/Atlys_BSB_Support_v_3_6/
+rm $CONFIG_DIR/Atlys_BSB_Support_v_3_6.zip
 
 #
 # Installation complete
