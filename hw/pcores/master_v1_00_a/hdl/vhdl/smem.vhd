@@ -147,8 +147,8 @@ begin
 	RDY_3 <= k3_ready;
 
 
-	-- TODO: optimize code bellow for the input_controller process
-	input_controller : process (TRIG_CLK)
+	-- TODO: optimize code bellow for the mem_controller process
+	mem_controller : process (TRIG_CLK)
 
 		variable bram_0_A_busy    : std_logic := '0';
 		variable bram_0_B_busy    : std_logic := '0';
@@ -388,7 +388,7 @@ begin
 
 		end if;
 
-	end process input_controller;
+	end process mem_controller;
 
 
 	-- TODO: decide if a process implementation should be used instead of
