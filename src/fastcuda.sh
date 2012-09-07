@@ -73,8 +73,12 @@ done
 #
 # Create configuration file for the TCL script
 #
+# TODO: parse each line in the bash configuration file and automatically
+#       translate all of it.
+#
 echo "set FASTCUDA_DIR \"$FASTCUDA_DIR\"">> $CONFIG_DIR/config_build.tcl
 echo "set FASTCUDA_PROJ_NAME \"$FASTCUDA_PROJ_NAME\"">> $CONFIG_DIR/config_build.tcl
+echo "set XILINX_DIR \"$XILINX_DIR\"">> $CONFIG_DIR/config_build.tcl
 
 
 #

@@ -26,9 +26,35 @@
 
 
 
+#
+# Set pcores versions
+#
+proc get_latest_pcore_version { pcore } {
+	global XILINX_DIR
+	global FASTCUDA_DIR
+	set XILINX_PCORES_DIR $XILINX_DIR/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores
+	return [ exec $FASTCUDA_DIR/src/lib/get_latest_pcore_version.sh $XILINX_PCORES_DIR $pcore ]
+}
+
+set microblaze_version        [ get_latest_pcore_version microblaze ]
+set lmb_v10_version           [ get_latest_pcore_version lmb_v10 ]
+set lmb_bram_if_cntlr_version [ get_latest_pcore_version lmb_bram_if_cntlr ]
+set bram_block_version        [ get_latest_pcore_version bram_block ]
+set proc_sys_reset_version    [ get_latest_pcore_version proc_sys_reset ]
+set clock_generator_version   [ get_latest_pcore_version clock_generator ]
+set axi_interconnect_version  [ get_latest_pcore_version axi_interconnect ]
+set axi_s6_ddrx_version       [ get_latest_pcore_version axi_s6_ddrx ]
+set mdm_version               [ get_latest_pcore_version mdm ]
+set registers_version           2.00.a
+set master_version              1.00.a
+
+
+#
 # Create hadle variables for the original and merged microprocessor hardware specification (MHS) files:
+#
 set mhs_handle [xget_handle mhs]
 set merged_mhs_handle [xget_handle merged_mhs]
+
 
 #
 # Top level ports
@@ -55,22 +81,22 @@ xadd_hw_ipinst_port $mhs_handle RESET "RESET, DIR = I, SIGIS = RST, RST_POLARITY
 xadd_hw_ipinst_port $mhs_handle GCLK "GCLK, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000"
 
 # Add a MicroBlaze (MB_0) v8.20.a IP with the instance name mblaze_0 to the MHS:
-set mblaze_0_handle [xadd_hw_ipinst $mhs_handle mblaze_0 microblaze 8.30.a]
+set mblaze_0_handle [xadd_hw_ipinst $mhs_handle mblaze_0 microblaze $microblaze_version]
 
 # Add a Local Memory Bus v2.00.b for the MB_0 instructions cache:
-set mblaze_0_ilmb_handle [xadd_hw_ipinst $mhs_handle mblaze_0_ilmb lmb_v10 2.00.b]
+set mblaze_0_ilmb_handle [xadd_hw_ipinst $mhs_handle mblaze_0_ilmb lmb_v10 $lmb_v10_version]
 
 # Add a LMB v2.00.b for the MB_0 data cache:
-set mblaze_0_dlmb_handle [xadd_hw_ipinst $mhs_handle mblaze_0_dlmb lmb_v10 2.00.b]
+set mblaze_0_dlmb_handle [xadd_hw_ipinst $mhs_handle mblaze_0_dlmb lmb_v10 $lmb_v10_version]
 
 # Add a LMB BRAM interface controller (IC) for the MB_0 intructions cache:
-set mblaze_0_i_bram_cntlr_handle [xadd_hw_ipinst $mhs_handle mblaze_0_i_bram_cntlr lmb_bram_if_cntlr 3.00.b]
+set mblaze_0_i_bram_cntlr_handle [xadd_hw_ipinst $mhs_handle mblaze_0_i_bram_cntlr lmb_bram_if_cntlr $lmb_bram_if_cntlr_version]
 
 # Add a LMB BRAM IC for the MB_0 data cache:
-set mblaze_0_d_bram_cntlr_handle [xadd_hw_ipinst $mhs_handle mblaze_0_d_bram_cntlr lmb_bram_if_cntlr 3.00.b]
+set mblaze_0_d_bram_cntlr_handle [xadd_hw_ipinst $mhs_handle mblaze_0_d_bram_cntlr lmb_bram_if_cntlr $lmb_bram_if_cntlr_version]
 
 # Add a BRAM for the MB_0 instructions and data caches:
-set mblaze_0_bram_handle [xadd_hw_ipinst $mhs_handle mblaze_0_bram bram_block 1.00.a]
+set mblaze_0_bram_handle [xadd_hw_ipinst $mhs_handle mblaze_0_bram bram_block $bram_block_version]
 
 # Set bus interfaces for MB_0 BRAM ports (connect A to i_bram_cntlr and B to d_bram_cntlr):
 xadd_hw_ipinst_busif $mblaze_0_bram_handle PORTA mblaze_0_i_bram_cntlr2block
@@ -110,7 +136,7 @@ xadd_hw_ipinst_parameter $mblaze_0_handle C_DCACHE_ALWAYS_USED 1
 #
 # Create and configure a processor system reset module:
 #
-set psys_reset_0_handle [xadd_hw_ipinst $mhs_handle psys_reset_0 proc_sys_reset 3.00.a]
+set psys_reset_0_handle [xadd_hw_ipinst $mhs_handle psys_reset_0 proc_sys_reset $proc_sys_reset_version]
 # Reset generated when external reset = '0':
 xadd_hw_ipinst_parameter $psys_reset_0_handle C_EXT_RESET_HIGH 0
 xadd_hw_ipinst_port $psys_reset_0_handle Dcm_locked psys_reset_0_Dcm_locked
@@ -125,7 +151,7 @@ xadd_hw_ipinst_port $psys_reset_0_handle Slowest_sync_clk clk_100_0000MHz_PLL0
 #
 # Create and configure a clock generator:
 #
-set clock_generator_0_handle [xadd_hw_ipinst $mhs_handle clock_generator_0 clock_generator 4.03.a]
+set clock_generator_0_handle [xadd_hw_ipinst $mhs_handle clock_generator_0 clock_generator $clock_generator_version]
 #   Reset: active low
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_EXT_RESET_HIGH 0
 xadd_hw_ipinst_parameter $clock_generator_0_handle C_CLKIN_FREQ 100000000
@@ -190,9 +216,9 @@ xadd_hw_ipinst_busif $mblaze_0_handle M_AXI_IC axi4_0
 #
 # Create AXI 4 and AXI 4-Lite interconnect cores:
 #
-set axi4lite_0_handle [xadd_hw_ipinst $mhs_handle axi4lite_0 axi_interconnect 1.06.a]
-set axi4_0_handle [xadd_hw_ipinst $mhs_handle axi4_0 axi_interconnect 1.06.a]
-set axi4_1_handle [xadd_hw_ipinst $mhs_handle axi4_1 axi_interconnect 1.06.a]
+set axi4lite_0_handle [xadd_hw_ipinst $mhs_handle axi4lite_0 axi_interconnect $axi_interconnect_version]
+set axi4_0_handle [xadd_hw_ipinst $mhs_handle axi4_0 axi_interconnect $axi_interconnect_version]
+set axi4_1_handle [xadd_hw_ipinst $mhs_handle axi4_1 axi_interconnect $axi_interconnect_version]
 # Reset and clock ports:
 xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ARESETN psys_reset_0_Interconnect_aresetn
 xadd_hw_ipinst_port $axi4lite_0_handle INTERCONNECT_ACLK clk_100_0000MHz_PLL0
@@ -210,7 +236,7 @@ xadd_hw_ipinst_parameter $axi4_1_handle C_BASEFAMILY spartan6
 #
 # Spartan 6 memory interface:
 #
-set MCB_DDR2_handle [xadd_hw_ipinst $mhs_handle MCB_DDR2 axi_s6_ddrx 1.05.a]
+set MCB_DDR2_handle [xadd_hw_ipinst $mhs_handle MCB_DDR2 axi_s6_ddrx $axi_s6_ddrx_version]
 #   Parameters
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MCB_RZQ_LOC L6
 xadd_hw_ipinst_parameter $MCB_DDR2_handle C_MCB_ZIO_LOC C2
@@ -270,7 +296,7 @@ xadd_hw_ipinst_port $MCB_DDR2_handle PLL_LOCK psys_reset_0_Dcm_locked
 #
 # Registers:
 #
-set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers 2.00.a]
+set registers_0_handle [xadd_hw_ipinst $mhs_handle registers_0 registers $registers_version]
 xadd_hw_ipinst_parameter $registers_0_handle C_BASEADDR 0x77c00000
 xadd_hw_ipinst_parameter $registers_0_handle C_HIGHADDR 0x77c0ffff
 xadd_hw_ipinst_busif $registers_0_handle S_AXI axi4lite_0
@@ -310,7 +336,7 @@ xadd_hw_ipinst_port $registers_0_handle RDY_3 smem_RDY_3
 #
 # Master
 #
-set master_0_handle [xadd_hw_ipinst $mhs_handle master_0 master 1.00.a]
+set master_0_handle [xadd_hw_ipinst $mhs_handle master_0 master $master_version]
 xadd_hw_ipinst_busif $master_0_handle M_AXI axi4_1
 xadd_hw_ipinst_port $master_0_handle S_AXI_ACLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $master_0_handle S_AXI_ARESETN psys_reset_0_Interconnect_aresetn
@@ -352,7 +378,7 @@ xadd_hw_ipinst_port $master_0_handle RDY_3 smem_RDY_3
 #
 # MB_0 debug module
 #
-set mblaze_0_debug_module_handle [xadd_hw_ipinst $mhs_handle mblaze_0_debug_module mdm 2.00.b]
+set mblaze_0_debug_module_handle [xadd_hw_ipinst $mhs_handle mblaze_0_debug_module mdm $mdm_version]
 xadd_hw_ipinst_parameter $mblaze_0_debug_module_handle C_INTERCONNECT 2
 xadd_hw_ipinst_parameter $mblaze_0_debug_module_handle C_USE_UART 1
 xadd_hw_ipinst_parameter $mblaze_0_debug_module_handle C_BASEADDR 0x74800000
