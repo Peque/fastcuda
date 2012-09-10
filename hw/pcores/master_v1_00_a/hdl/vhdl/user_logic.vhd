@@ -134,20 +134,18 @@ entity user_logic is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_in_0                      : in  std_logic_vector(31 downto 0);
-    address_in_1                      : in  std_logic_vector(31 downto 0);
-    address_in_2                      : in  std_logic_vector(31 downto 0);
-    address_in_3                      : in  std_logic_vector(31 downto 0);
-    go                                : in  std_logic;
-    ready                             : out std_logic;
-    DEBUG_signal                      : out std_logic_vector(250 downto 0);
-    DO_0, DO_1, DO_2, DO_3            : out std_logic_vector(31 downto 0);
-    DI_0, DI_1, DI_2, DI_3            : in  std_logic_vector(31 downto 0);
-    ADDR_0, ADDR_1, ADDR_2, ADDR_3    : in  std_logic_vector(9 downto 0);
-    BRAM_CLK, TRIG_CLK, RST           : in  std_logic;
-    WE_0, WE_1, WE_2, WE_3            : in  std_logic_vector(3 downto 0);
-    REQ_0, REQ_1, REQ_2, REQ_3        : in  std_logic;
-    RDY_0, RDY_1, RDY_2, RDY_3        : out std_logic;
+    address_in_0                              : in  std_logic_vector(31 downto 0);
+    address_in_1                              : in  std_logic_vector(31 downto 0);
+    address_in_2                              : in  std_logic_vector(31 downto 0);
+    address_in_3                              : in  std_logic_vector(31 downto 0);
+    go                                        : in  std_logic;
+    ready                                     : out std_logic;
+    chipscope_probe                           : out std_logic_vector(255 downto 0);
+    DO_0, DO_1, DO_2, DO_3                    : out std_logic_vector(31 downto 0);
+    DI_0, DI_1, DI_2, DI_3                    : in  std_logic_vector(31 downto 0);
+    ADDR_0_W, ADDR_1_W, ADDR_2_W, ADDR_3_W    : in  std_logic_vector(9 downto 0);
+    ADDR_0_R, ADDR_1_R, ADDR_2_R, ADDR_3_R    : in  std_logic_vector(9 downto 0);
+    BRAM_CLK, TRIG_CLK, RST                   : in  std_logic;
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -552,6 +550,17 @@ architecture IMP of user_logic is
   signal DEBUG_ip2bus_mstwr_sof_n : std_logic;
   signal DEBUG_ip2bus_mstwr_eof_n : std_logic;
 
+  -- Signals for the shared memory
+  signal smem_DO_0, smem_DO_1, smem_DO_2, smem_DO_3            : std_logic_vector(31 downto 0);
+  signal smem_DI_0, smem_DI_1, smem_DI_2, smem_DI_3            : std_logic_vector(31 downto 0);
+  signal smem_ADDR_0, smem_ADDR_1, smem_ADDR_2, smem_ADDR_3    : std_logic_vector(9 downto 0);
+  signal smem_BRAM_CLK, smem_TRIG_CLK, smem_RST                : std_logic;
+  signal smem_WE_0, smem_WE_1, smem_WE_2, smem_WE_3            : std_logic_vector(3 downto 0);
+  signal smem_REQ_0, smem_REQ_1, smem_REQ_2, smem_REQ_3        : std_logic;
+  signal smem_RDY_0, smem_RDY_1, smem_RDY_2, smem_RDY_3        : std_logic;
+
+  -- Chipscope signals
+  signal chipscope_probe_signal     : std_logic_vector(255 downto 0);
 
 
   ------------------------------------------
@@ -588,6 +597,19 @@ begin
   --                     "0001"   C_BASEADDR + 0xC
   --
   ------------------------------------------
+
+  smem_BRAM_CLK     <= BRAM_CLK;
+  smem_TRIG_CLK     <= TRIG_CLK;
+  smem_RST          <= RST;
+
+  DO_0              <= smem_DO_0;
+  DO_1              <= smem_DO_1;
+  DO_2              <= smem_DO_2;
+  DO_3              <= smem_DO_3;
+
+  chipscope_probe   <= chipscope_probe_signal;
+
+
   slv_reg_write_sel <= Bus2IP_WrCE(1 downto 0);
   slv_reg_read_sel  <= Bus2IP_RdCE(1 downto 0);
   slv_write_ack     <= Bus2IP_WrCE(0) or Bus2IP_WrCE(1);
@@ -719,33 +741,33 @@ begin
 
   shared_mem : smem port map (
 
-    DO_0      => DO_0,
-    DO_1      => DO_1,
-    DO_2      => DO_2,
-    DO_3      => DO_3,
-    DI_0      => DI_0,
-    DI_1      => DI_1,
-    DI_2      => DI_2,
-    DI_3      => DI_3,
-    ADDR_0    => ADDR_0,
-    ADDR_1    => ADDR_1,
-    ADDR_2    => ADDR_2,
-    ADDR_3    => ADDR_3,
-    BRAM_CLK  => BRAM_CLK,
-    TRIG_CLK  => TRIG_CLK,
-    RST       => RST,
-    WE_0      => WE_0,
-    WE_1      => WE_1,
-    WE_2      => WE_2,
-    WE_3      => WE_3,
-    REQ_0     => REQ_0,
-    REQ_1     => REQ_1,
-    REQ_2     => REQ_2,
-    REQ_3     => REQ_3,
-    RDY_0     => RDY_0,
-    RDY_1     => RDY_1,
-    RDY_2     => RDY_2,
-    RDY_3     => RDY_3
+    DO_0      => smem_DO_0,
+    DO_1      => smem_DO_1,
+    DO_2      => smem_DO_2,
+    DO_3      => smem_DO_3,
+    DI_0      => smem_DI_0,
+    DI_1      => smem_DI_1,
+    DI_2      => smem_DI_2,
+    DI_3      => smem_DI_3,
+    ADDR_0    => smem_ADDR_0,
+    ADDR_1    => smem_ADDR_1,
+    ADDR_2    => smem_ADDR_2,
+    ADDR_3    => smem_ADDR_3,
+    BRAM_CLK  => smem_BRAM_CLK,
+    TRIG_CLK  => smem_TRIG_CLK,
+    RST       => smem_RST,
+    WE_0      => smem_WE_0,
+    WE_1      => smem_WE_1,
+    WE_2      => smem_WE_2,
+    WE_3      => smem_WE_3,
+    REQ_0     => smem_REQ_0,
+    REQ_1     => smem_REQ_1,
+    REQ_2     => smem_REQ_2,
+    REQ_3     => smem_REQ_3,
+    RDY_0     => smem_RDY_0,
+    RDY_1     => smem_RDY_1,
+    RDY_2     => smem_RDY_2,
+    RDY_3     => smem_RDY_3
 
   );
 
@@ -1061,7 +1083,7 @@ begin
   ip2bus_mstwr_sof_n <= DEBUG_ip2bus_mstwr_sof_n;
   ip2bus_mstwr_eof_n <= DEBUG_ip2bus_mstwr_eof_n;
   DEBUG_bus2ip_mst_error <= bus2ip_mst_error;
-  DEBUG_signal <= ready3& --1
+  chipscope_probe_signal <= ready3& --1
 						ready2& --1
 						ready1& --1
 						ready0& --1
@@ -1107,7 +1129,9 @@ begin
 						bus2ip_mst_cmdack& --1
 						DEBUG_bus2ip_mst_error& --1
 						DEBUG_ip2bus_mst_length& --12
-						DEBUG_ESTADO&'1'; --5+1
+						DEBUG_ESTADO&
+						'1'& --5+1
+						(4 downto 0 => '0');
 									------------
 											--251
 

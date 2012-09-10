@@ -317,23 +317,15 @@ xadd_hw_ipinst_port $registers_0_handle DI_0 smem_DI_0
 xadd_hw_ipinst_port $registers_0_handle DI_1 smem_DI_1
 xadd_hw_ipinst_port $registers_0_handle DI_2 smem_DI_2
 xadd_hw_ipinst_port $registers_0_handle DI_3 smem_DI_3
-xadd_hw_ipinst_port $registers_0_handle ADDR_0 smem_ADDR_0
-xadd_hw_ipinst_port $registers_0_handle ADDR_1 smem_ADDR_1
-xadd_hw_ipinst_port $registers_0_handle ADDR_2 smem_ADDR_2
-xadd_hw_ipinst_port $registers_0_handle ADDR_3 smem_ADDR_3
+xadd_hw_ipinst_port $registers_0_handle ADDR_0_W smem_ADDR_0_W
+xadd_hw_ipinst_port $registers_0_handle ADDR_1_W smem_ADDR_1_W
+xadd_hw_ipinst_port $registers_0_handle ADDR_2_W smem_ADDR_2_W
+xadd_hw_ipinst_port $registers_0_handle ADDR_3_W smem_ADDR_3_W
+xadd_hw_ipinst_port $registers_0_handle ADDR_0_R smem_ADDR_0_R
+xadd_hw_ipinst_port $registers_0_handle ADDR_1_R smem_ADDR_1_R
+xadd_hw_ipinst_port $registers_0_handle ADDR_2_R smem_ADDR_2_R
+xadd_hw_ipinst_port $registers_0_handle ADDR_3_R smem_ADDR_3_R
 xadd_hw_ipinst_port $registers_0_handle RST smem_RST
-xadd_hw_ipinst_port $registers_0_handle WE_0 smem_WE_0
-xadd_hw_ipinst_port $registers_0_handle WE_1 smem_WE_1
-xadd_hw_ipinst_port $registers_0_handle WE_2 smem_WE_2
-xadd_hw_ipinst_port $registers_0_handle WE_3 smem_WE_3
-xadd_hw_ipinst_port $registers_0_handle REQ_0 smem_REQ_0
-xadd_hw_ipinst_port $registers_0_handle REQ_1 smem_REQ_1
-xadd_hw_ipinst_port $registers_0_handle REQ_2 smem_REQ_2
-xadd_hw_ipinst_port $registers_0_handle REQ_3 smem_REQ_3
-xadd_hw_ipinst_port $registers_0_handle RDY_0 smem_RDY_0
-xadd_hw_ipinst_port $registers_0_handle RDY_1 smem_RDY_1
-xadd_hw_ipinst_port $registers_0_handle RDY_2 smem_RDY_2
-xadd_hw_ipinst_port $registers_0_handle RDY_3 smem_RDY_3
 
 #
 # Master
@@ -358,25 +350,17 @@ xadd_hw_ipinst_port $master_0_handle DI_0 smem_DI_0
 xadd_hw_ipinst_port $master_0_handle DI_1 smem_DI_1
 xadd_hw_ipinst_port $master_0_handle DI_2 smem_DI_2
 xadd_hw_ipinst_port $master_0_handle DI_3 smem_DI_3
-xadd_hw_ipinst_port $master_0_handle ADDR_0 smem_ADDR_0
-xadd_hw_ipinst_port $master_0_handle ADDR_1 smem_ADDR_1
-xadd_hw_ipinst_port $master_0_handle ADDR_2 smem_ADDR_2
-xadd_hw_ipinst_port $master_0_handle ADDR_3 smem_ADDR_3
+xadd_hw_ipinst_port $master_0_handle ADDR_0_W smem_ADDR_0_W
+xadd_hw_ipinst_port $master_0_handle ADDR_1_W smem_ADDR_1_W
+xadd_hw_ipinst_port $master_0_handle ADDR_2_W smem_ADDR_2_W
+xadd_hw_ipinst_port $master_0_handle ADDR_3_W smem_ADDR_3_W
+xadd_hw_ipinst_port $master_0_handle ADDR_0_R smem_ADDR_0_R
+xadd_hw_ipinst_port $master_0_handle ADDR_1_R smem_ADDR_1_R
+xadd_hw_ipinst_port $master_0_handle ADDR_2_R smem_ADDR_2_R
+xadd_hw_ipinst_port $master_0_handle ADDR_3_R smem_ADDR_3_R
 xadd_hw_ipinst_port $master_0_handle BRAM_CLK clk_100_0000MHz_PLL0_nobuf
 xadd_hw_ipinst_port $master_0_handle TRIG_CLK clk_100_0000MHz_90_PLL0_nobuf
 xadd_hw_ipinst_port $master_0_handle RST smem_RST
-xadd_hw_ipinst_port $master_0_handle WE_0 smem_WE_0
-xadd_hw_ipinst_port $master_0_handle WE_1 smem_WE_1
-xadd_hw_ipinst_port $master_0_handle WE_2 smem_WE_2
-xadd_hw_ipinst_port $master_0_handle WE_3 smem_WE_3
-xadd_hw_ipinst_port $master_0_handle REQ_0 smem_REQ_0
-xadd_hw_ipinst_port $master_0_handle REQ_1 smem_REQ_1
-xadd_hw_ipinst_port $master_0_handle REQ_2 smem_REQ_2
-xadd_hw_ipinst_port $master_0_handle REQ_3 smem_REQ_3
-xadd_hw_ipinst_port $master_0_handle RDY_0 smem_RDY_0
-xadd_hw_ipinst_port $master_0_handle RDY_1 smem_RDY_1
-xadd_hw_ipinst_port $master_0_handle RDY_2 smem_RDY_2
-xadd_hw_ipinst_port $master_0_handle RDY_3 smem_RDY_3
 
 #
 # MB_0 debug module
