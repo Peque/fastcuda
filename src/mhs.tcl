@@ -45,6 +45,8 @@ set clock_generator_version   [ get_latest_pcore_version clock_generator ]
 set axi_interconnect_version  [ get_latest_pcore_version axi_interconnect ]
 set axi_s6_ddrx_version       [ get_latest_pcore_version axi_s6_ddrx ]
 set mdm_version               [ get_latest_pcore_version mdm ]
+set chipscope_ila_version     [ get_latest_pcore_version chipscope_ila ]
+set chipscope_icon_version    [ get_latest_pcore_version chipscope_icon ]
 set registers_version           2.00.a
 set master_version              1.00.a
 
@@ -340,6 +342,7 @@ set master_0_handle [xadd_hw_ipinst $mhs_handle master_0 master $master_version]
 xadd_hw_ipinst_busif $master_0_handle M_AXI axi4_1
 xadd_hw_ipinst_port $master_0_handle S_AXI_ACLK clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $master_0_handle S_AXI_ARESETN psys_reset_0_Interconnect_aresetn
+xadd_hw_ipinst_port $master_0_handle chipscope_probe master_0_debug_signal
 xadd_hw_ipinst_port $master_0_handle m_axi_aclk clk_100_0000MHz_PLL0
 xadd_hw_ipinst_port $master_0_handle address_in_0 master_0_address_in_0
 xadd_hw_ipinst_port $master_0_handle address_in_1 master_0_address_in_1
@@ -392,3 +395,21 @@ xadd_hw_ipinst_parameter $mblaze_0_handle C_DEBUG_ENABLED 1
 xadd_hw_ipinst_busif $mblaze_0_handle DEBUG mblaze_0_debug
 # Reset port:
 xadd_hw_ipinst_port $psys_reset_0_handle MB_Debug_Sys_Rst psys_reset_0_MB_Debug_Sys_Rst
+
+#
+# ChipScope integrated logic analyzer and controller
+#
+set chipscope_ila_handle [xadd_hw_ipinst $mhs_handle chipscope_ila_0 chipscope_ila $chipscope_ila_version]
+xadd_hw_ipinst_parameter $chipscope_ila_handle C_TRIG0_UNITS 1
+xadd_hw_ipinst_parameter $chipscope_ila_handle C_TRIG0_TRIGGER_IN_WIDTH 256
+xadd_hw_ipinst_parameter $chipscope_ila_handle C_NUM_DATA_SAMPLES 1024
+xadd_hw_ipinst_port $chipscope_ila_handle chipscope_ila_control chipscope_ila_0_control
+xadd_hw_ipinst_port $chipscope_ila_handle TRIG0 master_0_debug_signal
+xadd_hw_ipinst_port $chipscope_ila_handle CLK clk_100_0000MHz_PLL0
+
+set chipscope_icon_handle [xadd_hw_ipinst $mhs_handle chipscope_icon_0 chipscope_icon $chipscope_icon_version]
+xadd_hw_ipinst_parameter $chipscope_icon_handle C_NUM_CONTROL_PORTS 1
+xadd_hw_ipinst_port $chipscope_icon_handle control0 chipscope_ila_0_control
+
+
+
