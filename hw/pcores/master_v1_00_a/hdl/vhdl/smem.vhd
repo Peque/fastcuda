@@ -62,6 +62,8 @@ architecture smem_arch of smem is
 	--
 	-- Signals
 	--
+	--   TODO: update comments bellow! (outdated signals)
+	--
 	--   k#_needs_attention   Flag which says wether kernel # needs to be attended
 	--   k#_given_port        Within a BRAM, this bit sets with port (A|B) kernel # has been assigned
 	--   k#_requested_bram    BRAM from/to which we need to read/write (first ADDR_# bits)
@@ -103,38 +105,37 @@ architecture smem_arch of smem is
 	signal bram_1_B_input_sel  : bit_vector(1 downto 0) := "00";
 
 
-	signal DO_0_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DO_0_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_0_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_0_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal ADDR_0_A            : std_logic_vector(8 downto 0) := "000000000";
-	signal ADDR_0_B            : std_logic_vector(8 downto 0) := "000000000";
-	signal WE_0_A              : std_logic_vector(3 downto 0) := "0000";
-	signal WE_0_B              : std_logic_vector(3 downto 0) := "0000";
-	signal EN_0_A              : std_logic := '0';
-	signal EN_0_B              : std_logic := '0';
+	signal do_0_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal do_0_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_0_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_0_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal addr_0_a            : std_logic_vector(8 downto 0) := "000000000";
+	signal addr_0_b            : std_logic_vector(8 downto 0) := "000000000";
+	signal we_0_a              : std_logic_vector(3 downto 0) := "0000";
+	signal we_0_b              : std_logic_vector(3 downto 0) := "0000";
+	signal en_0_a              : std_logic := '0';
+	signal en_0_b              : std_logic := '0';
 
-	signal DO_1_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DO_1_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_1_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_1_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal ADDR_1_A            : std_logic_vector(8 downto 0) := "000000000";
-	signal ADDR_1_B            : std_logic_vector(8 downto 0) := "000000000";
-	signal WE_1_A              : std_logic_vector(3 downto 0) := "0000";
-	signal WE_1_B              : std_logic_vector(3 downto 0) := "0000";
-	signal EN_1_A              : std_logic := '0';
-	signal EN_1_B              : std_logic := '0';
+	signal do_1_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal do_1_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_1_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_1_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal addr_1_a            : std_logic_vector(8 downto 0) := "000000000";
+	signal addr_1_b            : std_logic_vector(8 downto 0) := "000000000";
+	signal we_1_a              : std_logic_vector(3 downto 0) := "0000";
+	signal we_1_b              : std_logic_vector(3 downto 0) := "0000";
+	signal en_1_a              : std_logic := '0';
+	signal en_1_b              : std_logic := '0';
 
 
 begin
 
 
-	-- TODO: remove the lines bellow (temporary workaround)
-	EN_0_A <= '1';
-	EN_0_B <= '1';
-	EN_1_A <= '1';
-	EN_1_B <= '1';
-
+	-- TODO: decide if enable signals should always be set to 1
+	en_0_a <= '1';
+	en_0_b <= '1';
+	en_1_a <= '1';
+	en_1_b <= '1';
 
 	k0_requested_bram <= ADDR_0(9 downto 9);
 	k1_requested_bram <= ADDR_1(9 downto 9);
@@ -395,17 +396,17 @@ begin
 	--       this block implementation bellow:
 	input_controller_0 : block begin
 		with bram_0_A_input_sel select
-			DI_0_A    <=  DI_0 when "00",
+			di_0_a    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_0_A_input_sel select
-			ADDR_0_A  <=  ADDR_0(8 downto 0) when "00",
+			addr_0_a  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_0_A_input_sel select
-			WE_0_A    <=  WE_0 when "00",
+			we_0_a    <=  WE_0 when "00",
 			              WE_1 when "01",
 			              WE_2 when "10",
 			              WE_3 when "11";
@@ -413,17 +414,17 @@ begin
 
 	input_controller_1 : block begin
 		with bram_0_B_input_sel select
-			DI_0_B    <=  DI_0 when "00",
+			di_0_b    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_0_B_input_sel select
-			ADDR_0_B  <=  ADDR_0(8 downto 0) when "00",
+			addr_0_b  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_0_B_input_sel select
-			WE_0_B    <=  WE_0 when "00",
+			we_0_b    <=  WE_0 when "00",
 			              WE_1 when "01",
 			              WE_2 when "10",
 			              WE_3 when "11";
@@ -431,17 +432,17 @@ begin
 
 	input_controller_2 : block begin
 		with bram_1_A_input_sel select
-			DI_1_A    <=  DI_0 when "00",
+			di_1_a    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_1_A_input_sel select
-			ADDR_1_A  <=  ADDR_0(8 downto 0) when "00",
+			addr_1_a  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_1_A_input_sel select
-			WE_1_A    <=  WE_0 when "00",
+			we_1_a    <=  WE_0 when "00",
 			              WE_1 when "01",
 			              WE_2 when "10",
 			              WE_3 when "11";
@@ -449,17 +450,17 @@ begin
 
 	input_controller_3 : block begin
 		with bram_1_B_input_sel select
-			DI_1_B    <=  DI_0 when "00",
+			di_1_b    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_1_B_input_sel select
-			ADDR_1_B  <=  ADDR_0(8 downto 0) when "00",
+			addr_1_b  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_1_B_input_sel select
-			WE_1_B    <=  WE_0 when "00",
+			we_1_b    <=  WE_0 when "00",
 			              WE_1 when "01",
 			              WE_2 when "10",
 			              WE_3 when "11";
@@ -471,43 +472,43 @@ begin
 	--
 	--output_controller_0 : process (TRIG_CLK) begin
 	--	case k0_output_sel is
-	--		when "00" => DO_0 <= DO_0_A;
-	--		when "01" => DO_0 <= DO_0_B;
-	--		when "10" => DO_0 <= DO_1_A;
-	--		when "11" => DO_0 <= DO_1_B;
+	--		when "00" => DO_0 <= do_0_a;
+	--		when "01" => DO_0 <= do_0_b;
+	--		when "10" => DO_0 <= do_1_a;
+	--		when "11" => DO_0 <= do_1_b;
 	--	end case;
 	--end process output_controller_0;
 	--
 	output_controller_0 : block begin
 		with k0_output_sel select
-			DO_0 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_0 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_0;
 
 	output_controller_1 : block begin
 		with k1_output_sel select
-			DO_1 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_1 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_1;
 
 	output_controller_2 : block begin
 		with k2_output_sel select
-			DO_2 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_2 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_2;
 
 	output_controller_3 : block begin
 		with k3_output_sel select
-			DO_3 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_3 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_3;
 
 
@@ -630,28 +631,28 @@ begin
 
 	) port map (
 
-		DOA                  => DO_0_A,              -- Output port-A data
-		DOB                  => DO_0_B,              -- Output port-B data
+		DOA                  => do_0_a,              -- Output port-A data
+		DOB                  => do_0_b,              -- Output port-B data
 		DOPA                 => open,                -- We are not using parity bits
 		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => DI_0_A,              -- Input port-A data
-		DIB                  => DI_0_B,              -- Input port-B data
+		DIA                  => di_0_a,              -- Input port-A data
+		DIB                  => di_0_b,              -- Input port-B data
 		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
 		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => ADDR_0_A,            -- Input port-A address
+		ADDRA(13 downto 5)   => addr_0_a,            -- Input port-A address
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDR_0_B,            -- Input port-B address
+		ADDRB(13 downto 5)   => addr_0_b,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		CLKA                 => BRAM_CLK,            -- Input port-A clock
 		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => EN_0_A,              -- Input port-A enable
-		ENB                  => EN_0_B,              -- Input port-B enable
+		ENA                  => en_0_a,              -- Input port-A enable
+		ENB                  => en_0_b,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
 		REGCEB               => REGCE_value,         -- Input port-B output register enable
 		RSTA                 => RST,                 -- Input port-A reset
 		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => WE_0_A,              -- Input port-A write enable
-		WEB                  => WE_0_B               -- Input port-B write enable
+		WEA                  => we_0_a,              -- Input port-A write enable
+		WEB                  => we_0_b               -- Input port-B write enable
 
 	);
 
@@ -774,28 +775,28 @@ begin
 
 	) port map (
 
-		DOA                  => DO_1_A,              -- Output port-A data
-		DOB                  => DO_1_B,              -- Output port-B data
+		DOA                  => do_1_a,              -- Output port-A data
+		DOB                  => do_1_b,              -- Output port-B data
 		DOPA                 => open,                -- We are not using parity bits
 		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => DI_1_A,              -- Input port-A data
-		DIB                  => DI_1_B,              -- Input port-B data
+		DIA                  => di_1_a,              -- Input port-A data
+		DIB                  => di_1_b,              -- Input port-B data
 		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
 		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => ADDR_1_A,            -- Input port-A address
+		ADDRA(13 downto 5)   => addr_1_a,            -- Input port-A address
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDR_1_B,            -- Input port-B address
+		ADDRB(13 downto 5)   => addr_1_b,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		CLKA                 => BRAM_CLK,            -- Input port-A clock
 		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => EN_1_A,              -- Input port-A enable
-		ENB                  => EN_1_B,              -- Input port-B enable
+		ENA                  => en_1_a,              -- Input port-A enable
+		ENB                  => en_1_b,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
 		REGCEB               => REGCE_value,         -- Input port-B output register enable
 		RSTA                 => RST,                 -- Input port-A reset
 		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => WE_1_A,              -- Input port-A write enable
-		WEB                  => WE_1_B               -- Input port-B write enable
+		WEA                  => we_1_a,              -- Input port-A write enable
+		WEB                  => we_1_b               -- Input port-B write enable
 
 	);
 
