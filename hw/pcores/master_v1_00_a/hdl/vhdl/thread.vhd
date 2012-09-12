@@ -47,8 +47,8 @@ entity thread is
 		SMEM_IN                  : out std_logic_vector(31 downto 0);
 		SMEM_ADDR                : out std_logic_vector(9 downto 0);
 		SMEM_WE                  : out std_logic_vector(3 downto 0);
-		SMEM_REQ                 : out std_logic_vector;
-		SMEM_RDY                 : in  std_logic_vector;
+		SMEM_REQ                 : out std_logic;
+		SMEM_RDY                 : in  std_logic;
 
 		-- Registers
 		REG_GO                   : in  std_logic;
@@ -67,105 +67,120 @@ entity thread is
 end thread;
 
 
-architecture Behavioral of thread is
+architecture thread_arch of thread is
 
 	type state_t is (
+
 		IDLE,
-		READ_DDR2, WAIT_READ_DDR2,
+		READ_A, WAIT_RD_A,
 		WRITE_C, WAIT_WR,
 		READ_C, WAIT_RD_C,
 		DONE
+
 	);
 
-	signal state : state_t;
-	signal aux : std_logic_vector (31 downto 0);
+	signal thread_state            : state_t;
+	signal ddr2_data_out_signal    : std_logic_vector(31 downto 0);
 
 begin
 
-thread_SM: process(clk) is
-begin
-    if ( clk'event and clk = '1' ) then
-        if resetn = '0' then --reset
-            aux <= (others => '0');
---            aux2 <= (others => '0');
-            state <= IDLE;
-            data_out_m <= (others => '0');
-            address_m <= (others => '0');
-            rd_req_m <= '0';
-            wr_req_m <= '0';
-            ready_r <= '0';
-				DATA_DEBUG <= (others => '0');
+	thread_sm : process (CLK) is
 
-        else
+	begin
 
-            case state is
+		if ( clk'event and clk = '1' ) then
 
-            when IDLE =>
-                ready_r <= '0';
-                aux <= (others => '0');
---                aux2 <= (others => '0');
-                data_out_m <= (others => '0');
-                address_m <= (others => '0');
-                rd_req_m <= '0';
-                wr_req_m <= '0';
-                ready_r <= '0';
-					 DATA_DEBUG <= (others => '0');
+			if resetn = '0' then
 
-                if go_r = '1' then state <= READ_A;
-                end if;
+				ddr2_data_out_signal     <= X"00000000";
+				thread_state             <= IDLE;
+				DDR2_DATA_IN             <= X"00000000";
+				DDR2_ADDRESS             <= X"00000000";
+				DDR2_READ_REQ            <= '0';
+				DDR2_WRITE_REQ           <= '0';
+				SMEM_IN                  <= X"00000000";
+				SMEM_ADDR                <= "0000000000";
+				SMEM_WE                  <= "0000";
+				SMEM_REQ                 <= '0';
+				REG_READY                <= '0';
+				DATA_DEBUG               <= X"00000000";
 
-            when READ_A =>
-                address_m <= address_a_r;
-                rd_req_m <= '1';
-                state <= WAIT_RD_A;
+			else
 
-            when WAIT_RD_A =>
-                if ack_m = '1' then --wait for ack
-                  rd_req_m <='0';
-						aux <= data_in_m;
-						DATA_DEBUG <= data_in_m;
-						state <= WRITE_C;
-                end if;
+				case thread_state is
 
-            when WRITE_C =>
-                address_m <= address_a_r; --in address_a (could change)
-					 data_out_m <= address_a_r-x"C0000000"+x"0000009"; --random number
-                wr_req_m <= '1';
-                state <= WAIT_WR;
+					when IDLE =>
 
-            when WAIT_WR =>
-                if ack_m = '1' then --wait for ack
-                    wr_req_m <= '0';
-                    state <= READ_C;
-                end if;
+						REG_READY <= '0';
+						ddr2_data_out_signal <= (others => '0');
+						DDR2_DATA_IN <= (others => '0');
+						DDR2_ADDRESS <= (others => '0');
+						DDR2_READ_REQ <= '0';
+						DDR2_WRITE_REQ <= '0';
+						REG_READY <= '0';
+						DATA_DEBUG <= (others => '0');
+						if REG_GO = '1' then thread_state <= READ_A;
+						end if;
 
+					when READ_A =>
 
-				when READ_C =>
-                address_m <= address_a_r;
-                rd_req_m <= '1';
-                state <= WAIT_RD_C;
+						DDR2_ADDRESS <= REG_DDR2_ADDRESS;
+						DDR2_READ_REQ <= '1';
+						thread_state <= WAIT_RD_A;
 
-            when WAIT_RD_C =>
-                if ack_m = '1' then --wait for ack
-                  rd_req_m <='0';
-						aux <= data_in_m;
-						DATA_DEBUG <= data_in_m;
-						state <= DONE;
-                end if;
+					when WAIT_RD_A =>
+
+						if DDR2_RDY = '1' then
+							DDR2_READ_REQ <='0';
+							ddr2_data_out_signal <= DDR2_DATA_OUT;
+							DATA_DEBUG <= DDR2_DATA_OUT;
+							thread_state <= WRITE_C;
+						end if;
+
+					when WRITE_C =>
+
+						DDR2_ADDRESS <= REG_DDR2_ADDRESS;
+						DDR2_DATA_IN <= REG_DDR2_ADDRESS-x"C0000000"+x"0000009";
+						DDR2_WRITE_REQ <= '1';
+						thread_state <= WAIT_WR;
+
+					when WAIT_WR =>
+
+						if DDR2_RDY = '1' then
+							DDR2_WRITE_REQ <= '0';
+							thread_state <= READ_C;
+						end if;
 
 
-            when DONE =>
-                ready_r <= '1';
-                state <= DONE;
+					when READ_C =>
 
-            when others => null;
+						DDR2_ADDRESS <= REG_DDR2_ADDRESS;
+						DDR2_READ_REQ <= '1';
+						thread_state <= WAIT_RD_C;
 
-            end case; --state
+					when WAIT_RD_C =>
 
-        end if; --resetn
-    end if; --clk
-end process thread_SM;
+						if DDR2_RDY = '1' then
+							DDR2_READ_REQ <='0';
+							ddr2_data_out_signal <= DDR2_DATA_OUT;
+							DATA_DEBUG <= DDR2_DATA_OUT;
+							thread_state <= DONE;
+						end if;
 
+					when DONE =>
 
-end Behavioral;
+						REG_READY <= '1';
+						thread_state <= DONE;
+
+					when others => null;
+
+				end case;
+
+			end if;
+
+		end if;
+
+	end process thread_sm;
+
+end thread_arch;
 

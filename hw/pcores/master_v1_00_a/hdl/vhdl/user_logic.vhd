@@ -213,26 +213,6 @@ architecture IMP of user_logic is
 --ACK_PROC --> genera los ack bis (para mantener la sincronización)
 --WR_REQ_PROC0, 1, 2 y 3 --> controla los wr req
 
-    COMPONENT thread
-    PORT(
-         clk : IN  std_logic;
-         resetn : IN  std_logic;
-         -- from/to memory controller
-         data_in_m : IN  std_logic_vector(31 downto 0);
-         data_out_m : OUT  std_logic_vector(31 downto 0);
-         address_m : OUT  std_logic_vector(31 downto 0);
-         rd_req_m : OUT  std_logic;
-         wr_req_m : OUT  std_logic;
-         ack_m : IN  std_logic;
-         -- from/to registers
-         go_r : IN  std_logic;
-         ready_r : OUT  std_logic;
-         address_a_r : IN  std_logic_vector(31 downto 0);
---         address_b_r : IN  std_logic_vector(31 downto 0)
-			DATA_DEBUG : OUT  std_logic_vector(31 downto 0)
-        );
-    END COMPONENT;
-
 
     COMPONENT controller
     PORT(
@@ -418,6 +398,34 @@ architecture IMP of user_logic is
     END COMPONENT;
 
 
+  component thread
+    port (
+      CLK                      : in  std_logic;
+      RESETN                   : in  std_logic;
+      DDR2_DATA_OUT            : in  std_logic_vector(31 downto 0);
+      DDR2_DATA_IN             : out std_logic_vector(31 downto 0);
+      DDR2_ADDRESS             : out std_logic_vector(31 downto 0);
+      DDR2_READ_REQ            : out std_logic;
+      DDR2_WRITE_REQ           : out std_logic;
+      DDR2_RDY                 : in  std_logic;
+      SMEM_DO                  : in  std_logic_vector(31 downto 0);
+      SMEM_IN                  : out std_logic_vector(31 downto 0);
+      SMEM_ADDR                : out std_logic_vector(9 downto 0);
+      SMEM_WE                  : out std_logic_vector(3 downto 0);
+      SMEM_REQ                 : out std_logic;
+      SMEM_RDY                 : in  std_logic;
+      REG_GO                   : in  std_logic;
+      REG_READY                : out std_logic;
+      REG_DDR2_ADDRESS         : in  std_logic_vector(31 downto 0);
+      REG_SMEM_DO              : in  std_logic_vector(31 downto 0);
+      REG_SMEM_DI              : in  std_logic_vector(31 downto 0);
+      REG_SMEM_ADDR_READ       : in  std_logic_vector(9 downto 0);
+      REG_SMEM_ADDR_WRITE      : in  std_logic_vector(9 downto 0);
+      DATA_DEBUG               : out std_logic_vector(31 downto 0)
+    );
+  end component;
+
+
   component smem
     port (
       DO_0, DO_1, DO_2, DO_3            : out std_logic_vector(31 downto 0);
@@ -559,6 +567,9 @@ architecture IMP of user_logic is
   signal smem_REQ_0, smem_REQ_1, smem_REQ_2, smem_REQ_3        : std_logic;
   signal smem_RDY_0, smem_RDY_1, smem_RDY_2, smem_RDY_3        : std_logic;
 
+  -- Registers signals
+  signal reg_do_0, reg_do_1, reg_do_2, reg_do_3                : std_logic_vector(31 downto 0);
+
   -- Chipscope signals
   signal chipscope_probe_signal     : std_logic_vector(255 downto 0);
 
@@ -602,10 +613,10 @@ begin
   smem_TRIG_CLK     <= TRIG_CLK;
   smem_RST          <= RST;
 
-  DO_0              <= smem_DO_0;
-  DO_1              <= smem_DO_1;
-  DO_2              <= smem_DO_2;
-  DO_3              <= smem_DO_3;
+  DO_0              <= reg_do_0;
+  DO_1              <= reg_do_1;
+  DO_2              <= reg_do_2;
+  DO_3              <= reg_do_3;
 
   chipscope_probe   <= chipscope_probe_signal;
 
@@ -658,81 +669,110 @@ begin
 
 
 
-  --------------------------------------------------
-  -- Threads instantiation
+  ------------------------------------------
+  -- instantiate threads
+  ------------------------------------------
 
-   thread0: thread PORT MAP (
-          clk => Bus2IP_Clk,
-          resetn => Bus2IP_Resetn,
-			 -- from/to memory controller
-          data_in_m => s_data_in_m0_bis,
-          data_out_m => s_data_out_m0,
-          address_m => s_address_m0,
-          rd_req_m => s_rd_req_m0_bis,
-          wr_req_m => s_wr_req_m0_bis,
-          ack_m => s_ack_t,
-			 -- from/to registers
-          go_r => go,
-          ready_r => s_ready_r0,
-          address_a_r => address_in_0,
-			 DATA_DEBUG => s_data_debug0
-        );
+  thread0: thread PORT MAP (
+    CLK                   => Bus2IP_Clk,
+    RESETN                => Bus2IP_Resetn,
+    DDR2_DATA_OUT         => s_data_in_m0_bis,
+    DDR2_DATA_IN          => s_data_out_m0,
+    DDR2_ADDRESS          => s_address_m0,
+    DDR2_READ_REQ         => s_rd_req_m0_bis,
+    DDR2_WRITE_REQ        => s_wr_req_m0_bis,
+    DDR2_RDY              => s_ack_t,
+    SMEM_DO               => smem_DO_0,
+    SMEM_IN               => smem_DI_0,
+    SMEM_ADDR             => smem_ADDR_0,
+    SMEM_WE               => smem_WE_0,
+    SMEM_REQ              => smem_REQ_0,
+    SMEM_RDY              => smem_RDY_0,
+    REG_GO                => go,
+    REG_READY             => s_ready_r0,
+    REG_DDR2_ADDRESS      => address_in_0,
+    REG_SMEM_DO           => reg_do_0,
+    REG_SMEM_DI           => DI_0,
+    REG_SMEM_ADDR_READ    => ADDR_0_R,
+    REG_SMEM_ADDR_WRITE   => ADDR_0_W,
+    DATA_DEBUG            => s_data_debug0
+  );
 
-  --------------------------------------------------
-	thread1: thread PORT MAP (
-          clk => Bus2IP_Clk,
-          resetn => Bus2IP_Resetn,
-			 -- from/to memory controller
-          data_in_m => s_data_in_m1_bis,
-			 data_out_m => s_data_out_m1,
-          address_m => s_address_m1,
-          rd_req_m => s_rd_req_m1_bis,
-			 wr_req_m => s_wr_req_m1_bis,
-          ack_m => s_ack_t,
-			 -- from/to registers
-          go_r => go,
-          ready_r => s_ready_r1,
-          address_a_r => address_in_1,
-			 DATA_DEBUG => s_data_debug1
-        );
+  thread1: thread PORT MAP (
+    CLK                   => Bus2IP_Clk,
+    RESETN                => Bus2IP_Resetn,
+    DDR2_DATA_OUT         => s_data_in_m1_bis,
+    DDR2_DATA_IN          => s_data_out_m1,
+    DDR2_ADDRESS          => s_address_m1,
+    DDR2_READ_REQ         => s_rd_req_m1_bis,
+    DDR2_WRITE_REQ        => s_wr_req_m1_bis,
+    DDR2_RDY              => s_ack_t,
+    SMEM_DO               => smem_DO_1,
+    SMEM_IN               => smem_DI_1,
+    SMEM_ADDR             => smem_ADDR_1,
+    SMEM_WE               => smem_WE_1,
+    SMEM_REQ              => smem_REQ_1,
+    SMEM_RDY              => smem_RDY_1,
+    REG_GO                => go,
+    REG_READY             => s_ready_r1,
+    REG_DDR2_ADDRESS      => address_in_1,
+    REG_SMEM_DO           => reg_do_1,
+    REG_SMEM_DI           => DI_1,
+    REG_SMEM_ADDR_READ    => ADDR_1_R,
+    REG_SMEM_ADDR_WRITE   => ADDR_1_W,
+    DATA_DEBUG            => s_data_debug1
+  );
 
-  --------------------------------------------------
-  	thread2: thread PORT MAP (
-          clk => Bus2IP_Clk,
-          resetn => Bus2IP_Resetn,
-			 -- from/to memory controller
-          data_in_m => s_data_in_m2_bis,
-			 data_out_m => s_data_out_m2,
-          address_m => s_address_m2,
-          rd_req_m => s_rd_req_m2_bis,
-			 wr_req_m => s_wr_req_m2_bis,
-          ack_m => s_ack_t,
-			 -- from/to registers
-          go_r => go,
-          ready_r => s_ready_r2,
-          address_a_r => address_in_2,
-			 DATA_DEBUG => s_data_debug2
-        );
+  thread2: thread PORT MAP (
+    CLK                   => Bus2IP_Clk,
+    RESETN                => Bus2IP_Resetn,
+    DDR2_DATA_OUT         => s_data_in_m2_bis,
+    DDR2_DATA_IN          => s_data_out_m2,
+    DDR2_ADDRESS          => s_address_m2,
+    DDR2_READ_REQ         => s_rd_req_m2_bis,
+    DDR2_WRITE_REQ        => s_wr_req_m2_bis,
+    DDR2_RDY              => s_ack_t,
+    SMEM_DO               => smem_DO_2,
+    SMEM_IN               => smem_DI_2,
+    SMEM_ADDR             => smem_ADDR_2,
+    SMEM_WE               => smem_WE_2,
+    SMEM_REQ              => smem_REQ_2,
+    SMEM_RDY              => smem_RDY_2,
+    REG_GO                => go,
+    REG_READY             => s_ready_r2,
+    REG_DDR2_ADDRESS      => address_in_2,
+    REG_SMEM_DO           => reg_do_2,
+    REG_SMEM_DI           => DI_2,
+    REG_SMEM_ADDR_READ    => ADDR_2_R,
+    REG_SMEM_ADDR_WRITE   => ADDR_2_W,
+    DATA_DEBUG            => s_data_debug2
+  );
 
-  --------------------------------------------------
-  	thread3: thread PORT MAP (
-          clk => Bus2IP_Clk,
-          resetn => Bus2IP_Resetn,
-			 -- from/to memory controller
-          data_in_m => s_data_in_m3_bis,
-			 data_out_m => s_data_out_m3,
-          address_m => s_address_m3,
-          rd_req_m => s_rd_req_m3_bis,
-			 wr_req_m => s_wr_req_m3_bis,
-          ack_m => s_ack_t,
-			 -- from/to registers
-          go_r => go,
-          ready_r => s_ready_r3,
-          address_a_r => address_in_3,
-			 DATA_DEBUG => s_data_debug3
-        );
+  thread3: thread PORT MAP (
+    CLK                   => Bus2IP_Clk,
+    RESETN                => Bus2IP_Resetn,
+    DDR2_DATA_OUT         => s_data_in_m3_bis,
+    DDR2_DATA_IN          => s_data_out_m3,
+    DDR2_ADDRESS          => s_address_m3,
+    DDR2_READ_REQ         => s_rd_req_m3_bis,
+    DDR2_WRITE_REQ        => s_wr_req_m3_bis,
+    DDR2_RDY              => s_ack_t,
+    SMEM_DO               => smem_DO_3,
+    SMEM_IN               => smem_DI_3,
+    SMEM_ADDR             => smem_ADDR_3,
+    SMEM_WE               => smem_WE_3,
+    SMEM_REQ              => smem_REQ_3,
+    SMEM_RDY              => smem_RDY_3,
+    REG_GO                => go,
+    REG_READY             => s_ready_r3,
+    REG_DDR2_ADDRESS      => address_in_3,
+    REG_SMEM_DO           => reg_do_3,
+    REG_SMEM_DI           => DI_3,
+    REG_SMEM_ADDR_READ    => ADDR_3_R,
+    REG_SMEM_ADDR_WRITE   => ADDR_3_W,
+    DATA_DEBUG            => s_data_debug3
+  );
 
-  --------------------------------------------------
 
 
   ------------------------------------------
