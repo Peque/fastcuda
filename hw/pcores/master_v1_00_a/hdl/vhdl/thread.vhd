@@ -54,7 +54,7 @@ entity thread is
 		REG_GO                   : in  std_logic;
 		REG_READY                : out std_logic;
 		REG_DDR2_ADDRESS         : in  std_logic_vector(31 downto 0);
-		REG_SMEM_DO              : in  std_logic_vector(31 downto 0);
+		REG_SMEM_DO              : out std_logic_vector(31 downto 0);
 		REG_SMEM_DI              : in  std_logic_vector(31 downto 0);
 		REG_SMEM_ADDR_READ       : in  std_logic_vector(9 downto 0);
 		REG_SMEM_ADDR_WRITE      : in  std_logic_vector(9 downto 0);
