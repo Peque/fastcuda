@@ -82,28 +82,15 @@ architecture smem_arch of smem is
 	--   bram_#_controller_we_[A|B]
 	--
 
-	signal k0_ready            : std_logic := '1';
-	signal k0_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k0_output_sel       : bit_vector(1 downto 0) := "00";
-
-	signal k1_ready            : std_logic := '1';
-	signal k1_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k1_output_sel       : bit_vector(1 downto 0) := "00";
-
-	signal k2_ready            : std_logic := '1';
-	signal k2_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k2_output_sel       : bit_vector(1 downto 0) := "00";
-
-	signal k3_ready            : std_logic := '1';
-	signal k3_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k3_output_sel       : bit_vector(1 downto 0) := "00";
-
 
 	signal bram_0_A_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_0_B_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_1_A_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_1_B_input_sel  : bit_vector(1 downto 0) := "00";
-
 
 	signal do_0_a              : std_logic_vector(31 downto 0) := X"00000000";
 	signal do_0_b              : std_logic_vector(31 downto 0) := X"00000000";
@@ -131,269 +118,118 @@ architecture smem_arch of smem is
 begin
 
 
-	-- TODO: decide if enable signals should always be set to 1
+	-- TODO: decide if enable signals should always be set to 1...
 	en_0_a <= '1';
 	en_0_b <= '1';
 	en_1_a <= '1';
 	en_1_b <= '1';
 
-	k0_requested_bram <= ADDR_0(9 downto 9);
-	k1_requested_bram <= ADDR_1(9 downto 9);
-	k2_requested_bram <= ADDR_2(9 downto 9);
-	k3_requested_bram <= ADDR_3(9 downto 9);
 
-	RDY_0 <= k0_ready;
-	RDY_1 <= k1_ready;
-	RDY_2 <= k2_ready;
-	RDY_3 <= k3_ready;
+	-- TODO: implement a decent input and output controller block
+	bram_0_A_input_sel <= "00";
+	bram_0_B_input_sel <= "01";
+	bram_1_A_input_sel <= "10";
+	bram_1_B_input_sel <= "11";
 
 
-	-- TODO: optimize code bellow for the mem_controller process
-	mem_controller : process (TRIG_CLK)
-
-		variable bram_0_A_busy    : std_logic := '0';
-		variable bram_0_B_busy    : std_logic := '0';
-		variable bram_1_A_busy    : std_logic := '0';
-		variable bram_1_B_busy    : std_logic := '0';
-
-		variable k0_duplicated    : std_logic := '0';
-		variable k1_duplicated    : std_logic := '0';
-		variable k2_duplicated    : std_logic := '0';
-		variable k3_duplicated    : std_logic := '0';
-
-		variable k0_ready_var     : std_logic;
-		variable k1_ready_var     : std_logic;
-		variable k2_ready_var     : std_logic;
-		variable k3_ready_var     : std_logic;
-
-	begin
-
-		if (TRIG_CLK = '1') then
-
-			k0_ready_var := k0_ready;
-			k1_ready_var := k1_ready;
-			k2_ready_var := k2_ready;
-			k3_ready_var := k3_ready;
-
-			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
-				k1_duplicated := '1';
-			end if;
-
-			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
-				k2_duplicated := '1';
-			end if;
-
-			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
-				k2_duplicated := '1';
-			end if;
-
-			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
-				k3_duplicated := '1';
-			end if;
-
-			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
-				k3_duplicated := '1';
-			end if;
-
-			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
-				k3_duplicated := '1';
-			end if;
-
-			if (k0_requested_bram = "0" and REQ_0 = '1' and k0_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k1_requested_bram = "0" and REQ_1 = '1' and k1_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k2_requested_bram = "0" and REQ_2 = '1' and k2_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k3_requested_bram = "0" and REQ_3 = '1' and k3_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k0_requested_bram = "1" and REQ_0 = '1' and k0_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k1_requested_bram = "1" and REQ_1 = '1' and k1_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k2_requested_bram = "1" and REQ_2 = '1' and k2_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k3_requested_bram = "1" and REQ_3 = '1' and k3_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
-				k1_ready_var := k0_ready_var;
-				k1_output_sel <= k0_output_sel;
-			end if;
-
-			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
-				k2_ready_var := k0_ready_var;
-				k2_output_sel <= k0_output_sel;
-			end if;
-
-			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
-				k2_ready_var := k1_ready_var;
-				k2_output_sel <= k1_output_sel;
-			end if;
-
-			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
-				k3_ready_var := k0_ready_var;
-				k3_output_sel <= k0_output_sel;
-			end if;
-
-			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
-				k3_ready_var := k1_ready_var;
-				k3_output_sel <= k1_output_sel;
-			end if;
-
-			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
-				k3_ready_var := k2_ready_var;
-				k3_output_sel <= k2_output_sel;
-			end if;
-
-			k0_ready <= k0_ready_var;
-			k1_ready <= k1_ready_var;
-			k2_ready <= k2_ready_var;
-			k3_ready <= k3_ready_var;
-
-		else
-
-			if (k0_ready = '0') then k0_ready <= '1'; end if;
-			if (k1_ready = '0') then k1_ready <= '1'; end if;
-			if (k2_ready = '0') then k2_ready <= '1'; end if;
-			if (k3_ready = '0') then k3_ready <= '1'; end if;
-
-			bram_0_A_busy := '0';
-			bram_0_B_busy := '0';
-			bram_1_A_busy := '0';
-			bram_1_B_busy := '0';
-
-			k0_duplicated := '0';
-			k1_duplicated := '0';
-			k2_duplicated := '0';
-			k3_duplicated := '0';
-
-		end if;
-
-	end process mem_controller;
+	--
+	-- The higher bits of the output selection signal represent the BRAM
+	-- which may be being used and, therefore, are the higher input port
+	-- address bits.
+	--
+	k0_output_sel(1 downto 1) <= to_bitvector(ADDR_0(9 downto 9));
+	k1_output_sel(1 downto 1) <= to_bitvector(ADDR_1(9 downto 9));
+	k2_output_sel(1 downto 1) <= to_bitvector(ADDR_2(9 downto 9));
+	k3_output_sel(1 downto 1) <= to_bitvector(ADDR_3(9 downto 9));
 
 
-	-- TODO: decide if a process implementation should be used instead of
-	--       this block implementation bellow:
+	--
+	-- The lower bit of the output selection signal represent the BRAM
+	-- port that may be being used:
+	--
+	--   kX_output_sel(0) = (ADDR_0(8 downto 0) == addr_0_b) or (ADDR_0(8 downto 0) == addr_1_b)
+	--
+	k0_output_sel(0) <= ( ( to_bit(ADDR_0(0)) xnor to_bit(addr_0_b(0)) ) and
+	                      ( to_bit(ADDR_0(1)) xnor to_bit(addr_0_b(1)) ) and
+	                      ( to_bit(ADDR_0(2)) xnor to_bit(addr_0_b(2)) ) and
+	                      ( to_bit(ADDR_0(3)) xnor to_bit(addr_0_b(3)) ) and
+	                      ( to_bit(ADDR_0(4)) xnor to_bit(addr_0_b(4)) ) and
+	                      ( to_bit(ADDR_0(5)) xnor to_bit(addr_0_b(5)) ) and
+	                      ( to_bit(ADDR_0(6)) xnor to_bit(addr_0_b(6)) ) and
+	                      ( to_bit(ADDR_0(7)) xnor to_bit(addr_0_b(7)) ) and
+	                      ( to_bit(ADDR_0(8)) xnor to_bit(addr_0_b(8)) ) )
+	                    or
+	                    ( ( to_bit(ADDR_0(0)) xnor to_bit(addr_1_b(0)) ) and
+	                      ( to_bit(ADDR_0(1)) xnor to_bit(addr_1_b(1)) ) and
+	                      ( to_bit(ADDR_0(2)) xnor to_bit(addr_1_b(2)) ) and
+	                      ( to_bit(ADDR_0(3)) xnor to_bit(addr_1_b(3)) ) and
+	                      ( to_bit(ADDR_0(4)) xnor to_bit(addr_1_b(4)) ) and
+	                      ( to_bit(ADDR_0(5)) xnor to_bit(addr_1_b(5)) ) and
+	                      ( to_bit(ADDR_0(6)) xnor to_bit(addr_1_b(6)) ) and
+	                      ( to_bit(ADDR_0(7)) xnor to_bit(addr_1_b(7)) ) and
+	                      ( to_bit(ADDR_0(8)) xnor to_bit(addr_1_b(8)) ) );
+
+	k1_output_sel(0) <= ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_0_b(0)) ) and
+	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_0_b(1)) ) and
+	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_0_b(2)) ) and
+	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_0_b(3)) ) and
+	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_0_b(4)) ) and
+	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_0_b(5)) ) and
+	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_0_b(6)) ) and
+	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_0_b(7)) ) and
+	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_0_b(8)) ) )
+	                    or
+	                    ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_1_b(0)) ) and
+	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_1_b(1)) ) and
+	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_1_b(2)) ) and
+	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_1_b(3)) ) and
+	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_1_b(4)) ) and
+	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_1_b(5)) ) and
+	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_1_b(6)) ) and
+	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_1_b(7)) ) and
+	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_1_b(8)) ) );
+
+	k2_output_sel(0) <= ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_0_b(0)) ) and
+	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_0_b(1)) ) and
+	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_0_b(2)) ) and
+	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_0_b(3)) ) and
+	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_0_b(4)) ) and
+	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_0_b(5)) ) and
+	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_0_b(6)) ) and
+	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_0_b(7)) ) and
+	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_0_b(8)) ) )
+	                    or
+	                    ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_1_b(0)) ) and
+	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_1_b(1)) ) and
+	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_1_b(2)) ) and
+	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_1_b(3)) ) and
+	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_1_b(4)) ) and
+	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_1_b(5)) ) and
+	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_1_b(6)) ) and
+	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_1_b(7)) ) and
+	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_1_b(8)) ) );
+
+	k3_output_sel(0) <= ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_0_b(0)) ) and
+	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_0_b(1)) ) and
+	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_0_b(2)) ) and
+	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_0_b(3)) ) and
+	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_0_b(4)) ) and
+	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_0_b(5)) ) and
+	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_0_b(6)) ) and
+	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_0_b(7)) ) and
+	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_0_b(8)) ) )
+	                    or
+	                    ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_1_b(0)) ) and
+	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_1_b(1)) ) and
+	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_1_b(2)) ) and
+	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_1_b(3)) ) and
+	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_1_b(4)) ) and
+	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_1_b(5)) ) and
+	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_1_b(6)) ) and
+	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_1_b(7)) ) and
+	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_1_b(8)) ) );
+
+
 	input_controller_0 : block begin
 		with bram_0_A_input_sel select
 			di_0_a    <=  DI_0 when "00",
@@ -467,18 +303,6 @@ begin
 	end block input_controller_3;
 
 
-	-- TODO: decide if the block implementation for the output controllers
-	--       should be replaced by this process implementation:
-	--
-	--output_controller_0 : process (TRIG_CLK) begin
-	--	case k0_output_sel is
-	--		when "00" => DO_0 <= do_0_a;
-	--		when "01" => DO_0 <= do_0_b;
-	--		when "10" => DO_0 <= do_1_a;
-	--		when "11" => DO_0 <= do_1_b;
-	--	end case;
-	--end process output_controller_0;
-	--
 	output_controller_0 : block begin
 		with k0_output_sel select
 			DO_0 <= do_0_a when "00",
@@ -655,6 +479,7 @@ begin
 		WEB                  => we_0_b               -- Input port-B write enable
 
 	);
+
 
 	RAMB16BWER_1 : RAMB16BWER
 
