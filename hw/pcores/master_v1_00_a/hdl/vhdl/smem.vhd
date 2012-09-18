@@ -189,45 +189,45 @@ begin
 	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_1_b(7)) ) and
 	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_1_b(8)) ) );
 
-	k2_output_sel(0) <= ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_0_b(0)) ) and
-	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_0_b(1)) ) and
-	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_0_b(2)) ) and
-	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_0_b(3)) ) and
-	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_0_b(4)) ) and
-	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_0_b(5)) ) and
-	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_0_b(6)) ) and
-	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_0_b(7)) ) and
-	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_0_b(8)) ) )
+	k2_output_sel(0) <= ( ( to_bit(ADDR_2(0)) xnor to_bit(addr_0_b(0)) ) and
+	                      ( to_bit(ADDR_2(1)) xnor to_bit(addr_0_b(1)) ) and
+	                      ( to_bit(ADDR_2(2)) xnor to_bit(addr_0_b(2)) ) and
+	                      ( to_bit(ADDR_2(3)) xnor to_bit(addr_0_b(3)) ) and
+	                      ( to_bit(ADDR_2(4)) xnor to_bit(addr_0_b(4)) ) and
+	                      ( to_bit(ADDR_2(5)) xnor to_bit(addr_0_b(5)) ) and
+	                      ( to_bit(ADDR_2(6)) xnor to_bit(addr_0_b(6)) ) and
+	                      ( to_bit(ADDR_2(7)) xnor to_bit(addr_0_b(7)) ) and
+	                      ( to_bit(ADDR_2(8)) xnor to_bit(addr_0_b(8)) ) )
 	                    or
-	                    ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_1_b(0)) ) and
-	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_1_b(1)) ) and
-	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_1_b(2)) ) and
-	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_1_b(3)) ) and
-	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_1_b(4)) ) and
-	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_1_b(5)) ) and
-	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_1_b(6)) ) and
-	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_1_b(7)) ) and
-	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_1_b(8)) ) );
+	                    ( ( to_bit(ADDR_2(0)) xnor to_bit(addr_1_b(0)) ) and
+	                      ( to_bit(ADDR_2(1)) xnor to_bit(addr_1_b(1)) ) and
+	                      ( to_bit(ADDR_2(2)) xnor to_bit(addr_1_b(2)) ) and
+	                      ( to_bit(ADDR_2(3)) xnor to_bit(addr_1_b(3)) ) and
+	                      ( to_bit(ADDR_2(4)) xnor to_bit(addr_1_b(4)) ) and
+	                      ( to_bit(ADDR_2(5)) xnor to_bit(addr_1_b(5)) ) and
+	                      ( to_bit(ADDR_2(6)) xnor to_bit(addr_1_b(6)) ) and
+	                      ( to_bit(ADDR_2(7)) xnor to_bit(addr_1_b(7)) ) and
+	                      ( to_bit(ADDR_2(8)) xnor to_bit(addr_1_b(8)) ) );
 
-	k3_output_sel(0) <= ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_0_b(0)) ) and
-	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_0_b(1)) ) and
-	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_0_b(2)) ) and
-	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_0_b(3)) ) and
-	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_0_b(4)) ) and
-	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_0_b(5)) ) and
-	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_0_b(6)) ) and
-	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_0_b(7)) ) and
-	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_0_b(8)) ) )
+	k3_output_sel(0) <= ( ( to_bit(ADDR_3(0)) xnor to_bit(addr_0_b(0)) ) and
+	                      ( to_bit(ADDR_3(1)) xnor to_bit(addr_0_b(1)) ) and
+	                      ( to_bit(ADDR_3(2)) xnor to_bit(addr_0_b(2)) ) and
+	                      ( to_bit(ADDR_3(3)) xnor to_bit(addr_0_b(3)) ) and
+	                      ( to_bit(ADDR_3(4)) xnor to_bit(addr_0_b(4)) ) and
+	                      ( to_bit(ADDR_3(5)) xnor to_bit(addr_0_b(5)) ) and
+	                      ( to_bit(ADDR_3(6)) xnor to_bit(addr_0_b(6)) ) and
+	                      ( to_bit(ADDR_3(7)) xnor to_bit(addr_0_b(7)) ) and
+	                      ( to_bit(ADDR_3(8)) xnor to_bit(addr_0_b(8)) ) )
 	                    or
-	                    ( ( to_bit(ADDR_1(0)) xnor to_bit(addr_1_b(0)) ) and
-	                      ( to_bit(ADDR_1(1)) xnor to_bit(addr_1_b(1)) ) and
-	                      ( to_bit(ADDR_1(2)) xnor to_bit(addr_1_b(2)) ) and
-	                      ( to_bit(ADDR_1(3)) xnor to_bit(addr_1_b(3)) ) and
-	                      ( to_bit(ADDR_1(4)) xnor to_bit(addr_1_b(4)) ) and
-	                      ( to_bit(ADDR_1(5)) xnor to_bit(addr_1_b(5)) ) and
-	                      ( to_bit(ADDR_1(6)) xnor to_bit(addr_1_b(6)) ) and
-	                      ( to_bit(ADDR_1(7)) xnor to_bit(addr_1_b(7)) ) and
-	                      ( to_bit(ADDR_1(8)) xnor to_bit(addr_1_b(8)) ) );
+	                    ( ( to_bit(ADDR_3(0)) xnor to_bit(addr_1_b(0)) ) and
+	                      ( to_bit(ADDR_3(1)) xnor to_bit(addr_1_b(1)) ) and
+	                      ( to_bit(ADDR_3(2)) xnor to_bit(addr_1_b(2)) ) and
+	                      ( to_bit(ADDR_3(3)) xnor to_bit(addr_1_b(3)) ) and
+	                      ( to_bit(ADDR_3(4)) xnor to_bit(addr_1_b(4)) ) and
+	                      ( to_bit(ADDR_3(5)) xnor to_bit(addr_1_b(5)) ) and
+	                      ( to_bit(ADDR_3(6)) xnor to_bit(addr_1_b(6)) ) and
+	                      ( to_bit(ADDR_3(7)) xnor to_bit(addr_1_b(7)) ) and
+	                      ( to_bit(ADDR_3(8)) xnor to_bit(addr_1_b(8)) ) );
 
 
 	input_controller_0 : block begin
