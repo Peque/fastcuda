@@ -137,25 +137,33 @@ begin
 	bram_1_B_input_sel <= "11";
 
 
-	k0_being_served <= REQ_0 and ( (not bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
-	                               (not bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) or
-	                               (not bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
-	                               (not bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) );
-
-	k1_being_served <= REQ_1 and ( (not bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
-	                               (not bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) or
-	                               (not bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
-	                               (not bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) );
-
-	k2_being_served <= REQ_2 and ( (    bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
-	                               (    bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) or
-	                               (    bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
-	                               (    bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) );
-
-	k3_being_served <= REQ_3 and ( (    bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
-	                               (    bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) or
-	                               (    bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
-	                               (    bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) );
+	k0_being_served <= to_bit(REQ_0) and (
+	                       ( not k0_output_sel(1) and ( (not bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
+	                                                    (not bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) ) )
+	                       or
+	                       (     k0_output_sel(1) and ( (not bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
+	                                                    (not bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) ) ) );
+	                                                            
+	k1_being_served <= to_bit(REQ_1) and (
+	                       ( not k1_output_sel(1) and ( (not bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
+	                                                    (not bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) ) )
+	                       or
+	                       (     k1_output_sel(1) and ( (not bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
+	                                                    (not bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) ) ) );
+	                                                            
+	k2_being_served <= to_bit(REQ_2) and (
+	                       ( not k2_output_sel(1) and ( (    bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
+	                                                    (    bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) ) )
+	                       or
+	                       (     k2_output_sel(1) and ( (    bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
+	                                                    (    bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) ) ) );
+	                                                            
+	k3_being_served <= to_bit(REQ_3) and (
+	                       ( not k3_output_sel(1) and ( (    bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
+	                                                    (    bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) ) )
+	                       or
+	                       (     k3_output_sel(1) and ( (    bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
+	                                                    (    bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) ) ) );
 
 
 	--
