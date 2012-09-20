@@ -104,6 +104,11 @@ architecture smem_arch of smem is
 	signal addr_1_eq_addr_3    : bit := '0';
 	signal addr_2_eq_addr_3    : bit := '0';
 
+	signal we_0_safe           : std_logic_vector(3 downto 0) := "0000";
+	signal we_1_safe           : std_logic_vector(3 downto 0) := "0000";
+	signal we_2_safe           : std_logic_vector(3 downto 0) := "0000";
+	signal we_3_safe           : std_logic_vector(3 downto 0) := "0000";
+
 	signal bram_0_A_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_0_B_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_1_A_input_sel  : bit_vector(1 downto 0) := "00";
@@ -148,6 +153,27 @@ begin
 	en_0_b <= '1';
 	en_1_a <= '1';
 	en_1_b <= '1';
+
+
+	we_0_safe(3) <= WE_0(3) and REQ_0;
+	we_0_safe(2) <= WE_0(2) and REQ_0;
+	we_0_safe(1) <= WE_0(1) and REQ_0;
+	we_0_safe(0) <= WE_0(0) and REQ_0;
+
+	we_1_safe(3) <= WE_0(3) and REQ_0;
+	we_1_safe(2) <= WE_0(2) and REQ_0;
+	we_1_safe(1) <= WE_0(1) and REQ_0;
+	we_1_safe(0) <= WE_0(0) and REQ_0;
+
+	we_2_safe(3) <= WE_0(3) and REQ_0;
+	we_2_safe(2) <= WE_0(2) and REQ_0;
+	we_2_safe(1) <= WE_0(1) and REQ_0;
+	we_2_safe(0) <= WE_0(0) and REQ_0;
+
+	we_3_safe(3) <= WE_0(3) and REQ_0;
+	we_3_safe(2) <= WE_0(2) and REQ_0;
+	we_3_safe(1) <= WE_0(1) and REQ_0;
+	we_3_safe(0) <= WE_0(0) and REQ_0;
 
 
 	RDY_0 <= to_stdulogic(k0_being_served);
@@ -358,10 +384,10 @@ begin
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_0_A_input_sel select
-			we_0_a    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_0_a    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_0;
 
 	input_controller_1 : block begin
@@ -376,10 +402,10 @@ begin
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_0_B_input_sel select
-			we_0_b    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_0_b    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_1;
 
 	input_controller_2 : block begin
@@ -394,10 +420,10 @@ begin
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_1_A_input_sel select
-			we_1_a    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_1_a    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_2;
 
 	input_controller_3 : block begin
@@ -412,10 +438,10 @@ begin
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_1_B_input_sel select
-			we_1_b    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_1_b    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_3;
 
 
