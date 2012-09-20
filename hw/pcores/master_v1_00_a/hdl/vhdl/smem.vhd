@@ -160,20 +160,20 @@ begin
 	we_0_safe(1) <= WE_0(1) and REQ_0;
 	we_0_safe(0) <= WE_0(0) and REQ_0;
 
-	we_1_safe(3) <= WE_0(3) and REQ_0;
-	we_1_safe(2) <= WE_0(2) and REQ_0;
-	we_1_safe(1) <= WE_0(1) and REQ_0;
-	we_1_safe(0) <= WE_0(0) and REQ_0;
+	we_1_safe(3) <= WE_1(3) and REQ_1;
+	we_1_safe(2) <= WE_1(2) and REQ_1;
+	we_1_safe(1) <= WE_1(1) and REQ_1;
+	we_1_safe(0) <= WE_1(0) and REQ_1;
 
-	we_2_safe(3) <= WE_0(3) and REQ_0;
-	we_2_safe(2) <= WE_0(2) and REQ_0;
-	we_2_safe(1) <= WE_0(1) and REQ_0;
-	we_2_safe(0) <= WE_0(0) and REQ_0;
+	we_2_safe(3) <= WE_2(3) and REQ_2;
+	we_2_safe(2) <= WE_2(2) and REQ_2;
+	we_2_safe(1) <= WE_2(1) and REQ_2;
+	we_2_safe(0) <= WE_2(0) and REQ_2;
 
-	we_3_safe(3) <= WE_0(3) and REQ_0;
-	we_3_safe(2) <= WE_0(2) and REQ_0;
-	we_3_safe(1) <= WE_0(1) and REQ_0;
-	we_3_safe(0) <= WE_0(0) and REQ_0;
+	we_3_safe(3) <= WE_3(3) and REQ_3;
+	we_3_safe(2) <= WE_3(2) and REQ_3;
+	we_3_safe(1) <= WE_3(1) and REQ_3;
+	we_3_safe(0) <= WE_3(0) and REQ_3;
 
 
 	RDY_0 <= to_stdulogic(k0_being_served);
