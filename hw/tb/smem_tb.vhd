@@ -40,9 +40,17 @@ architecture smem_tb_arch of smem_tb is
 	type state_t is (
 
 		IDLE,
-		SMEM_WRITE,
-		FOO,
-		SMEM_READ,
+		SMEM_WRITE_0,
+		FOO_0,
+		SMEM_READ_0,
+		FOO_1,
+		SMEM_WRITE_1,
+		FOO_2,
+		SMEM_READ_1,
+		FOO_3,
+		SMEM_WRITE_2,
+		FOO_4,
+		SMEM_READ_2,
 		DONE
 
 	);
@@ -161,10 +169,10 @@ begin
 				when IDLE =>
 
 					if start_test_bench = '1' then
-						kernel_0_state <= SMEM_WRITE;
+						kernel_0_state <= SMEM_WRITE_0;
 					end if;
 
-				when SMEM_WRITE =>
+				when SMEM_WRITE_0 =>
 
 					DI_0 <= x"AAAAAAAA";
 					ADDR_0 <= "0000000000";
@@ -172,16 +180,74 @@ begin
 					REQ_0 <= '1';
 					if (RDY_0 = '1') then
 						REQ_0 <= '0';
-						kernel_0_state <= FOO;
+						kernel_0_state <= FOO_0;
 					end if;
 
-				when FOO =>
+				when FOO_0 =>
 
-					kernel_0_state <= SMEM_READ;
+					kernel_0_state <= SMEM_READ_0;
 
-				when SMEM_READ =>
+				when SMEM_READ_0 =>
+
+					ADDR_0 <= "0000000000";
+					WE_0 <= "0000";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_1;
+					end if;
+
+				when FOO_1 =>
+
+					kernel_0_state <= SMEM_WRITE_1;
+
+				when SMEM_WRITE_1 =>
+
+					DI_0 <= x"AAAAAAAA";
+					ADDR_0 <= "0000000000";
+					WE_0 <= "1111";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_2;
+					end if;
+
+				when FOO_2 =>
+
+					kernel_0_state <= SMEM_READ_1;
+
+				when SMEM_READ_1 =>
 
 					ADDR_0 <= "1000000001";
+					WE_0 <= "0000";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_3;
+					end if;
+
+				when FOO_3 =>
+
+					kernel_0_state <= SMEM_WRITE_2;
+
+				when SMEM_WRITE_2 =>
+
+					DI_0 <= x"AAAAAAAA";
+					ADDR_0 <= "0000000010";
+					WE_0 <= "1111";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_0_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_0 <= "0000001110";
 					WE_0 <= "0000";
 					REQ_0 <= '1';
 					if (RDY_0 = '1') then
@@ -211,10 +277,39 @@ begin
 				when IDLE =>
 
 					if start_test_bench = '1' then
-						kernel_1_state <= SMEM_WRITE;
+						kernel_1_state <= SMEM_WRITE_0;
 					end if;
 
-				when SMEM_WRITE =>
+				when SMEM_WRITE_0 =>
+
+					DI_1 <= x"BBBBBBBB";
+					ADDR_1 <= "0000000000";
+					WE_1 <= "1111";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_0;
+					end if;
+
+				when FOO_0 =>
+
+					kernel_1_state <= SMEM_READ_0;
+
+				when SMEM_READ_0 =>
+
+					ADDR_1 <= "0000000000";
+					WE_1 <= "0000";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_1;
+					end if;
+
+				when FOO_1 =>
+
+					kernel_1_state <= SMEM_WRITE_1;
+
+				when SMEM_WRITE_1 =>
 
 					DI_1 <= x"BBBBBBBB";
 					ADDR_1 <= "0000000001";
@@ -222,16 +317,45 @@ begin
 					REQ_1 <= '1';
 					if (RDY_1 = '1') then
 						REQ_1 <= '0';
-						kernel_1_state <= FOO;
+						kernel_1_state <= FOO_2;
 					end if;
 
-				when FOO =>
+				when FOO_2 =>
 
-					kernel_1_state <= SMEM_READ;
+					kernel_1_state <= SMEM_READ_1;
 
-				when SMEM_READ =>
+				when SMEM_READ_1 =>
 
-					ADDR_1 <= "1000000001";
+					ADDR_1 <= "1000000000";
+					WE_1 <= "0000";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_3;
+					end if;
+
+				when FOO_3 =>
+
+					kernel_1_state <= SMEM_WRITE_2;
+
+				when SMEM_WRITE_2 =>
+
+					DI_1 <= x"BBBBBBBB";
+					ADDR_1 <= "0000000110";
+					WE_1 <= "1111";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_1_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_1 <= "0000001010";
 					WE_1 <= "0000";
 					REQ_1 <= '1';
 					if (RDY_1 = '1') then
@@ -261,10 +385,39 @@ begin
 				when IDLE =>
 
 					if start_test_bench = '1' then
-						kernel_2_state <= SMEM_WRITE;
+						kernel_2_state <= SMEM_WRITE_0;
 					end if;
 
-				when SMEM_WRITE =>
+				when SMEM_WRITE_0 =>
+
+					DI_2 <= x"CCCCCCCC";
+					ADDR_2 <= "0000000000";
+					WE_2 <= "1111";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_0;
+					end if;
+
+				when FOO_0 =>
+
+					kernel_2_state <= SMEM_READ_0;
+
+				when SMEM_READ_0 =>
+
+					ADDR_2 <= "0000000000";
+					WE_2 <= "0000";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_1;
+					end if;
+
+				when FOO_1 =>
+
+					kernel_2_state <= SMEM_WRITE_1;
+
+				when SMEM_WRITE_1 =>
 
 					DI_2 <= x"CCCCCCCC";
 					ADDR_2 <= "1000000000";
@@ -272,16 +425,45 @@ begin
 					REQ_2 <= '1';
 					if (RDY_2 = '1') then
 						REQ_2 <= '0';
-						kernel_2_state <= FOO;
+						kernel_2_state <= FOO_2;
 					end if;
 
-				when FOO =>
+				when FOO_2 =>
 
-					kernel_2_state <= SMEM_READ;
+					kernel_2_state <= SMEM_READ_1;
 
-				when SMEM_READ =>
+				when SMEM_READ_1 =>
 
-					ADDR_2 <= "0000000000";
+					ADDR_2 <= "0000000001";
+					WE_2 <= "0000";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_3;
+					end if;
+
+				when FOO_3 =>
+
+					kernel_2_state <= SMEM_WRITE_2;
+
+				when SMEM_WRITE_2 =>
+
+					DI_2 <= x"CCCCCCCC";
+					ADDR_2 <= "0000001010";
+					WE_2 <= "1111";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_2_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_2 <= "0000000110";
 					WE_2 <= "0000";
 					REQ_2 <= '1';
 					if (RDY_2 = '1') then
@@ -311,10 +493,39 @@ begin
 				when IDLE =>
 
 					if start_test_bench = '1' then
-						kernel_3_state <= SMEM_WRITE;
+						kernel_3_state <= SMEM_WRITE_0;
 					end if;
 
-				when SMEM_WRITE =>
+				when SMEM_WRITE_0 =>
+
+					DI_3 <= x"DDDDDDDD";
+					ADDR_3 <= "0000000000";
+					WE_3 <= "1111";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_0;
+					end if;
+
+				when FOO_0 =>
+
+					kernel_3_state <= SMEM_READ_0;
+
+				when SMEM_READ_0 =>
+
+					ADDR_3 <= "0000000000";
+					WE_3 <= "0000";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_1;
+					end if;
+
+				when FOO_1 =>
+
+					kernel_3_state <= SMEM_WRITE_1;
+
+				when SMEM_WRITE_1 =>
 
 					DI_3 <= x"DDDDDDDD";
 					ADDR_3 <= "1000000001";
@@ -322,16 +533,45 @@ begin
 					REQ_3 <= '1';
 					if (RDY_3 = '1') then
 						REQ_3 <= '0';
-						kernel_3_state <= FOO;
+						kernel_3_state <= FOO_2;
 					end if;
 
-				when FOO =>
+				when FOO_2 =>
 
-					kernel_3_state <= SMEM_READ;
+					kernel_3_state <= SMEM_READ_1;
 
-				when SMEM_READ =>
+				when SMEM_READ_1 =>
 
-					ADDR_3 <= "0000000001";
+					ADDR_3 <= "0000000000";
+					WE_3 <= "0000";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_3;
+					end if;
+
+				when FOO_3 =>
+
+					kernel_3_state <= SMEM_WRITE_2;
+
+				when SMEM_WRITE_2 =>
+
+					DI_3 <= x"DDDDDDDD";
+					ADDR_3 <= "0000001110";
+					WE_3 <= "1111";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_3_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_3 <= "0000000010";
 					WE_3 <= "0000";
 					REQ_3 <= '1';
 					if (RDY_3 = '1') then
