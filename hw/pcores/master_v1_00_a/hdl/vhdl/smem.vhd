@@ -62,6 +62,8 @@ architecture smem_arch of smem is
 	--
 	-- Signals
 	--
+	--   TODO: update comments bellow! (outdated signals)
+	--
 	--   k#_needs_attention   Flag which says wether kernel # needs to be attended
 	--   k#_given_port        Within a BRAM, this bit sets with port (A|B) kernel # has been assigned
 	--   k#_requested_bram    BRAM from/to which we need to read/write (first ADDR_# bits)
@@ -80,434 +82,399 @@ architecture smem_arch of smem is
 	--   bram_#_controller_we_[A|B]
 	--
 
-	signal k0_ready            : std_logic := '1';
-	signal k0_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k0_output_sel       : bit_vector(1 downto 0) := "00";
-
-	signal k1_ready            : std_logic := '1';
-	signal k1_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k1_output_sel       : bit_vector(1 downto 0) := "00";
-
-	signal k2_ready            : std_logic := '1';
-	signal k2_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k2_output_sel       : bit_vector(1 downto 0) := "00";
-
-	signal k3_ready            : std_logic := '1';
-	signal k3_requested_bram   : std_logic_vector(0 downto 0) := "0";
 	signal k3_output_sel       : bit_vector(1 downto 0) := "00";
 
+	signal k0_being_served     : bit := '0';
+	signal k1_being_served     : bit := '0';
+	signal k2_being_served     : bit := '0';
+	signal k3_being_served     : bit := '0';
+
+	signal k0_needs_attention  : bit := '0';
+	signal k1_needs_attention  : bit := '0';
+	signal k2_needs_attention  : bit := '0';
+	signal k3_needs_attention  : bit := '0';
+
+	signal addr_0_eq_addr_1    : bit := '0';
+	signal addr_0_eq_addr_2    : bit := '0';
+	signal addr_0_eq_addr_3    : bit := '0';
+	signal addr_1_eq_addr_2    : bit := '0';
+	signal addr_1_eq_addr_3    : bit := '0';
+	signal addr_2_eq_addr_3    : bit := '0';
+
+	signal we_0_safe           : std_logic_vector(3 downto 0) := "0000";
+	signal we_1_safe           : std_logic_vector(3 downto 0) := "0000";
+	signal we_2_safe           : std_logic_vector(3 downto 0) := "0000";
+	signal we_3_safe           : std_logic_vector(3 downto 0) := "0000";
 
 	signal bram_0_A_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_0_B_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_1_A_input_sel  : bit_vector(1 downto 0) := "00";
 	signal bram_1_B_input_sel  : bit_vector(1 downto 0) := "00";
 
+	signal k0_needs_bram_0     : bit := '0';
+	signal k0_needs_bram_1     : bit := '0';
+	signal k1_needs_bram_0     : bit := '0';
+	signal k1_needs_bram_1     : bit := '0';
+	signal k2_needs_bram_0     : bit := '0';
+	signal k2_needs_bram_1     : bit := '0';
+	signal k3_needs_bram_0     : bit := '0';
+	signal k3_needs_bram_1     : bit := '0';
 
-	signal DO_0_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DO_0_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_0_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_0_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal ADDR_0_A            : std_logic_vector(8 downto 0) := "000000000";
-	signal ADDR_0_B            : std_logic_vector(8 downto 0) := "000000000";
-	signal WE_0_A              : std_logic_vector(3 downto 0) := "0000";
-	signal WE_0_B              : std_logic_vector(3 downto 0) := "0000";
-	signal EN_0_A              : std_logic := '0';
-	signal EN_0_B              : std_logic := '0';
+	signal do_0_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal do_0_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_0_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_0_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal addr_0_a            : std_logic_vector(8 downto 0) := "000000000";
+	signal addr_0_b            : std_logic_vector(8 downto 0) := "000000000";
+	signal we_0_a              : std_logic_vector(3 downto 0) := "0000";
+	signal we_0_b              : std_logic_vector(3 downto 0) := "0000";
+	signal en_0_a              : std_logic := '0';
+	signal en_0_b              : std_logic := '0';
 
-	signal DO_1_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DO_1_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_1_A              : std_logic_vector(31 downto 0) := X"00000000";
-	signal DI_1_B              : std_logic_vector(31 downto 0) := X"00000000";
-	signal ADDR_1_A            : std_logic_vector(8 downto 0) := "000000000";
-	signal ADDR_1_B            : std_logic_vector(8 downto 0) := "000000000";
-	signal WE_1_A              : std_logic_vector(3 downto 0) := "0000";
-	signal WE_1_B              : std_logic_vector(3 downto 0) := "0000";
-	signal EN_1_A              : std_logic := '0';
-	signal EN_1_B              : std_logic := '0';
+	signal do_1_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal do_1_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_1_a              : std_logic_vector(31 downto 0) := X"00000000";
+	signal di_1_b              : std_logic_vector(31 downto 0) := X"00000000";
+	signal addr_1_a            : std_logic_vector(8 downto 0) := "000000000";
+	signal addr_1_b            : std_logic_vector(8 downto 0) := "000000000";
+	signal we_1_a              : std_logic_vector(3 downto 0) := "0000";
+	signal we_1_b              : std_logic_vector(3 downto 0) := "0000";
+	signal en_1_a              : std_logic := '0';
+	signal en_1_b              : std_logic := '0';
 
 
 begin
 
 
-	-- TODO: remove the lines bellow (temporary workaround)
-	EN_0_A <= '1';
-	EN_0_B <= '1';
-	EN_1_A <= '1';
-	EN_1_B <= '1';
+	en_0_a <= '1';
+	en_0_b <= '1';
+	en_1_a <= '1';
+	en_1_b <= '1';
 
 
-	k0_requested_bram <= ADDR_0(9 downto 9);
-	k1_requested_bram <= ADDR_1(9 downto 9);
-	k2_requested_bram <= ADDR_2(9 downto 9);
-	k3_requested_bram <= ADDR_3(9 downto 9);
+	we_0_safe(3) <= WE_0(3) and to_stdulogic(k0_needs_attention);
+	we_0_safe(2) <= WE_0(2) and to_stdulogic(k0_needs_attention);
+	we_0_safe(1) <= WE_0(1) and to_stdulogic(k0_needs_attention);
+	we_0_safe(0) <= WE_0(0) and to_stdulogic(k0_needs_attention);
 
-	RDY_0 <= k0_ready;
-	RDY_1 <= k1_ready;
-	RDY_2 <= k2_ready;
-	RDY_3 <= k3_ready;
+	we_1_safe(3) <= WE_1(3) and to_stdulogic(k1_needs_attention);
+	we_1_safe(2) <= WE_1(2) and to_stdulogic(k1_needs_attention);
+	we_1_safe(1) <= WE_1(1) and to_stdulogic(k1_needs_attention);
+	we_1_safe(0) <= WE_1(0) and to_stdulogic(k1_needs_attention);
 
+	we_2_safe(3) <= WE_2(3) and to_stdulogic(k2_needs_attention);
+	we_2_safe(2) <= WE_2(2) and to_stdulogic(k2_needs_attention);
+	we_2_safe(1) <= WE_2(1) and to_stdulogic(k2_needs_attention);
+	we_2_safe(0) <= WE_2(0) and to_stdulogic(k2_needs_attention);
 
-	-- TODO: optimize code bellow for the mem_controller process
-	mem_controller : process (TRIG_CLK)
-
-		variable bram_0_A_busy    : std_logic := '0';
-		variable bram_0_B_busy    : std_logic := '0';
-		variable bram_1_A_busy    : std_logic := '0';
-		variable bram_1_B_busy    : std_logic := '0';
-
-		variable k0_duplicated    : std_logic := '0';
-		variable k1_duplicated    : std_logic := '0';
-		variable k2_duplicated    : std_logic := '0';
-		variable k3_duplicated    : std_logic := '0';
-
-		variable k0_ready_var     : std_logic;
-		variable k1_ready_var     : std_logic;
-		variable k2_ready_var     : std_logic;
-		variable k3_ready_var     : std_logic;
-
-	begin
-
-		if (TRIG_CLK = '1') then
-
-			k0_ready_var := k0_ready;
-			k1_ready_var := k1_ready;
-			k2_ready_var := k2_ready;
-			k3_ready_var := k3_ready;
-
-			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
-				k1_duplicated := '1';
-			end if;
-
-			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
-				k2_duplicated := '1';
-			end if;
-
-			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
-				k2_duplicated := '1';
-			end if;
-
-			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
-				k3_duplicated := '1';
-			end if;
-
-			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
-				k3_duplicated := '1';
-			end if;
-
-			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
-				k3_duplicated := '1';
-			end if;
-
-			if (k0_requested_bram = "0" and REQ_0 = '1' and k0_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k1_requested_bram = "0" and REQ_1 = '1' and k1_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k2_requested_bram = "0" and REQ_2 = '1' and k2_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k3_requested_bram = "0" and REQ_3 = '1' and k3_duplicated = '0') then
-
-				if (bram_0_A_busy = '0') then
-					bram_0_A_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "00";
-					bram_0_A_busy := '1';
-				elsif (bram_0_B_busy = '0') then
-					bram_0_B_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "01";
-					bram_0_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k0_requested_bram = "1" and REQ_0 = '1' and k0_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "00";
-					k0_ready_var := '0';
-					k0_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k1_requested_bram = "1" and REQ_1 = '1' and k1_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "01";
-					k1_ready_var := '0';
-					k1_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k2_requested_bram = "1" and REQ_2 = '1' and k2_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "10";
-					k2_ready_var := '0';
-					k2_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (k3_requested_bram = "1" and REQ_3 = '1' and k3_duplicated = '0') then
-
-				if (bram_1_A_busy = '0') then
-					bram_1_A_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "10";
-					bram_1_A_busy := '1';
-				elsif (bram_1_B_busy = '0') then
-					bram_1_B_input_sel <= "11";
-					k3_ready_var := '0';
-					k3_output_sel <= "11";
-					bram_1_B_busy := '1';
-				else
-				end if;
-
-			end if;
-
-			if (REQ_1 = '1' and REQ_0 = '1' and ADDR_1 = ADDR_0) then
-				k1_ready_var := k0_ready_var;
-				k1_output_sel <= k0_output_sel;
-			end if;
-
-			if (REQ_2 = '1' and REQ_0 = '1' and ADDR_2 = ADDR_0) then
-				k2_ready_var := k0_ready_var;
-				k2_output_sel <= k0_output_sel;
-			end if;
-
-			if (REQ_2 = '1' and REQ_1 = '1' and ADDR_2 = ADDR_1) then
-				k2_ready_var := k1_ready_var;
-				k2_output_sel <= k1_output_sel;
-			end if;
-
-			if (REQ_3 = '1' and REQ_0 = '1' and ADDR_3 = ADDR_0) then
-				k3_ready_var := k0_ready_var;
-				k3_output_sel <= k0_output_sel;
-			end if;
-
-			if (REQ_3 = '1' and REQ_1 = '1' and ADDR_3 = ADDR_1) then
-				k3_ready_var := k1_ready_var;
-				k3_output_sel <= k1_output_sel;
-			end if;
-
-			if (REQ_3 = '1' and REQ_2 = '1' and ADDR_3 = ADDR_2) then
-				k3_ready_var := k2_ready_var;
-				k3_output_sel <= k2_output_sel;
-			end if;
-
-			k0_ready <= k0_ready_var;
-			k1_ready <= k1_ready_var;
-			k2_ready <= k2_ready_var;
-			k3_ready <= k3_ready_var;
-
-		else
-
-			if (k0_ready = '0') then k0_ready <= '1'; end if;
-			if (k1_ready = '0') then k1_ready <= '1'; end if;
-			if (k2_ready = '0') then k2_ready <= '1'; end if;
-			if (k3_ready = '0') then k3_ready <= '1'; end if;
-
-			bram_0_A_busy := '0';
-			bram_0_B_busy := '0';
-			bram_1_A_busy := '0';
-			bram_1_B_busy := '0';
-
-			k0_duplicated := '0';
-			k1_duplicated := '0';
-			k2_duplicated := '0';
-			k3_duplicated := '0';
-
-		end if;
-
-	end process mem_controller;
+	we_3_safe(3) <= WE_3(3) and to_stdulogic(k3_needs_attention);
+	we_3_safe(2) <= WE_3(2) and to_stdulogic(k3_needs_attention);
+	we_3_safe(1) <= WE_3(1) and to_stdulogic(k3_needs_attention);
+	we_3_safe(0) <= WE_3(0) and to_stdulogic(k3_needs_attention);
 
 
-	-- TODO: decide if a process implementation should be used instead of
-	--       this block implementation bellow:
+	RDY_0 <= to_stdulogic(k0_being_served);
+	RDY_1 <= to_stdulogic(k1_being_served);
+	RDY_2 <= to_stdulogic(k2_being_served);
+	RDY_3 <= to_stdulogic(k3_being_served);
+
+
+	k0_needs_attention <= to_bit(REQ_0);
+
+	k1_needs_attention <= to_bit(REQ_1) and (not (addr_0_eq_addr_1 and k0_needs_attention));
+
+	k2_needs_attention <= to_bit(REQ_2) and (not (addr_0_eq_addr_2 and k0_needs_attention)) and (not (addr_1_eq_addr_2 and k1_needs_attention));
+
+	k3_needs_attention <= to_bit(REQ_3) and (not (addr_0_eq_addr_3 and k0_needs_attention)) and (not (addr_1_eq_addr_3 and k1_needs_attention)) and (not (addr_2_eq_addr_3 and k2_needs_attention));
+
+
+	k0_needs_bram_0 <= k0_needs_attention and not to_bit(ADDR_0(9));
+	k0_needs_bram_1 <= k0_needs_attention and     to_bit(ADDR_0(9));
+
+	k1_needs_bram_0 <= k1_needs_attention and not to_bit(ADDR_1(9));
+	k1_needs_bram_1 <= k1_needs_attention and     to_bit(ADDR_1(9));
+
+	k2_needs_bram_0 <= k2_needs_attention and not to_bit(ADDR_2(9));
+	k2_needs_bram_1 <= k2_needs_attention and     to_bit(ADDR_2(9));
+
+	-- NEVER USED --k3_needs_bram_0 <= k3_needs_attention and not to_bit(ADDR_3(9));
+	-- NEVER USED --k3_needs_bram_1 <= k3_needs_attention and     to_bit(ADDR_3(9));
+
+
+	bram_0_A_input_sel(1) <= not k0_needs_bram_0 and not k1_needs_bram_0;
+	bram_0_A_input_sel(0) <= not (k0_needs_bram_0 or (k2_needs_bram_0 and not k1_needs_bram_0));
+
+	bram_1_A_input_sel(1) <= not k0_needs_bram_1 and not k1_needs_bram_1;
+	bram_1_A_input_sel(0) <= not (k0_needs_bram_1 or (k2_needs_bram_1 and not k1_needs_bram_1));
+
+	bram_0_B_input_sel(1) <= bram_0_A_input_sel(1) or bram_0_A_input_sel(0) or not k1_needs_bram_0;
+	bram_0_B_input_sel(0) <= not (k2_needs_bram_0 and ((k0_needs_bram_0 and not k1_needs_bram_0) or
+	                                                   (k1_needs_bram_0 and not k0_needs_bram_0)));
+
+	bram_1_B_input_sel(1) <= bram_1_A_input_sel(1) or bram_1_A_input_sel(0) or not k1_needs_bram_1;
+	bram_1_B_input_sel(0) <= not (k2_needs_bram_1 and ((k0_needs_bram_1 and not k1_needs_bram_1) or
+	                                                   (k1_needs_bram_1 and not k0_needs_bram_1)));
+
+
+	addr_0_eq_addr_1 <= ( (to_bit(ADDR_0(9)) xnor to_bit(ADDR_1(9))) and
+	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_1(8))) and
+	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_1(7))) and
+	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_1(6))) and
+	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_1(5))) and
+	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_1(4))) and
+	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_1(3))) and
+	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_1(2))) and
+	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_1(1))) and
+	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_1(0))) );
+
+	addr_0_eq_addr_2 <= ( (to_bit(ADDR_0(9)) xnor to_bit(ADDR_2(9))) and
+	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_2(8))) and
+	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_2(7))) and
+	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_2(6))) and
+	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_2(5))) and
+	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_2(4))) and
+	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_2(3))) and
+	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_2(2))) and
+	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_2(1))) and
+	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_2(0))) );
+
+	addr_0_eq_addr_3 <= ( (to_bit(ADDR_0(9)) xnor to_bit(ADDR_3(9))) and
+	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_3(8))) and
+	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_3(7))) and
+	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_3(6))) and
+	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_3(5))) and
+	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_3(4))) and
+	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_3(3))) and
+	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_3(2))) and
+	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_3(1))) and
+	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_3(0))) );
+
+	addr_1_eq_addr_2 <= ( (to_bit(ADDR_1(9)) xnor to_bit(ADDR_2(9))) and
+	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_2(8))) and
+	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_2(7))) and
+	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_2(6))) and
+	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_2(5))) and
+	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_2(4))) and
+	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_2(3))) and
+	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_2(2))) and
+	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_2(1))) and
+	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_2(0))) );
+
+	addr_1_eq_addr_3 <= ( (to_bit(ADDR_1(9)) xnor to_bit(ADDR_3(9))) and
+	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_3(8))) and
+	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_3(7))) and
+	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_3(6))) and
+	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_3(5))) and
+	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_3(4))) and
+	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_3(3))) and
+	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_3(2))) and
+	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_3(1))) and
+	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_3(0))) );
+
+	addr_2_eq_addr_3 <= ( (to_bit(ADDR_2(9)) xnor to_bit(ADDR_3(9))) and
+	                      (to_bit(ADDR_2(8)) xnor to_bit(ADDR_3(8))) and
+	                      (to_bit(ADDR_2(7)) xnor to_bit(ADDR_3(7))) and
+	                      (to_bit(ADDR_2(6)) xnor to_bit(ADDR_3(6))) and
+	                      (to_bit(ADDR_2(5)) xnor to_bit(ADDR_3(5))) and
+	                      (to_bit(ADDR_2(4)) xnor to_bit(ADDR_3(4))) and
+	                      (to_bit(ADDR_2(3)) xnor to_bit(ADDR_3(3))) and
+	                      (to_bit(ADDR_2(2)) xnor to_bit(ADDR_3(2))) and
+	                      (to_bit(ADDR_2(1)) xnor to_bit(ADDR_3(1))) and
+	                      (to_bit(ADDR_2(0)) xnor to_bit(ADDR_3(0))) );
+
+
+	k0_being_served <= to_bit(REQ_0);
+
+	k1_being_served <= to_bit(REQ_1);
+
+	k2_being_served <= to_bit(REQ_2) and (
+	                       ( not k2_output_sel(1) and ( (    bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
+	                                                    (    bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) ) )
+	                       or
+	                       (     k2_output_sel(1) and ( (    bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
+	                                                    (    bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) ) )
+	                       or
+	                       (not k2_needs_attention) );
+
+	k3_being_served <= to_bit(REQ_3) and (
+	                       ( not k3_output_sel(1) and ( (    bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
+	                                                    (    bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) ) )
+	                       or
+	                       (     k3_output_sel(1) and ( (    bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
+	                                                    (    bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) ) )
+	                       or
+	                       (not k3_needs_attention) );
+
+
+	--
+	-- The higher bits of the output selection signal represent the BRAM
+	-- which may be being used and, therefore, are the higher input port
+	-- address bits.
+	--
+	k0_output_sel(1 downto 1) <= to_bitvector(ADDR_0(9 downto 9));
+	k1_output_sel(1 downto 1) <= to_bitvector(ADDR_1(9 downto 9));
+	k2_output_sel(1 downto 1) <= to_bitvector(ADDR_2(9 downto 9));
+	k3_output_sel(1 downto 1) <= to_bitvector(ADDR_3(9 downto 9));
+
+
+	k0_output_sel(0) <= ( not k0_output_sel(1) and ( not bram_0_B_input_sel(1) and
+	                                                 not bram_0_B_input_sel(0)) )
+	                    or
+	                    (     k0_output_sel(1) and ( not bram_1_B_input_sel(1) and
+	                                                 not bram_1_B_input_sel(0)) );
+
+	k1_output_sel(0) <= ( not k1_output_sel(1) and ( not bram_0_B_input_sel(1) and
+	                                                     bram_0_B_input_sel(0)) )
+	                    or
+	                    (     k1_output_sel(1) and ( not bram_1_B_input_sel(1) and
+	                                                     bram_1_B_input_sel(0)) );
+
+	k2_output_sel(0) <= ( not k2_output_sel(1) and (     bram_0_B_input_sel(1) and
+	                                                 not bram_0_B_input_sel(0)) )
+	                    or
+	                    (     k2_output_sel(1) and (     bram_1_B_input_sel(1) and
+	                                                 not bram_1_B_input_sel(0)) );
+
+	k3_output_sel(0) <= ( not k3_output_sel(1) and (     bram_0_B_input_sel(1) and
+	                                                     bram_0_B_input_sel(0)) )
+	                    or
+	                    (     k3_output_sel(1) and (     bram_1_B_input_sel(1) and
+	                                                     bram_1_B_input_sel(0)) );
+
+	--
+	-- A process implementation alternative for the output controller
+	-- which could be used to update output signals only on BRAM_CLK
+	-- events or TRIG_CLK events:
+	--
+	-- TODO: decide whether using a process implementation could be better.
+	--
+	--k0_output_sel_controller : process (BRAM_CLK) begin
+		--if (BRAM_CLK'event and BRAM_CLK = '0') then
+			--if (ADDR_0(9 downto 9) = "0") then
+				--k0_output_sel(1 downto 1) <= "0";
+				--if (bram_0_B_input_sel = "00") then
+					--k0_output_sel(0) <= '1';
+				--else
+					--k0_output_sel(0) <= '0';
+				--end if;
+			--else
+				--k0_output_sel(1 downto 1) <= "1";
+				--if (bram_1_B_input_sel = "00") then
+					--k0_output_sel(0) <= '1';
+				--else
+					--k0_output_sel(0) <= '0';
+				--end if;
+			--end if;
+		--end if;
+	--end process k0_output_sel_controller;
+
+
 	input_controller_0 : block begin
 		with bram_0_A_input_sel select
-			DI_0_A    <=  DI_0 when "00",
+			di_0_a    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_0_A_input_sel select
-			ADDR_0_A  <=  ADDR_0(8 downto 0) when "00",
+			addr_0_a  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_0_A_input_sel select
-			WE_0_A    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_0_a    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_0;
 
 	input_controller_1 : block begin
 		with bram_0_B_input_sel select
-			DI_0_B    <=  DI_0 when "00",
+			di_0_b    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_0_B_input_sel select
-			ADDR_0_B  <=  ADDR_0(8 downto 0) when "00",
+			addr_0_b  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_0_B_input_sel select
-			WE_0_B    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_0_b    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_1;
 
 	input_controller_2 : block begin
 		with bram_1_A_input_sel select
-			DI_1_A    <=  DI_0 when "00",
+			di_1_a    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_1_A_input_sel select
-			ADDR_1_A  <=  ADDR_0(8 downto 0) when "00",
+			addr_1_a  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_1_A_input_sel select
-			WE_1_A    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_1_a    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_2;
 
 	input_controller_3 : block begin
 		with bram_1_B_input_sel select
-			DI_1_B    <=  DI_0 when "00",
+			di_1_b    <=  DI_0 when "00",
 			              DI_1 when "01",
 			              DI_2 when "10",
 			              DI_3 when "11";
 		with bram_1_B_input_sel select
-			ADDR_1_B  <=  ADDR_0(8 downto 0) when "00",
+			addr_1_b  <=  ADDR_0(8 downto 0) when "00",
 			              ADDR_1(8 downto 0) when "01",
 			              ADDR_2(8 downto 0) when "10",
 			              ADDR_3(8 downto 0) when "11";
 		with bram_1_B_input_sel select
-			WE_1_B    <=  WE_0 when "00",
-			              WE_1 when "01",
-			              WE_2 when "10",
-			              WE_3 when "11";
+			we_1_b    <=  we_0_safe when "00",
+			              we_1_safe when "01",
+			              we_2_safe when "10",
+			              we_3_safe when "11";
 	end block input_controller_3;
 
 
-	-- TODO: decide if the block implementation for the output controllers
-	--       should be replaced by this process implementation:
-	--
-	--output_controller_0 : process (TRIG_CLK) begin
-	--	case k0_output_sel is
-	--		when "00" => DO_0 <= DO_0_A;
-	--		when "01" => DO_0 <= DO_0_B;
-	--		when "10" => DO_0 <= DO_1_A;
-	--		when "11" => DO_0 <= DO_1_B;
-	--	end case;
-	--end process output_controller_0;
-	--
 	output_controller_0 : block begin
 		with k0_output_sel select
-			DO_0 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_0 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_0;
 
 	output_controller_1 : block begin
 		with k1_output_sel select
-			DO_1 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_1 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_1;
 
 	output_controller_2 : block begin
 		with k2_output_sel select
-			DO_2 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_2 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_2;
 
 	output_controller_3 : block begin
 		with k3_output_sel select
-			DO_3 <= DO_0_A when "00",
-			        DO_0_B when "01",
-			        DO_1_A when "10",
-			        DO_1_B when "11";
+			DO_3 <= do_0_a when "00",
+			        do_0_b when "01",
+			        do_1_a when "10",
+			        do_1_b when "11";
 	end block output_controller_3;
 
 
@@ -630,30 +597,31 @@ begin
 
 	) port map (
 
-		DOA                  => DO_0_A,              -- Output port-A data
-		DOB                  => DO_0_B,              -- Output port-B data
+		DOA                  => do_0_a,              -- Output port-A data
+		DOB                  => do_0_b,              -- Output port-B data
 		DOPA                 => open,                -- We are not using parity bits
 		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => DI_0_A,              -- Input port-A data
-		DIB                  => DI_0_B,              -- Input port-B data
+		DIA                  => di_0_a,              -- Input port-A data
+		DIB                  => di_0_b,              -- Input port-B data
 		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
 		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => ADDR_0_A,            -- Input port-A address
+		ADDRA(13 downto 5)   => addr_0_a,            -- Input port-A address
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDR_0_B,            -- Input port-B address
+		ADDRB(13 downto 5)   => addr_0_b,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		CLKA                 => BRAM_CLK,            -- Input port-A clock
 		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => EN_0_A,              -- Input port-A enable
-		ENB                  => EN_0_B,              -- Input port-B enable
+		ENA                  => en_0_a,              -- Input port-A enable
+		ENB                  => en_0_b,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
 		REGCEB               => REGCE_value,         -- Input port-B output register enable
 		RSTA                 => RST,                 -- Input port-A reset
 		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => WE_0_A,              -- Input port-A write enable
-		WEB                  => WE_0_B               -- Input port-B write enable
+		WEA                  => we_0_a,              -- Input port-A write enable
+		WEB                  => we_0_b               -- Input port-B write enable
 
 	);
+
 
 	RAMB16BWER_1 : RAMB16BWER
 
@@ -774,28 +742,28 @@ begin
 
 	) port map (
 
-		DOA                  => DO_1_A,              -- Output port-A data
-		DOB                  => DO_1_B,              -- Output port-B data
+		DOA                  => do_1_a,              -- Output port-A data
+		DOB                  => do_1_b,              -- Output port-B data
 		DOPA                 => open,                -- We are not using parity bits
 		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => DI_1_A,              -- Input port-A data
-		DIB                  => DI_1_B,              -- Input port-B data
+		DIA                  => di_1_a,              -- Input port-A data
+		DIB                  => di_1_b,              -- Input port-B data
 		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
 		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => ADDR_1_A,            -- Input port-A address
+		ADDRA(13 downto 5)   => addr_1_a,            -- Input port-A address
 		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => ADDR_1_B,            -- Input port-B address
+		ADDRB(13 downto 5)   => addr_1_b,            -- Input port-B address
 		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
 		CLKA                 => BRAM_CLK,            -- Input port-A clock
 		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => EN_1_A,              -- Input port-A enable
-		ENB                  => EN_1_B,              -- Input port-B enable
+		ENA                  => en_1_a,              -- Input port-A enable
+		ENB                  => en_1_b,              -- Input port-B enable
 		REGCEA               => REGCE_value,         -- Input port-A output register enable
 		REGCEB               => REGCE_value,         -- Input port-B output register enable
 		RSTA                 => RST,                 -- Input port-A reset
 		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => WE_1_A,              -- Input port-A write enable
-		WEB                  => WE_1_B               -- Input port-B write enable
+		WEA                  => we_1_a,              -- Input port-A write enable
+		WEB                  => we_1_b               -- Input port-B write enable
 
 	);
 

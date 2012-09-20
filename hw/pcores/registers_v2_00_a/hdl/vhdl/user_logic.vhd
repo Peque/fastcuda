@@ -98,19 +98,17 @@ entity user_logic is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_out_0                     : out std_logic_vector(31 downto 0);
-    address_out_1                     : out std_logic_vector(31 downto 0);
-    address_out_2                     : out std_logic_vector(31 downto 0);
-    address_out_3                     : out std_logic_vector(31 downto 0);
-    go                                : out std_logic;
-    ready                             : in  std_logic;
-    DO_0, DO_1, DO_2, DO_3            : in  std_logic_vector(31 downto 0);
-    DI_0, DI_1, DI_2, DI_3            : out std_logic_vector(31 downto 0);
-    ADDR_0, ADDR_1, ADDR_2, ADDR_3    : out std_logic_vector(9 downto 0);
-    RST                               : out std_logic;
-    WE_0, WE_1, WE_2, WE_3            : out std_logic_vector(3 downto 0);
-    REQ_0, REQ_1, REQ_2, REQ_3        : out std_logic;
-    RDY_0, RDY_1, RDY_2, RDY_3        : in  std_logic;
+    address_out_0                             : out std_logic_vector(31 downto 0);
+    address_out_1                             : out std_logic_vector(31 downto 0);
+    address_out_2                             : out std_logic_vector(31 downto 0);
+    address_out_3                             : out std_logic_vector(31 downto 0);
+    go                                        : out std_logic;
+    ready                                     : in  std_logic;
+    DO_0, DO_1, DO_2, DO_3                    : in  std_logic_vector(31 downto 0);
+    DI_0, DI_1, DI_2, DI_3                    : out std_logic_vector(31 downto 0);
+    ADDR_0_W, ADDR_1_W, ADDR_2_W, ADDR_3_W    : out std_logic_vector(9 downto 0);
+    ADDR_0_R, ADDR_1_R, ADDR_2_R, ADDR_3_R    : out std_logic_vector(9 downto 0);
+    RST                                       : out std_logic;
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -202,23 +200,15 @@ begin
   DI_1            <= slv_reg11;
   DI_2            <= slv_reg12;
   DI_3            <= slv_reg13;
-  ADDR_0          <= slv_reg14(9 downto 0);
-  ADDR_1          <= slv_reg15(9 downto 0);
-  ADDR_2          <= slv_reg16(9 downto 0);
-  ADDR_3          <= slv_reg17(9 downto 0);
+  ADDR_0_W        <= slv_reg14(9 downto 0);
+  ADDR_1_W        <= slv_reg15(9 downto 0);
+  ADDR_2_W        <= slv_reg16(9 downto 0);
+  ADDR_3_W        <= slv_reg17(9 downto 0);
+  ADDR_0_R        <= slv_reg14(9 downto 0);
+  ADDR_1_R        <= slv_reg15(9 downto 0);
+  ADDR_2_R        <= slv_reg16(9 downto 0);
+  ADDR_3_R        <= slv_reg17(9 downto 0);
   RST             <= slv_reg18(0);
-  WE_0            <= slv_reg19(3 downto 0);
-  WE_1            <= slv_reg20(3 downto 0);
-  WE_2            <= slv_reg21(3 downto 0);
-  WE_3            <= slv_reg22(3 downto 0);
-  REQ_0           <= slv_reg23(0);
-  REQ_1           <= slv_reg24(0);
-  REQ_2           <= slv_reg25(0);
-  REQ_3           <= slv_reg26(0);
-  slv_reg27(0)    <= RDY_0;
-  slv_reg28(0)    <= RDY_1;
-  slv_reg29(0)    <= RDY_2;
-  slv_reg30(0)    <= RDY_3;
   ------------------------------------------
   -- Example code to read/write user logic slave model s/w accessible registers
   --
@@ -275,10 +265,10 @@ begin
         slv_reg24 <= (others => '0');
         slv_reg25 <= (others => '0');
         slv_reg26 <= (others => '0');
---      slv_reg27 <= (others => '0');
---      slv_reg28 <= (others => '0');
---      slv_reg29 <= (others => '0');
---      slv_reg30 <= (others => '0');
+        slv_reg27 <= (others => '0');
+        slv_reg28 <= (others => '0');
+        slv_reg29 <= (others => '0');
+        slv_reg30 <= (others => '0');
         slv_reg31 <= (others => '0');
       else
         case slv_reg_write_sel is
@@ -439,35 +429,35 @@ begin
               end if;
             end loop;
           when "00000000000000000000000000100000" =>
---          for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
---            if ( Bus2IP_BE(byte_index) = '1' ) then
---              slv_reg26(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
---            end if;
---          end loop;
+            for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
+              if ( Bus2IP_BE(byte_index) = '1' ) then
+                slv_reg26(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
+              end if;
+            end loop;
           when "00000000000000000000000000010000" =>
---          for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
---            if ( Bus2IP_BE(byte_index) = '1' ) then
---              slv_reg27(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
---            end if;
---          end loop;
+            for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
+              if ( Bus2IP_BE(byte_index) = '1' ) then
+                slv_reg27(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
+              end if;
+            end loop;
           when "00000000000000000000000000001000" =>
---          for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
---            if ( Bus2IP_BE(byte_index) = '1' ) then
---              slv_reg28(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
---            end if;
---          end loop;
+            for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
+              if ( Bus2IP_BE(byte_index) = '1' ) then
+                slv_reg28(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
+              end if;
+            end loop;
           when "00000000000000000000000000000100" =>
---          for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
---            if ( Bus2IP_BE(byte_index) = '1' ) then
---              slv_reg29(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
---            end if;
---          end loop;
+            for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
+              if ( Bus2IP_BE(byte_index) = '1' ) then
+                slv_reg29(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
+              end if;
+            end loop;
           when "00000000000000000000000000000010" =>
---          for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
---            if ( Bus2IP_BE(byte_index) = '1' ) then
---              slv_reg30(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
---            end if;
---          end loop;
+            for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
+              if ( Bus2IP_BE(byte_index) = '1' ) then
+                slv_reg30(byte_index*8+7 downto byte_index*8) <= Bus2IP_Data(byte_index*8+7 downto byte_index*8);
+              end if;
+            end loop;
           when "00000000000000000000000000000001" =>
             for byte_index in 0 to (C_SLV_DWIDTH/8)-1 loop
               if ( Bus2IP_BE(byte_index) = '1' ) then

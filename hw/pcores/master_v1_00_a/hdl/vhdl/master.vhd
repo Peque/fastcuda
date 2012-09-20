@@ -185,20 +185,18 @@ entity master is
   (
     -- ADD USER PORTS BELOW THIS LINE ------------------
     --USER ports added here
-    address_in_0                      : in  std_logic_vector(31 downto 0);
-    address_in_1                      : in  std_logic_vector(31 downto 0);
-    address_in_2                      : in  std_logic_vector(31 downto 0);
-    address_in_3                      : in  std_logic_vector(31 downto 0);
-    go                                : in  std_logic;
-    ready                             : out std_logic;
-    DEBUG_signal_master               : out std_logic_vector(250 downto 0);
-    DO_0, DO_1, DO_2, DO_3            : out std_logic_vector(31 downto 0);
-    DI_0, DI_1, DI_2, DI_3            : in  std_logic_vector(31 downto 0);
-    ADDR_0, ADDR_1, ADDR_2, ADDR_3    : in  std_logic_vector(9 downto 0);
-    BRAM_CLK, TRIG_CLK, RST           : in  std_logic;
-    WE_0, WE_1, WE_2, WE_3            : in  std_logic_vector(3 downto 0);
-    REQ_0, REQ_1, REQ_2, REQ_3        : in  std_logic;
-	RDY_0, RDY_1, RDY_2, RDY_3        : out std_logic;
+    address_in_0                              : in  std_logic_vector(31 downto 0);
+    address_in_1                              : in  std_logic_vector(31 downto 0);
+    address_in_2                              : in  std_logic_vector(31 downto 0);
+    address_in_3                              : in  std_logic_vector(31 downto 0);
+    go                                        : in  std_logic;
+    ready                                     : out std_logic;
+    chipscope_probe                           : out std_logic_vector(255 downto 0);
+    DO_0, DO_1, DO_2, DO_3                    : out std_logic_vector(31 downto 0);
+    DI_0, DI_1, DI_2, DI_3                    : in  std_logic_vector(31 downto 0);
+    ADDR_0_W, ADDR_1_W, ADDR_2_W, ADDR_3_W    : in  std_logic_vector(9 downto 0);
+    ADDR_0_R, ADDR_1_R, ADDR_2_R, ADDR_3_R    : in  std_logic_vector(9 downto 0);
+    BRAM_CLK, TRIG_CLK, RST                   : in  std_logic;
     -- ADD USER PORTS ABOVE THIS LINE ------------------
 
     -- DO NOT EDIT BELOW THIS LINE ---------------------
@@ -378,55 +376,8 @@ architecture IMP of master is
   signal user_IP2Bus_RdAck              : std_logic;
   signal user_IP2Bus_WrAck              : std_logic;
   signal user_IP2Bus_Error              : std_logic;
---	------------------
---	signal DEBUG_signal : std_logic_vector(153 downto 0);
---	signal DEBUG_md_error : std_logic;
---	signal DEBUG_m_axi_awvalid : std_logic;
---	signal DEBUG_m_axi_awaddr : std_logic_vector(31 downto 0);
---	signal DEBUG_m_axi_awlen : std_logic_vector(7 downto 0);
---	signal DEBUG_m_axi_awsize : std_logic_vector(2 downto 0);
---	signal DEBUG_m_axi_awburst : std_logic_vector(1 downto 0);
---	signal DEBUG_m_axi_awprot : std_logic_vector(2 downto 0);
---	signal DEBUG_m_axi_wvalid : std_logic;
---	signal DEBUG_m_axi_wdata : std_logic_vector(31 downto 0);
---	signal DEBUG_m_axi_wstrb : std_logic_vector(3 downto 0);
---	signal DEBUG_m_axi_wlast : std_logic;
---	signal DEBUG_m_axi_bready : std_logic;
---	------------------
+
 begin
---	------------------ debug
---	md_error <= DEBUG_md_error;
---	m_axi_awvalid <= DEBUG_m_axi_awvalid;
---	m_axi_awaddr <= DEBUG_m_axi_awaddr;
---	m_axi_awlen <= DEBUG_m_axi_awlen;
---	m_axi_awsize <= DEBUG_m_axi_awsize;
---	m_axi_awburst <= DEBUG_m_axi_awburst;
---	m_axi_awprot <= DEBUG_m_axi_awprot;
---	m_axi_wvalid <= DEBUG_m_axi_wvalid;
---	m_axi_wdata <= DEBUG_m_axi_wdata;
---	m_axi_wstrb <= DEBUG_m_axi_wstrb;
---	m_axi_wlast <= DEBUG_m_axi_wlast;
---	m_axi_bready <= DEBUG_m_axi_bready;
---	DEBUG_signal_master <=  DEBUG_md_error& --1
---									m_axi_awready& --1
---									DEBUG_m_axi_awvalid& --1
---									DEBUG_m_axi_awaddr& --32
---									DEBUG_m_axi_awlen& --8
---									DEBUG_m_axi_awsize& --3
---									DEBUG_m_axi_awburst& --2
---									DEBUG_m_axi_awprot& --3
---									DEBUG_m_axi_wvalid& --1
---									m_axi_wready& --1
---									DEBUG_m_axi_wdata& --32
---									DEBUG_m_axi_wstrb& --4
---									DEBUG_m_axi_wlast& --1
---									DEBUG_m_axi_bready& --1
---									m_axi_bvalid& --1
---									m_axi_bresp& --2
---									DEBUG_signal; --251
---													--------------
---															--251 bits
---	------------------
   ------------------------------------------
   -- instantiate axi_lite_ipif
   ------------------------------------------
@@ -583,7 +534,7 @@ begin
       address_in_3     => address_in_3,
       go               => go,
       ready            => ready,
-      DEBUG_signal     => DEBUG_signal_master,
+      chipscope_probe  => chipscope_probe,
       DO_0             => DO_0,
       DO_1             => DO_1,
       DO_2             => DO_2,
@@ -592,25 +543,17 @@ begin
       DI_1             => DI_1,
       DI_2             => DI_2,
       DI_3             => DI_3,
-      ADDR_0           => ADDR_0,
-      ADDR_1           => ADDR_1,
-      ADDR_2           => ADDR_2,
-      ADDR_3           => ADDR_3,
+      ADDR_0_W         => ADDR_0_W,
+      ADDR_1_W         => ADDR_1_W,
+      ADDR_2_W         => ADDR_2_W,
+      ADDR_3_W         => ADDR_3_W,
+      ADDR_0_R         => ADDR_0_R,
+      ADDR_1_R         => ADDR_1_R,
+      ADDR_2_R         => ADDR_2_R,
+      ADDR_3_R         => ADDR_3_R,
       BRAM_CLK         => BRAM_CLK,
       TRIG_CLK         => TRIG_CLK,
       RST              => RST,
-      WE_0             => WE_0,
-      WE_1             => WE_1,
-      WE_2             => WE_2,
-      WE_3             => WE_3,
-      REQ_0            => REQ_0,
-      REQ_1            => REQ_1,
-      REQ_2            => REQ_2,
-      REQ_3            => REQ_3,
-      RDY_0            => RDY_0,
-      RDY_1            => RDY_1,
-      RDY_2            => RDY_2,
-      RDY_3            => RDY_3,
       -- MAP USER PORTS ABOVE THIS LINE ------------------
 
       Bus2IP_Clk                     => ipif_Bus2IP_Clk,

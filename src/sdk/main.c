@@ -52,23 +52,15 @@ typedef volatile int32_t * pdata_32;
 #define DI_1         REG_DATA_32(11)
 #define DI_2         REG_DATA_32(12)
 #define DI_3         REG_DATA_32(13)
-#define ADDR_0       REG_DATA_32(14)
-#define ADDR_1       REG_DATA_32(15)
-#define ADDR_2       REG_DATA_32(16)
-#define ADDR_3       REG_DATA_32(17)
-#define RST          REG_DATA_32(18)
-#define WE_0         REG_DATA_32(19)
-#define WE_1         REG_DATA_32(20)
-#define WE_2         REG_DATA_32(21)
-#define WE_3         REG_DATA_32(22)
-#define REQ_0        REG_DATA_32(23)
-#define REQ_1        REG_DATA_32(24)
-#define REQ_2        REG_DATA_32(25)
-#define REQ_3        REG_DATA_32(26)
-#define RDY_0        REG_DATA_32(27)
-#define RDY_1        REG_DATA_32(28)
-#define RDY_2        REG_DATA_32(29)
-#define RDY_3        REG_DATA_32(30)
+#define ADDR_0_W     REG_DATA_32(14)
+#define ADDR_1_W     REG_DATA_32(15)
+#define ADDR_2_W     REG_DATA_32(16)
+#define ADDR_3_W     REG_DATA_32(17)
+#define ADDR_0_R     REG_DATA_32(18)
+#define ADDR_1_R     REG_DATA_32(19)
+#define ADDR_2_R     REG_DATA_32(20)
+#define ADDR_3_R     REG_DATA_32(21)
+#define RST          REG_DATA_32(22)
 
 // We need this header to avoid compiling errors...
 void xil_printf(const char *, ...);
@@ -112,54 +104,10 @@ int main(void)
 	xil_printf("Threads have finished!\n");
 
 	// Display DDR2 data once the threads have finished
-	//xil_printf("DDR2 data after the threads have finished:\n");
-	//for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i), DDR2_DATA_32(i));
-	//for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i+100), DDR2_DATA_32(i+100));
+	xil_printf("DDR2 data after the threads have finished:\n");
+	for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i), DDR2_DATA_32(i));
+	for (i = 0; i < 16; i++) xil_printf("%X => %d\n", &DDR2_DATA_32(i+100), DDR2_DATA_32(i+100));
 
-	DI_0 = 0xAAAAAAAA;
-	DI_1 = 0xBBBBBBBB;
-	DI_2 = 0xCCCCCCCC;
-	DI_3 = 0xDDDDDDDD;
-
-	ADDR_0 = 100;
-	ADDR_1 = 200;
-	ADDR_2 = 600;
-	ADDR_3 = 700;
-
-	WE_0 = 0b1111;
-	WE_1 = 0b1111;
-	WE_2 = 0b1111;
-	WE_3 = 0b1111;
-
-	REQ_0 = 1;
-	while (!RDY_0);
-	REQ_0 = 0;
-	REQ_1 = 1;
-	while (!RDY_1);
-	REQ_1 = 0;
-	REQ_2 = 1;
-	while (!RDY_2);
-	REQ_2 = 0;
-	REQ_3 = 1;
-	while (!RDY_3);
-	REQ_3 = 0;
-
-	ADDR_0 = 700;
-	ADDR_1 = 600;
-	ADDR_2 = 200;
-	ADDR_3 = 100;
-
-	REQ_0 = 1;
-	REQ_1 = 1;
-	REQ_2 = 1;
-	REQ_3 = 1;
-
-	while (!RDY_3);
-
-	xil_printf("Data read in port 0 => %x\n", DO_0);
-	xil_printf("Data read in port 1 => %x\n", DO_1);
-	xil_printf("Data read in port 2 => %x\n", DO_2);
-	xil_printf("Data read in port 3 => %x\n", DO_3);
 
 	return 0;
 }

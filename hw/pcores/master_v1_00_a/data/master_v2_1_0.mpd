@@ -50,7 +50,7 @@ PORT address_in_2 = "", DIR = I, VEC = [31:0]
 PORT address_in_3 = "", DIR = I, VEC = [31:0]
 PORT go = "", DIR = I
 PORT ready = "", DIR = O
-PORT DEBUG_signal_master = "", DIR = O, VEC = [250:0]
+PORT chipscope_probe = "", DIR = O, VEC = [255:0]
 PORT DO_0 = "", DIR = O, VEC = [31:0]
 PORT DO_1 = "", DIR = O, VEC = [31:0]
 PORT DO_2 = "", DIR = O, VEC = [31:0]
@@ -59,25 +59,17 @@ PORT DI_0 = "", DIR = I, VEC = [31:0]
 PORT DI_1 = "", DIR = I, VEC = [31:0]
 PORT DI_2 = "", DIR = I, VEC = [31:0]
 PORT DI_3 = "", DIR = I, VEC = [31:0]
-PORT ADDR_0 = "", DIR = I, VEC = [9:0]
-PORT ADDR_1 = "", DIR = I, VEC = [9:0]
-PORT ADDR_2 = "", DIR = I, VEC = [9:0]
-PORT ADDR_3 = "", DIR = I, VEC = [9:0]
+PORT ADDR_0_W = "", DIR = I, VEC = [9:0]
+PORT ADDR_1_W = "", DIR = I, VEC = [9:0]
+PORT ADDR_2_W = "", DIR = I, VEC = [9:0]
+PORT ADDR_3_W = "", DIR = I, VEC = [9:0]
+PORT ADDR_0_R = "", DIR = I, VEC = [9:0]
+PORT ADDR_1_R = "", DIR = I, VEC = [9:0]
+PORT ADDR_2_R = "", DIR = I, VEC = [9:0]
+PORT ADDR_3_R = "", DIR = I, VEC = [9:0]
 PORT BRAM_CLK = "", DIR = I
 PORT TRIG_CLK = "", DIR = I
 PORT RST = "", DIR = I
-PORT WE_0 = "", DIR = I, VEC = [3:0]
-PORT WE_1 = "", DIR = I, VEC = [3:0]
-PORT WE_2 = "", DIR = I, VEC = [3:0]
-PORT WE_3 = "", DIR = I, VEC = [3:0]
-PORT REQ_0 = "", DIR = I
-PORT REQ_1 = "", DIR = I
-PORT REQ_2 = "", DIR = I
-PORT REQ_3 = "", DIR = I
-PORT RDY_0 = "", DIR = O
-PORT RDY_1 = "", DIR = O
-PORT RDY_2 = "", DIR = O
-PORT RDY_3 = "", DIR = O
 
 PORT S_AXI_ACLK = "", DIR = I, SIGIS = CLK, BUS = S_AXI
 PORT S_AXI_ARESETN = ARESETN, DIR = I, SIGIS = RST, BUS = S_AXI

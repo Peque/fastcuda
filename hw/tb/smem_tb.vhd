@@ -37,6 +37,24 @@ end smem_tb;
 architecture smem_tb_arch of smem_tb is
 
 
+	type state_t is (
+
+		IDLE,
+		SMEM_WRITE_0,
+		FOO_0,
+		SMEM_READ_0,
+		FOO_1,
+		SMEM_WRITE_1,
+		FOO_2,
+		SMEM_READ_1,
+		FOO_3,
+		SMEM_WRITE_2,
+		FOO_4,
+		SMEM_READ_2,
+		DONE
+
+	);
+
 	component smem
 
 		port (
@@ -61,7 +79,12 @@ architecture smem_tb_arch of smem_tb is
 	signal BRAM_CLK, TRIG_CLK, RST            : std_logic := '0';
 	signal REQ_0, REQ_1, REQ_2, REQ_3         : std_logic := '0';
 	signal RDY_0, RDY_1, RDY_2, RDY_3         : std_logic := '0';
-	signal test_bench_state                   : std_logic_vector(1 downto 0) := "00";
+	signal start_test_bench                   : std_logic := '0';
+
+	signal kernel_0_state                       : state_t;
+	signal kernel_1_state                       : state_t;
+	signal kernel_2_state                       : state_t;
+	signal kernel_3_state                       : state_t;
 
 
 begin
@@ -130,264 +153,439 @@ begin
 
 		wait for 100 ns; -- Wait until global set/reset completes
 
-		test_bench_state <= "01";
-
-		wait for 50 ns;
-
-		test_bench_state <= "10";
-
-		wait for 20 ns;
-
-		test_bench_state <= "11";
+		start_test_bench <= '1';
 
 	end process test_bench;
 
 
-	thread_0 : process begin
+	thread_0 : process (TRIG_CLK)
 
-		wait until test_bench_state = "01";
+	begin
 
-		DI_0 <= x"AAAAAAAA";
-		ADDR_0 <= "1000000000";
-		WE_0 <= "1111";
-		REQ_0 <= '1';
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
 
-		wait until RDY_0 = '0';
+			case kernel_0_state is
 
-		REQ_0 <= '0';
+				when IDLE =>
 
-		wait until RDY_0 = '1';
+					if start_test_bench = '1' then
+						kernel_0_state <= SMEM_WRITE_0;
+					end if;
 
-		WE_0 <= "0000";
-		REQ_0 <= '1';
+				when SMEM_WRITE_0 =>
 
-		wait until RDY_0 = '0';
+					DI_0 <= x"AAAAAAAA";
+					ADDR_0 <= "0000000000";
+					WE_0 <= "1111";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_0;
+					end if;
 
-		REQ_0 <= '0';
+				when FOO_0 =>
 
-		wait until RDY_0 = '1';
+					kernel_0_state <= SMEM_READ_0;
 
-		wait until test_bench_state = "10";
+				when SMEM_READ_0 =>
 
-		ADDR_0 <= "1000000000";
-		WE_0 <= "0000";
-		REQ_0 <= '1';
+					ADDR_0 <= "0000000000";
+					WE_0 <= "0000";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_1;
+					end if;
 
-		wait until RDY_0 = '0';
+				when FOO_1 =>
 
-		REQ_0 <= '0';
+					kernel_0_state <= SMEM_WRITE_1;
 
-		wait until RDY_0 = '1';
+				when SMEM_WRITE_1 =>
 
-		wait until test_bench_state = "11";
+					DI_0 <= x"AAAAAAAA";
+					ADDR_0 <= "0000000000";
+					WE_0 <= "1111";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_2;
+					end if;
 
-		DI_0 <= x"11111111";
-		ADDR_0 <= "0000000000";
-		WE_0 <= "1111";
-		REQ_0 <= '1';
+				when FOO_2 =>
 
-		wait until RDY_0 = '0';
+					kernel_0_state <= SMEM_READ_1;
 
-		REQ_0 <= '0';
+				when SMEM_READ_1 =>
 
-		wait until RDY_0 = '1';
+					ADDR_0 <= "1000000001";
+					WE_0 <= "0000";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_3;
+					end if;
 
-		WE_0 <= "0000";
-		REQ_0 <= '1';
+				when FOO_3 =>
 
-		wait until RDY_0 = '0';
+					kernel_0_state <= SMEM_WRITE_2;
 
-		REQ_0 <= '0';
+				when SMEM_WRITE_2 =>
 
-		wait until RDY_0 = '1';
+					DI_0 <= x"AAAAAAAA";
+					ADDR_0 <= "0000000010";
+					WE_0 <= "1111";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= FOO_4;
+					end if;
 
-		wait;
+				when FOO_4 =>
+
+					kernel_0_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_0 <= "0000001110";
+					WE_0 <= "0000";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
 
 	end process thread_0;
 
-	thread_1 : process begin
 
-		wait until test_bench_state = "01";
+	thread_1 : process (TRIG_CLK)
 
-		DI_1 <= x"BBBBBBBB";
-		ADDR_1 <= "1000000001";
-		WE_1 <= "1111";
-		REQ_1 <= '1';
+	begin
 
-		wait until RDY_1 = '0';
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
 
-		REQ_1 <= '0';
+			case kernel_1_state is
 
-		wait until RDY_1 = '1';
+				when IDLE =>
 
-		WE_1 <= "0000";
-		REQ_1 <= '1';
+					if start_test_bench = '1' then
+						kernel_1_state <= SMEM_WRITE_0;
+					end if;
 
-		wait until RDY_1 = '0';
+				when SMEM_WRITE_0 =>
 
-		REQ_1 <= '0';
+					DI_1 <= x"BBBBBBBB";
+					ADDR_1 <= "0000000000";
+					WE_1 <= "1111";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_0;
+					end if;
 
-		wait until RDY_1 = '1';
+				when FOO_0 =>
 
-		wait until test_bench_state = "10";
+					kernel_1_state <= SMEM_READ_0;
 
-		ADDR_1 <= "1000000000";
-		WE_1 <= "0000";
-		REQ_1 <= '1';
+				when SMEM_READ_0 =>
 
-		wait until RDY_1 = '0';
+					ADDR_1 <= "0000000000";
+					WE_1 <= "0000";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_1;
+					end if;
 
-		REQ_1 <= '0';
+				when FOO_1 =>
 
-		wait until RDY_1 = '1';
+					kernel_1_state <= SMEM_WRITE_1;
 
-		wait until test_bench_state = "11";
+				when SMEM_WRITE_1 =>
 
-		DI_1 <= x"22222222";
-		ADDR_1 <= "0000000001";
-		WE_1 <= "1111";
-		REQ_1 <= '1';
+					DI_1 <= x"BBBBBBBB";
+					ADDR_1 <= "0000000001";
+					WE_1 <= "1111";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_2;
+					end if;
 
-		wait until RDY_1 = '0';
+				when FOO_2 =>
 
-		REQ_1 <= '0';
+					kernel_1_state <= SMEM_READ_1;
 
-		wait until RDY_1 = '1';
+				when SMEM_READ_1 =>
 
-		WE_1 <= "0000";
-		REQ_1 <= '1';
+					ADDR_1 <= "1000000000";
+					WE_1 <= "0000";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_3;
+					end if;
 
-		wait until RDY_1 = '0';
+				when FOO_3 =>
 
-		REQ_1 <= '0';
+					kernel_1_state <= SMEM_WRITE_2;
 
-		wait until RDY_1 = '1';
+				when SMEM_WRITE_2 =>
 
-		wait;
+					DI_1 <= x"BBBBBBBB";
+					ADDR_1 <= "0000000110";
+					WE_1 <= "1111";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_1_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_1 <= "0000001010";
+					WE_1 <= "0000";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
 
 	end process thread_1;
 
-	thread_2 : process begin
 
-		wait until test_bench_state = "01";
+	thread_2 : process (TRIG_CLK)
 
-		DI_2 <= x"CCCCCCCC";
-		ADDR_2 <= "1000000010";
-		WE_2 <= "1111";
-		REQ_2 <= '1';
+	begin
 
-		wait until RDY_2 = '0';
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
 
-		REQ_2 <= '0';
+			case kernel_2_state is
 
-		wait until RDY_2 = '1';
+				when IDLE =>
 
-		WE_2 <= "0000";
-		REQ_2 <= '1';
+					if start_test_bench = '1' then
+						kernel_2_state <= SMEM_WRITE_0;
+					end if;
 
-		wait until RDY_2 = '0';
+				when SMEM_WRITE_0 =>
 
-		REQ_2 <= '0';
+					DI_2 <= x"CCCCCCCC";
+					ADDR_2 <= "0000000000";
+					WE_2 <= "1111";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_0;
+					end if;
 
-		wait until RDY_2 = '1';
+				when FOO_0 =>
 
-		wait until test_bench_state = "10";
+					kernel_2_state <= SMEM_READ_0;
 
-		ADDR_2 <= "1000000000";
-		WE_2 <= "0000";
-		REQ_2 <= '1';
+				when SMEM_READ_0 =>
 
-		wait until RDY_2 = '0';
+					ADDR_2 <= "0000000000";
+					WE_2 <= "0000";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_1;
+					end if;
 
-		REQ_2 <= '0';
+				when FOO_1 =>
 
-		wait until RDY_2 = '1';
+					kernel_2_state <= SMEM_WRITE_1;
 
-		wait until test_bench_state = "11";
+				when SMEM_WRITE_1 =>
 
-		DI_2 <= x"33333333";
-		ADDR_2 <= "1000000000";
-		WE_2 <= "1111";
-		REQ_2 <= '1';
+					DI_2 <= x"CCCCCCCC";
+					ADDR_2 <= "1000000000";
+					WE_2 <= "1111";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_2;
+					end if;
 
-		wait until RDY_2 = '0';
+				when FOO_2 =>
 
-		REQ_2 <= '0';
+					kernel_2_state <= SMEM_READ_1;
 
-		wait until RDY_2 = '1';
+				when SMEM_READ_1 =>
 
-		WE_2 <= "0000";
-		REQ_2 <= '1';
+					ADDR_2 <= "0000000001";
+					WE_2 <= "0000";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_3;
+					end if;
 
-		wait until RDY_2 = '0';
+				when FOO_3 =>
 
-		REQ_2 <= '0';
+					kernel_2_state <= SMEM_WRITE_2;
 
-		wait until RDY_2 = '1';
+				when SMEM_WRITE_2 =>
 
-		wait;
+					DI_2 <= x"CCCCCCCC";
+					ADDR_2 <= "0000001010";
+					WE_2 <= "1111";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_2_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_2 <= "0000000110";
+					WE_2 <= "0000";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
 
 	end process thread_2;
 
-	thread_3 : process begin
 
-		wait until test_bench_state = "01";
+	thread_3 : process (TRIG_CLK)
 
-		DI_3 <= x"DDDDDDDD";
-		ADDR_3 <= "1000000011";
-		WE_3 <= "1111";
-		REQ_3 <= '1';
+	begin
 
-		wait until RDY_3 = '0';
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
 
-		REQ_3 <= '0';
+			case kernel_3_state is
 
-		wait until RDY_3 = '1';
+				when IDLE =>
 
-		WE_3 <= "0000";
-		REQ_3 <= '1';
+					if start_test_bench = '1' then
+						kernel_3_state <= SMEM_WRITE_0;
+					end if;
 
-		wait until RDY_3 = '0';
+				when SMEM_WRITE_0 =>
 
-		REQ_3 <= '0';
+					DI_3 <= x"DDDDDDDD";
+					ADDR_3 <= "0000000000";
+					WE_3 <= "1111";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_0;
+					end if;
 
-		wait until RDY_3 = '1';
+				when FOO_0 =>
 
-		wait until test_bench_state = "10";
+					kernel_3_state <= SMEM_READ_0;
 
-		ADDR_3 <= "1000000000";
-		WE_3 <= "0000";
-		REQ_3 <= '1';
+				when SMEM_READ_0 =>
 
-		wait until RDY_3 = '0';
+					ADDR_3 <= "0000000000";
+					WE_3 <= "0000";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_1;
+					end if;
 
-		REQ_3 <= '0';
+				when FOO_1 =>
 
-		wait until RDY_3 = '1';
+					kernel_3_state <= SMEM_WRITE_1;
 
-		wait until test_bench_state = "11";
+				when SMEM_WRITE_1 =>
 
-		DI_3 <= x"44444444";
-		ADDR_3 <= "1000000001";
-		WE_3 <= "1111";
-		REQ_3 <= '1';
+					DI_3 <= x"DDDDDDDD";
+					ADDR_3 <= "1000000001";
+					WE_3 <= "1111";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_2;
+					end if;
 
-		wait until RDY_3 = '0';
+				when FOO_2 =>
 
-		REQ_3 <= '0';
+					kernel_3_state <= SMEM_READ_1;
 
-		wait until RDY_3 = '1';
+				when SMEM_READ_1 =>
 
-		WE_3 <= "0000";
-		REQ_3 <= '1';
+					ADDR_3 <= "0000000000";
+					WE_3 <= "0000";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_3;
+					end if;
 
-		wait until RDY_3 = '0';
+				when FOO_3 =>
 
-		REQ_3 <= '0';
+					kernel_3_state <= SMEM_WRITE_2;
 
-		wait until RDY_3 = '1';
+				when SMEM_WRITE_2 =>
 
-		wait;
+					DI_3 <= x"DDDDDDDD";
+					ADDR_3 <= "0000001110";
+					WE_3 <= "1111";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO_4;
+					end if;
+
+				when FOO_4 =>
+
+					kernel_3_state <= SMEM_READ_2;
+
+				when SMEM_READ_2 =>
+
+					ADDR_3 <= "0000000010";
+					WE_3 <= "0000";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
 
 	end process thread_3;
 
