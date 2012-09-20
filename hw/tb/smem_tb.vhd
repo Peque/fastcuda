@@ -41,10 +41,8 @@ architecture smem_tb_arch of smem_tb is
 
 		IDLE,
 		SMEM_WRITE,
-		WAIT_SMEM_WRITE,
 		FOO,
 		SMEM_READ,
-		WAIT_SMEM_READ,
 		DONE
 
 	);
@@ -75,7 +73,10 @@ architecture smem_tb_arch of smem_tb is
 	signal RDY_0, RDY_1, RDY_2, RDY_3         : std_logic := '0';
 	signal start_test_bench                   : std_logic := '0';
 
-	signal kernel_state                       : state_t;
+	signal kernel_0_state                       : state_t;
+	signal kernel_1_state                       : state_t;
+	signal kernel_2_state                       : state_t;
+	signal kernel_3_state                       : state_t;
 
 
 begin
@@ -155,12 +156,12 @@ begin
 
 		if (TRIG_CLK'event and TRIG_CLK = '1') then
 
-			case kernel_state is
+			case kernel_0_state is
 
 				when IDLE =>
 
 					if start_test_bench = '1' then
-						kernel_state <= SMEM_WRITE;
+						kernel_0_state <= SMEM_WRITE;
 					end if;
 
 				when SMEM_WRITE =>
@@ -169,26 +170,24 @@ begin
 					ADDR_0 <= "0000000000";
 					WE_0 <= "1111";
 					REQ_0 <= '1';
-					kernel_state <= WAIT_SMEM_WRITE;
-
-				when WAIT_SMEM_WRITE =>
-
 					if (RDY_0 = '1') then
 						REQ_0 <= '0';
-						kernel_state <= FOO;
+						kernel_0_state <= FOO;
 					end if;
 
 				when FOO =>
 
-					kernel_state <= SMEM_READ;
+					kernel_0_state <= SMEM_READ;
 
 				when SMEM_READ =>
 
-					null;
-
-				when WAIT_SMEM_READ =>
-
-					null;
+					ADDR_0 <= "1000000001";
+					WE_0 <= "0000";
+					REQ_0 <= '1';
+					if (RDY_0 = '1') then
+						REQ_0 <= '0';
+						kernel_0_state <= DONE;
+					end if;
 
 				when DONE =>
 
@@ -199,6 +198,156 @@ begin
 		end if;
 
 	end process thread_0;
+
+
+	thread_1 : process (TRIG_CLK)
+
+	begin
+
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
+
+			case kernel_1_state is
+
+				when IDLE =>
+
+					if start_test_bench = '1' then
+						kernel_1_state <= SMEM_WRITE;
+					end if;
+
+				when SMEM_WRITE =>
+
+					DI_1 <= x"BBBBBBBB";
+					ADDR_1 <= "0000000001";
+					WE_1 <= "1111";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= FOO;
+					end if;
+
+				when FOO =>
+
+					kernel_1_state <= SMEM_READ;
+
+				when SMEM_READ =>
+
+					ADDR_1 <= "1000000001";
+					WE_1 <= "0000";
+					REQ_1 <= '1';
+					if (RDY_1 = '1') then
+						REQ_1 <= '0';
+						kernel_1_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
+
+	end process thread_1;
+
+
+	thread_2 : process (TRIG_CLK)
+
+	begin
+
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
+
+			case kernel_2_state is
+
+				when IDLE =>
+
+					if start_test_bench = '1' then
+						kernel_2_state <= SMEM_WRITE;
+					end if;
+
+				when SMEM_WRITE =>
+
+					DI_2 <= x"CCCCCCCC";
+					ADDR_2 <= "1000000000";
+					WE_2 <= "1111";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= FOO;
+					end if;
+
+				when FOO =>
+
+					kernel_2_state <= SMEM_READ;
+
+				when SMEM_READ =>
+
+					ADDR_2 <= "0000000000";
+					WE_2 <= "0000";
+					REQ_2 <= '1';
+					if (RDY_2 = '1') then
+						REQ_2 <= '0';
+						kernel_2_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
+
+	end process thread_2;
+
+
+	thread_3 : process (TRIG_CLK)
+
+	begin
+
+		if (TRIG_CLK'event and TRIG_CLK = '1') then
+
+			case kernel_3_state is
+
+				when IDLE =>
+
+					if start_test_bench = '1' then
+						kernel_3_state <= SMEM_WRITE;
+					end if;
+
+				when SMEM_WRITE =>
+
+					DI_3 <= x"DDDDDDDD";
+					ADDR_3 <= "1000000001";
+					WE_3 <= "1111";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= FOO;
+					end if;
+
+				when FOO =>
+
+					kernel_3_state <= SMEM_READ;
+
+				when SMEM_READ =>
+
+					ADDR_3 <= "0000000001";
+					WE_3 <= "0000";
+					REQ_3 <= '1';
+					if (RDY_3 = '1') then
+						REQ_3 <= '0';
+						kernel_3_state <= DONE;
+					end if;
+
+				when DONE =>
+
+					null;
+
+			end case;
+
+		end if;
+
+	end process thread_3;
 
 
 end smem_tb_arch;
