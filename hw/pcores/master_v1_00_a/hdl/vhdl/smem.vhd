@@ -178,10 +178,10 @@ begin
 	-- NEVER USED --k3_needs_bram_1 <= k3_needs_attention and     to_bit(ADDR_3(9));
 
 
-	bram_0_A_input_sel(1) <= not k0_needs_bram_0 and not k2_needs_bram_0;
+	bram_0_A_input_sel(1) <= not k0_needs_bram_0 and not k1_needs_bram_0;
 	bram_0_A_input_sel(0) <= not (k0_needs_bram_0 or (k2_needs_bram_0 and not k1_needs_bram_0));
 
-	bram_1_A_input_sel(1) <= not k0_needs_bram_1 and not k2_needs_bram_1;
+	bram_1_A_input_sel(1) <= not k0_needs_bram_1 and not k1_needs_bram_1;
 	bram_1_A_input_sel(0) <= not (k0_needs_bram_1 or (k2_needs_bram_1 and not k1_needs_bram_1));
 
 	bram_0_B_input_sel(1) <= bram_0_A_input_sel(1) or bram_0_A_input_sel(0) or not k1_needs_bram_0;
