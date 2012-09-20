@@ -26,7 +26,7 @@
 CONFIG_DIR=~/.fastcuda
 
 
-XILINX_DIR_TOKEN=/ISE_DS/EDK/hw/XilinxProcessorIPLib/pcores
+XILINX_DIR_TOKEN=/ISE_DS/
 FASTCUDA_DIR_TOKEN=/src/fastcuda.sh
 
 
@@ -49,10 +49,10 @@ XILINX_FOUND_HOME=$(find ~ -name '.?*' -prune -o -print | grep $XILINX_DIR_TOKEN
 if [[ -z "$XILINX_FOUND_OPT" && -z "$XILINX_FOUND_HOME" ]]; then
 	echo "Couldn't find Xilinx in your system."
 	echo "Please, introduce path for the Xilinx installation directory,"
-	read -p "(i.e.: /opt/Xilinx/13.3/ISE_DS): "
+	read -p "(i.e.: /opt/Xilinx/14.2/ISE_DS): "
 	while [ ! `readlink -e ${REPLY}${XILINX_DIR_TOKEN}` ]; do
 		echo "Incorrect path. Please try again with an absolute path with no trailing '/',"
-		read -p "(i.e.: /opt/Xilinx/13.3/ISE_DS): "
+		read -p "(i.e.: /opt/Xilinx/14.2/ISE_DS): "
 	done
 	echo XILINX_DIR=\"$REPLY\">> $CONFIG_DIR/config
 else
