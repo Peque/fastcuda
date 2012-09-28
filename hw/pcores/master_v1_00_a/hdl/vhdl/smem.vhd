@@ -1251,8 +1251,8 @@ begin
 	end block output_controller_3;
 
 	output_controller_4 : block begin
-		with k0_output_sel select
-			DO_0 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+		with k4_output_sel select
+			DO_4 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1263,8 +1263,8 @@ begin
 	end block output_controller_4;
 
 	output_controller_5 : block begin
-		with k1_output_sel select
-			DO_1 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+		with k5_output_sel select
+			DO_5 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1275,8 +1275,8 @@ begin
 	end block output_controller_5;
 
 	output_controller_6 : block begin
-		with k2_output_sel select
-			DO_2 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+		with k6_output_sel select
+			DO_6 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1287,8 +1287,8 @@ begin
 	end block output_controller_6;
 
 	output_controller_7 : block begin
-		with k3_output_sel select
-			DO_3 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+		with k7_output_sel select
+			DO_7 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
