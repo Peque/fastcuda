@@ -35,6 +35,13 @@ use unimacro.vcomponents.all;
 
 entity smem is
 
+	generic (
+
+		N_PORTS         : integer := 8;
+		LOG2_N_PORTS    : integer := 3  -- TODO: should be calculated from N_PORTS and then used only to generate the VHDL code
+
+	);
+
 	port (
 
 		DO_0, DO_1, DO_2, DO_3, DO_4, DO_5, DO_6, DO_7                     : out std_logic_vector(31 downto 0);    -- Data output ports
@@ -189,62 +196,24 @@ architecture smem_arch of smem is
 	signal k7_needs_bram_2     : bit := '0';
 	signal k7_needs_bram_3     : bit := '0';
 
-	signal do_0_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal do_0_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_0_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_0_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal addr_0_a            : std_logic_vector(8 downto 0) := "000000000";
-	signal addr_0_b            : std_logic_vector(8 downto 0) := "000000000";
-	signal we_0_a              : std_logic_vector(3 downto 0) := "0000";
-	signal we_0_b              : std_logic_vector(3 downto 0) := "0000";
-	signal en_0_a              : std_logic := '0';
-	signal en_0_b              : std_logic := '0';
-
-	signal do_1_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal do_1_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_1_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_1_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal addr_1_a            : std_logic_vector(8 downto 0) := "000000000";
-	signal addr_1_b            : std_logic_vector(8 downto 0) := "000000000";
-	signal we_1_a              : std_logic_vector(3 downto 0) := "0000";
-	signal we_1_b              : std_logic_vector(3 downto 0) := "0000";
-	signal en_1_a              : std_logic := '0';
-	signal en_1_b              : std_logic := '0';
-
-	signal do_2_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal do_2_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_2_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_2_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal addr_2_a            : std_logic_vector(8 downto 0) := "000000000";
-	signal addr_2_b            : std_logic_vector(8 downto 0) := "000000000";
-	signal we_2_a              : std_logic_vector(3 downto 0) := "0000";
-	signal we_2_b              : std_logic_vector(3 downto 0) := "0000";
-	signal en_2_a              : std_logic := '0';
-	signal en_2_b              : std_logic := '0';
-
-	signal do_3_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal do_3_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_3_a              : std_logic_vector(31 downto 0) := X"00000000";
-	signal di_3_b              : std_logic_vector(31 downto 0) := X"00000000";
-	signal addr_3_a            : std_logic_vector(8 downto 0) := "000000000";
-	signal addr_3_b            : std_logic_vector(8 downto 0) := "000000000";
-	signal we_3_a              : std_logic_vector(3 downto 0) := "0000";
-	signal we_3_b              : std_logic_vector(3 downto 0) := "0000";
-	signal en_3_a              : std_logic := '0';
-	signal en_3_b              : std_logic := '0';
+	signal bram_do             : std_logic_vector(N_PORTS * 32 - 1 downto 0);
+	signal bram_di             : std_logic_vector(N_PORTS * 32 - 1 downto 0);
+	signal bram_addr           : std_logic_vector(N_ports * 9  - 1 downto 0);
+	signal bram_we             : std_logic_vector(N_PORTS * 4  - 1 downto 0);
+	signal bram_en             : std_logic_vector(N_PORTS * 1  - 1 downto 0);
 
 
 begin
 
 
-	en_0_a <= '1';
-	en_0_b <= '1';
-	en_1_a <= '1';
-	en_1_b <= '1';
-	en_2_a <= '1';
-	en_2_b <= '1';
-	en_3_a <= '1';
-	en_3_b <= '1';
+	bram_en(0) <= '1';
+	bram_en(1) <= '1';
+	bram_en(2) <= '1';
+	bram_en(3) <= '1';
+	bram_en(4) <= '1';
+	bram_en(5) <= '1';
+	bram_en(6) <= '1';
+	bram_en(7) <= '1';
 
 
 	we_0_safe(3) <= WE_0(3) and to_stdulogic(k0_needs_attention);
@@ -994,7 +963,7 @@ begin
 
 	input_controller_0 : block begin
 		with bram_0_A_input_sel select
-			di_0_a    <=  DI_0 when "000",
+			bram_di(1 * 32 - 1 downto 0 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1003,7 +972,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_0_A_input_sel select
-			addr_0_a  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(1 * 9 - 1 downto 0 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1012,7 +981,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_0_A_input_sel select
-			we_0_a    <=  we_0_safe when "000",
+			bram_we(1 * 4 - 1 downto 0 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1024,7 +993,7 @@ begin
 
 	input_controller_1 : block begin
 		with bram_0_B_input_sel select
-			di_0_b    <=  DI_0 when "000",
+			bram_di(2 * 32 - 1 downto 1 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1033,7 +1002,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_0_B_input_sel select
-			addr_0_b  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(2 * 9 - 1 downto 1 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1042,7 +1011,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_0_B_input_sel select
-			we_0_b    <=  we_0_safe when "000",
+			bram_we(2 * 4 - 1 downto 1 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1054,7 +1023,7 @@ begin
 
 	input_controller_2 : block begin
 		with bram_1_A_input_sel select
-			di_1_a    <=  DI_0 when "000",
+			bram_di(3 * 32 - 1 downto 2 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1063,7 +1032,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_1_A_input_sel select
-			addr_1_a  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(3 * 9 - 1 downto 2 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1072,7 +1041,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_1_A_input_sel select
-			we_1_a    <=  we_0_safe when "000",
+			bram_we(3 * 4 - 1 downto 2 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1084,7 +1053,7 @@ begin
 
 	input_controller_3 : block begin
 		with bram_1_B_input_sel select
-			di_1_b    <=  DI_0 when "000",
+			bram_di(4 * 32 - 1 downto 3 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1093,7 +1062,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_1_B_input_sel select
-			addr_1_b  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(4 * 9 - 1 downto 3 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1102,7 +1071,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_1_B_input_sel select
-			we_1_b    <=  we_0_safe when "000",
+			bram_we(4 * 4 - 1 downto 3 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1114,7 +1083,7 @@ begin
 
 	input_controller_4 : block begin
 		with bram_2_A_input_sel select
-			di_2_a    <=  DI_0 when "000",
+			bram_di(5 * 32 - 1 downto 4 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1123,7 +1092,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_2_A_input_sel select
-			addr_2_a  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(5 * 9 - 1 downto 4 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1132,7 +1101,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_2_A_input_sel select
-			we_2_a    <=  we_0_safe when "000",
+			bram_we(5 * 4 - 1 downto 4 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1144,7 +1113,7 @@ begin
 
 	input_controller_5 : block begin
 		with bram_2_B_input_sel select
-			di_2_b    <=  DI_0 when "000",
+			bram_di(6 * 32 - 1 downto 5 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1153,7 +1122,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_2_B_input_sel select
-			addr_2_b  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(6 * 9 - 1 downto 5 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1162,7 +1131,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_2_B_input_sel select
-			we_2_b    <=  we_0_safe when "000",
+			bram_we(6 * 4 - 1 downto 5 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1174,7 +1143,7 @@ begin
 
 	input_controller_6 : block begin
 		with bram_3_A_input_sel select
-			di_3_a    <=  DI_0 when "000",
+			bram_di(7 * 32 - 1 downto 6 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1183,7 +1152,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_3_A_input_sel select
-			addr_3_a  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(7 * 9 - 1 downto 6 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1192,7 +1161,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_3_A_input_sel select
-			we_3_a    <=  we_0_safe when "000",
+			bram_we(7 * 4 - 1 downto 6 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1204,7 +1173,7 @@ begin
 
 	input_controller_7 : block begin
 		with bram_3_B_input_sel select
-			di_3_b    <=  DI_0 when "000",
+			bram_di(8 * 32 - 1 downto 7 * 32)    <=  DI_0 when "000",
 			              DI_1 when "001",
 			              DI_2 when "010",
 			              DI_3 when "011",
@@ -1213,7 +1182,7 @@ begin
 			              DI_6 when "110",
 			              DI_7 when "111";
 		with bram_3_B_input_sel select
-			addr_3_b  <=  ADDR_0(8 downto 0) when "000",
+			bram_addr(8 * 9 - 1 downto 7 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
 			              ADDR_3(8 downto 0) when "011",
@@ -1222,7 +1191,7 @@ begin
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
 		with bram_3_B_input_sel select
-			we_3_b    <=  we_0_safe when "000",
+			bram_we(8 * 4 - 1 downto 7 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
 			              we_3_safe when "011",
@@ -1235,679 +1204,248 @@ begin
 
 	output_controller_0 : block begin
 		with k0_output_sel select
-			DO_0 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_0 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_0;
 
 	output_controller_1 : block begin
 		with k1_output_sel select
-			DO_1 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_1 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_1;
 
 	output_controller_2 : block begin
 		with k2_output_sel select
-			DO_2 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_2 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_2;
 
 	output_controller_3 : block begin
 		with k3_output_sel select
-			DO_3 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_3 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_3;
 
 	output_controller_4 : block begin
 		with k0_output_sel select
-			DO_0 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_0 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_4;
 
 	output_controller_5 : block begin
 		with k1_output_sel select
-			DO_1 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_1 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_5;
 
 	output_controller_6 : block begin
 		with k2_output_sel select
-			DO_2 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_2 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_6;
 
 	output_controller_7 : block begin
 		with k3_output_sel select
-			DO_3 <= do_0_a when "000",
-			        do_0_b when "001",
-			        do_1_a when "010",
-			        do_1_b when "011",
-			        do_2_a when "100",
-			        do_2_b when "101",
-			        do_3_a when "110",
-			        do_3_b when "111";
+			DO_3 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
+			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
+			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
+			        bram_do(5 * 32 - 1 downto 4 * 32) when "100",
+			        bram_do(6 * 32 - 1 downto 5 * 32) when "101",
+			        bram_do(7 * 32 - 1 downto 6 * 32) when "110",
+			        bram_do(8 * 32 - 1 downto 7 * 32) when "111";
 	end block output_controller_7;
 
 
-	RAMB16BWER_0 : RAMB16BWER
-
-	generic map (
-
-		-- Configurable data with for ports A and B
-		DATA_WIDTH_A => 36,
-		DATA_WIDTH_B => 36,
-
-		-- Enable RST capability
-		EN_RSTRAM_A => TRUE,
-		EN_RSTRAM_B => TRUE,
-
-		-- Reset type
-		RSTTYPE => "SYNC",
-
-		-- Optional port output register
-		DOA_REG => 0,
-		DOB_REG => 0,
-		-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
-		RST_PRIORITY_A => "SR",
-		RST_PRIORITY_B => "SR",
-
-		-- Initial values on ports
-		INIT_A => X"000000000",
-		INIT_B => X"000000000",
-		INIT_FILE => "NONE",
-
-		-- Warning produced and affected outputs/memory location go unknown
-		SIM_COLLISION_CHECK => "ALL",
-
-		-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
-		SIM_DEVICE => "SPARTAN6",
-
-		-- Output value on the DO ports upon the assertion of the syncronous reset signal
-		SRVAL_A => X"000000000",
-		SRVAL_B => X"000000000",
-
-		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
-		WRITE_MODE_A => "READ_FIRST",
-		WRITE_MODE_B => "READ_FIRST",
-
-		-- Initial contents of the RAM
-		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_13 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_14 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_15 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_16 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_17 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_18 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_19 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_20 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_21 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_22 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_23 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_24 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_25 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_26 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_27 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_28 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_29 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_30 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_31 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_32 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_33 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_34 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_35 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_36 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_37 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_38 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_39 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000",
-
-		-- Parity bits initialization
-		INITP_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_07 => X"0000000000000000000000000000000000000000000000000000000000000000"
-
-	) port map (
-
-		DOA                  => do_0_a,              -- Output port-A data
-		DOB                  => do_0_b,              -- Output port-B data
-		DOPA                 => open,                -- We are not using parity bits
-		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => di_0_a,              -- Input port-A data
-		DIB                  => di_0_b,              -- Input port-B data
-		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => addr_0_a,            -- Input port-A address
-		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => addr_0_b,            -- Input port-B address
-		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		CLKA                 => BRAM_CLK,            -- Input port-A clock
-		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => en_0_a,              -- Input port-A enable
-		ENB                  => en_0_b,              -- Input port-B enable
-		REGCEA               => REGCE_value,         -- Input port-A output register enable
-		REGCEB               => REGCE_value,         -- Input port-B output register enable
-		RSTA                 => RST,                 -- Input port-A reset
-		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => we_0_a,              -- Input port-A write enable
-		WEB                  => we_0_b               -- Input port-B write enable
-
-	);
-
-
-	RAMB16BWER_1 : RAMB16BWER
-
-	generic map (
-
-		-- Configurable data with for ports A and B
-		DATA_WIDTH_A => 36,
-		DATA_WIDTH_B => 36,
-
-		-- Enable RST capability
-		EN_RSTRAM_A => TRUE,
-		EN_RSTRAM_B => TRUE,
-
-		-- Reset type
-		RSTTYPE => "SYNC",
-
-		-- Optional port output register
-		DOA_REG => 0,
-		DOB_REG => 0,
-		-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
-		RST_PRIORITY_A => "SR",
-		RST_PRIORITY_B => "SR",
-
-		-- Initial values on ports
-		INIT_A => X"000000000",
-		INIT_B => X"000000000",
-		INIT_FILE => "NONE",
-
-		-- Warning produced and affected outputs/memory location go unknown
-		SIM_COLLISION_CHECK => "ALL",
-
-		-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
-		SIM_DEVICE => "SPARTAN6",
-
-		-- Output value on the DO ports upon the assertion of the syncronous reset signal
-		SRVAL_A => X"000000000",
-		SRVAL_B => X"000000000",
-
-		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
-		WRITE_MODE_A => "READ_FIRST",
-		WRITE_MODE_B => "READ_FIRST",
-
-		-- Initial contents of the RAM
-		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_13 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_14 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_15 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_16 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_17 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_18 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_19 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_20 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_21 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_22 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_23 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_24 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_25 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_26 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_27 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_28 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_29 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_30 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_31 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_32 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_33 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_34 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_35 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_36 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_37 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_38 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_39 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000",
-
-		-- Parity bits initialization
-		INITP_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_07 => X"0000000000000000000000000000000000000000000000000000000000000000"
-
-	) port map (
-
-		DOA                  => do_1_a,              -- Output port-A data
-		DOB                  => do_1_b,              -- Output port-B data
-		DOPA                 => open,                -- We are not using parity bits
-		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => di_1_a,              -- Input port-A data
-		DIB                  => di_1_b,              -- Input port-B data
-		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => addr_1_a,            -- Input port-A address
-		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => addr_1_b,            -- Input port-B address
-		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		CLKA                 => BRAM_CLK,            -- Input port-A clock
-		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => en_1_a,              -- Input port-A enable
-		ENB                  => en_1_b,              -- Input port-B enable
-		REGCEA               => REGCE_value,         -- Input port-A output register enable
-		REGCEB               => REGCE_value,         -- Input port-B output register enable
-		RSTA                 => RST,                 -- Input port-A reset
-		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => we_1_a,              -- Input port-A write enable
-		WEB                  => we_1_b               -- Input port-B write enable
-
-	);
-
-
-	RAMB16BWER_2 : RAMB16BWER
-
-	generic map (
-
-		-- Configurable data with for ports A and B
-		DATA_WIDTH_A => 36,
-		DATA_WIDTH_B => 36,
-
-		-- Enable RST capability
-		EN_RSTRAM_A => TRUE,
-		EN_RSTRAM_B => TRUE,
-
-		-- Reset type
-		RSTTYPE => "SYNC",
-
-		-- Optional port output register
-		DOA_REG => 0,
-		DOB_REG => 0,
-		-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
-		RST_PRIORITY_A => "SR",
-		RST_PRIORITY_B => "SR",
-
-		-- Initial values on ports
-		INIT_A => X"000000000",
-		INIT_B => X"000000000",
-		INIT_FILE => "NONE",
-
-		-- Warning produced and affected outputs/memory location go unknown
-		SIM_COLLISION_CHECK => "ALL",
-
-		-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
-		SIM_DEVICE => "SPARTAN6",
-
-		-- Output value on the DO ports upon the assertion of the syncronous reset signal
-		SRVAL_A => X"000000000",
-		SRVAL_B => X"000000000",
-
-		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
-		WRITE_MODE_A => "READ_FIRST",
-		WRITE_MODE_B => "READ_FIRST",
-
-		-- Initial contents of the RAM
-		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_13 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_14 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_15 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_16 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_17 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_18 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_19 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_20 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_21 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_22 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_23 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_24 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_25 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_26 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_27 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_28 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_29 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_30 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_31 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_32 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_33 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_34 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_35 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_36 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_37 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_38 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_39 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000",
-
-		-- Parity bits initialization
-		INITP_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_07 => X"0000000000000000000000000000000000000000000000000000000000000000"
-
-	) port map (
-
-		DOA                  => do_2_a,              -- Output port-A data
-		DOB                  => do_2_b,              -- Output port-B data
-		DOPA                 => open,                -- We are not using parity bits
-		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => di_2_a,              -- Input port-A data
-		DIB                  => di_2_b,              -- Input port-B data
-		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => addr_2_a,            -- Input port-A address
-		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => addr_2_b,            -- Input port-B address
-		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		CLKA                 => BRAM_CLK,            -- Input port-A clock
-		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => en_2_a,              -- Input port-A enable
-		ENB                  => en_2_b,              -- Input port-B enable
-		REGCEA               => REGCE_value,         -- Input port-A output register enable
-		REGCEB               => REGCE_value,         -- Input port-B output register enable
-		RSTA                 => RST,                 -- Input port-A reset
-		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => we_2_a,              -- Input port-A write enable
-		WEB                  => we_2_b               -- Input port-B write enable
-
-	);
-
-
-	RAMB16BWER_3 : RAMB16BWER
-
-	generic map (
-
-		-- Configurable data with for ports A and B
-		DATA_WIDTH_A => 36,
-		DATA_WIDTH_B => 36,
-
-		-- Enable RST capability
-		EN_RSTRAM_A => TRUE,
-		EN_RSTRAM_B => TRUE,
-
-		-- Reset type
-		RSTTYPE => "SYNC",
-
-		-- Optional port output register
-		DOA_REG => 0,
-		DOB_REG => 0,
-		-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
-		RST_PRIORITY_A => "SR",
-		RST_PRIORITY_B => "SR",
-
-		-- Initial values on ports
-		INIT_A => X"000000000",
-		INIT_B => X"000000000",
-		INIT_FILE => "NONE",
-
-		-- Warning produced and affected outputs/memory location go unknown
-		SIM_COLLISION_CHECK => "ALL",
-
-		-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
-		SIM_DEVICE => "SPARTAN6",
-
-		-- Output value on the DO ports upon the assertion of the syncronous reset signal
-		SRVAL_A => X"000000000",
-		SRVAL_B => X"000000000",
-
-		-- NO_CHANGE mode: the output latches remain unchanged during a write operation
-		WRITE_MODE_A => "READ_FIRST",
-		WRITE_MODE_B => "READ_FIRST",
-
-		-- Initial contents of the RAM
-		INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_13 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_14 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_15 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_16 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_17 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_18 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_19 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_1F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_20 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_21 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_22 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_23 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_24 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_25 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_26 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_27 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_28 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_29 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_2F => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_30 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_31 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_32 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_33 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_34 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_35 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_36 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_37 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_38 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_39 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3A => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3B => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3C => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3D => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3E => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000",
-
-		-- Parity bits initialization
-		INITP_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
-		INITP_07 => X"0000000000000000000000000000000000000000000000000000000000000000"
-
-	) port map (
-
-		DOA                  => do_3_a,              -- Output port-A data
-		DOB                  => do_3_b,              -- Output port-B data
-		DOPA                 => open,                -- We are not using parity bits
-		DOPB                 => open,                -- We are not using parity bits
-		DIA                  => di_3_a,              -- Input port-A data
-		DIB                  => di_3_b,              -- Input port-B data
-		DIPA                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		DIPB                 => DIP_value,           -- Input parity bits always set to 0 (not using them)
-		ADDRA(13 downto 5)   => addr_3_a,            -- Input port-A address
-		ADDRA(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		ADDRB(13 downto 5)   => addr_3_b,            -- Input port-B address
-		ADDRB(4 downto 0)    => LOWADDR_value,       -- Set low adress bits to 0
-		CLKA                 => BRAM_CLK,            -- Input port-A clock
-		CLKB                 => BRAM_CLK,            -- Input port-B clock
-		ENA                  => en_3_a,              -- Input port-A enable
-		ENB                  => en_3_b,              -- Input port-B enable
-		REGCEA               => REGCE_value,         -- Input port-A output register enable
-		REGCEB               => REGCE_value,         -- Input port-B output register enable
-		RSTA                 => RST,                 -- Input port-A reset
-		RSTB                 => RST,                 -- Input port-B reset
-		WEA                  => we_3_a,              -- Input port-A write enable
-		WEB                  => we_3_b               -- Input port-B write enable
-
-	);
+	bram_inst : for i in 0 to N_PORTS / 2 - 1 generate
+
+		RAMB16BWER_INST : RAMB16BWER
+
+		generic map (
+
+			-- Configurable data with for ports A and B
+			DATA_WIDTH_A => 36,
+			DATA_WIDTH_B => 36,
+
+			-- Enable RST capability
+			EN_RSTRAM_A => TRUE,
+			EN_RSTRAM_B => TRUE,
+
+			-- Reset type
+			RSTTYPE => "SYNC",
+
+			-- Optional port output register
+			DOA_REG => 0,
+			DOB_REG => 0,
+			-- Priority given to RAM RST over EN pin (when DO[A|B]_REG = 0)
+			RST_PRIORITY_A => "SR",
+			RST_PRIORITY_B => "SR",
+
+			-- Initial values on ports
+			INIT_A => X"000000000",
+			INIT_B => X"000000000",
+			INIT_FILE => "NONE",
+
+			-- Warning produced and affected outputs/memory location go unknown
+			SIM_COLLISION_CHECK => "ALL",
+
+			-- Simulation device (must be set to "SPARTAN6" for proper simulation behavior
+			SIM_DEVICE => "SPARTAN6",
+
+			-- Output value on the DO ports upon the assertion of the syncronous reset signal
+			SRVAL_A => X"000000000",
+			SRVAL_B => X"000000000",
+
+			-- NO_CHANGE mode: the output latches remain unchanged during a write operation
+			WRITE_MODE_A => "READ_FIRST",
+			WRITE_MODE_B => "READ_FIRST",
+
+			-- Initial contents of the RAM
+			INIT_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_07 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_08 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_09 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_0A => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_0B => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_0C => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_0D => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_0E => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_0F => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_10 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_11 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_12 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_13 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_14 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_15 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_16 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_17 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_18 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_19 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_1A => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_1B => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_1C => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_1D => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_1E => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_1F => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_20 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_21 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_22 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_23 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_24 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_25 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_26 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_27 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_28 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_29 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_2A => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_2B => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_2C => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_2D => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_2E => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_2F => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_30 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_31 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_32 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_33 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_34 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_35 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_36 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_37 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_38 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_39 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_3A => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_3B => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_3C => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_3D => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_3E => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INIT_3F => X"0000000000000000000000000000000000000000000000000000000000000000",
+
+			-- Parity bits initialization
+			INITP_00 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_01 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_02 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_03 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_04 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_05 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_06 => X"0000000000000000000000000000000000000000000000000000000000000000",
+			INITP_07 => X"0000000000000000000000000000000000000000000000000000000000000000"
+
+		) port map (
+
+			DOA                  => bram_do((2 * i + 1) * 32 - 1 downto (2 * i + 0) * 32),    -- Output port-A data
+			DOB                  => bram_do((2 * i + 2) * 32 - 1 downto (2 * i + 1) * 32),    -- Output port-B data
+			DOPA                 => open,                                                     -- We are not using parity bits
+			DOPB                 => open,                                                     -- We are not using parity bits
+			DIA                  => bram_di((2 * i + 1) * 32 - 1 downto (2 * i + 0) * 32),    -- Input port-A data
+			DIB                  => bram_di((2 * i + 2) * 32 - 1 downto (2 * i + 1) * 32),    -- Input port-B data
+			DIPA                 => DIP_value,                                                -- Input parity bits always set to 0 (not using them)
+			DIPB                 => DIP_value,                                                -- Input parity bits always set to 0 (not using them)
+			ADDRA(13 downto 5)   => bram_addr((2 * i + 1) * 9 - 1 downto (2 * i + 0) * 9),    -- Input port-A address
+			ADDRA(4 downto 0)    => LOWADDR_value,                                            -- Set low adress bits to 0
+			ADDRB(13 downto 5)   => bram_addr((2 * i + 2) * 9 - 1 downto (2 * i + 1) * 9),    -- Input port-B address
+			ADDRB(4 downto 0)    => LOWADDR_value,                                            -- Set low adress bits to 0
+			CLKA                 => BRAM_CLK,                                                 -- Input port-A clock
+			CLKB                 => BRAM_CLK,                                                 -- Input port-B clock
+			ENA                  => bram_en(2 * i),                                           -- Input port-A enable
+			ENB                  => bram_en(2 * i + 1),                                       -- Input port-B enable
+			REGCEA               => REGCE_value,                                              -- Input port-A output register enable
+			REGCEB               => REGCE_value,                                              -- Input port-B output register enable
+			RSTA                 => RST,                                                      -- Input port-A reset
+			RSTB                 => RST,                                                      -- Input port-B reset
+			WEA                  => bram_we((2 * i + 1) * 4 - 1 downto (2 * i + 0) * 4),      -- Input port-A write enable
+			WEB                  => bram_we((2 * i + 2) * 4 - 1 downto (2 * i + 1) * 4)       -- Input port-B write enable
+
+		);
+
+	end generate bram_inst;
 
 
 end smem_arch;
