@@ -38,14 +38,15 @@ entity smem is
 	generic (
 
 		N_PORTS         : integer := 8;
+		N_BRAMS         : integer := 4;
 		LOG2_N_PORTS    : integer := 3  -- TODO: should be calculated from N_PORTS and then used only to generate the VHDL code
 
 	);
 
 	port (
 
-		DO_0, DO_1, DO_2, DO_3, DO_4, DO_5, DO_6, DO_7                     : out std_logic_vector(31 downto 0);    -- Data output ports
-		DI_0, DI_1, DI_2, DI_3, DI_4, DI_5, DI_6, DI_7                     : in  std_logic_vector(31 downto 0);    -- Data input ports
+		DO                     : out std_logic_vector(32 * N_PORTS - 1 downto 0);    -- Data output ports
+		DI                     : in  std_logic_vector(32 * N_PORTS - 1 downto 0);    -- Data input ports
 		ADDR_0, ADDR_1, ADDR_2, ADDR_3, ADDR_4, ADDR_5, ADDR_6, ADDR_7     : in  std_logic_vector(10 downto 0);    -- Address input ports
 		WE_0, WE_1, WE_2, WE_3, WE_4, WE_5, WE_6, WE_7                     : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
 		BRAM_CLK, TRIG_CLK, RST                                            : in  std_logic;                        -- Clock and reset input ports
@@ -356,342 +357,229 @@ begin
 	bram_2_B_input_sel(0) <= k7_needs_bram_2 or (k5_needs_bram_2 and not k6_needs_bram_2) or (k3_needs_bram_2 and not k4_needs_bram_2 and not k6_needs_bram_2) or (k1_needs_bram_2 and not k2_needs_bram_2 and not k4_needs_bram_2 and not k6_needs_bram_2);
 	bram_3_B_input_sel(0) <= k7_needs_bram_3 or (k5_needs_bram_3 and not k6_needs_bram_3) or (k3_needs_bram_3 and not k4_needs_bram_3 and not k6_needs_bram_3) or (k1_needs_bram_3 and not k2_needs_bram_3 and not k4_needs_bram_3 and not k6_needs_bram_3);
 
+	process (ADDR_0, ADDR_1) begin
+		if (ADDR_0 = ADDR_1) then
+			addr_0_eq_addr_1 <= '1';
+		else
+			addr_0_eq_addr_1 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_1 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_1(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_1(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_1(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_1(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_1(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_1(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_1(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_1(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_1(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_1(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_1(0))) );
+	process (ADDR_0, ADDR_2) begin
+		if (ADDR_0 = ADDR_2) then
+			addr_0_eq_addr_2 <= '1';
+		else
+			addr_0_eq_addr_2 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_2 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_2(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_2(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_2(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_2(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_2(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_2(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_2(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_2(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_2(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_2(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_2(0))) );
+	process (ADDR_0, ADDR_3) begin
+		if (ADDR_0 = ADDR_3) then
+			addr_0_eq_addr_3 <= '1';
+		else
+			addr_0_eq_addr_3 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_3 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_3(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_3(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_3(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_3(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_3(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_3(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_3(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_3(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_3(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_3(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_3(0))) );
+	process (ADDR_0, ADDR_4) begin
+		if (ADDR_0 = ADDR_4) then
+			addr_0_eq_addr_4 <= '1';
+		else
+			addr_0_eq_addr_4 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_4 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_4(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_4(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_4(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_4(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_4(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_4(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_4(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_4(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_4(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_4(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_4(0))) );
+	process (ADDR_0, ADDR_5) begin
+		if (ADDR_0 = ADDR_5) then
+			addr_0_eq_addr_5 <= '1';
+		else
+			addr_0_eq_addr_5 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_5 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_5(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_5(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_5(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_5(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_5(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_5(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_5(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_5(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_5(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_5(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_5(0))) );
+	process (ADDR_0, ADDR_6) begin
+		if (ADDR_0 = ADDR_6) then
+			addr_0_eq_addr_6 <= '1';
+		else
+			addr_0_eq_addr_6 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_6 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_6(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_6(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_6(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_6(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_6(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_6(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_6(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_6(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_6(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_6(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_6(0))) );
+	process (ADDR_0, ADDR_7) begin
+		if (ADDR_0 = ADDR_7) then
+			addr_0_eq_addr_7 <= '1';
+		else
+			addr_0_eq_addr_7 <= '0';
+		end if;
+	end process;
 
-	addr_0_eq_addr_7 <= ( (to_bit(ADDR_0(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_0(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_0(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_0(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_0(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_0(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_0(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_0(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_0(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_0(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_0(0)) xnor to_bit(ADDR_7(0))) );
+	process (ADDR_1, ADDR_2) begin
+		if (ADDR_1 = ADDR_2) then
+			addr_1_eq_addr_2 <= '1';
+		else
+			addr_1_eq_addr_2 <= '0';
+		end if;
+	end process;
 
-	addr_1_eq_addr_2 <= ( (to_bit(ADDR_1(10)) xnor to_bit(ADDR_2(10))) and
-	                      (to_bit(ADDR_1(9)) xnor to_bit(ADDR_2(9))) and
-	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_2(8))) and
-	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_2(7))) and
-	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_2(6))) and
-	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_2(5))) and
-	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_2(4))) and
-	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_2(3))) and
-	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_2(2))) and
-	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_2(1))) and
-	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_2(0))) );
+	process (ADDR_1, ADDR_3) begin
+		if (ADDR_1 = ADDR_3) then
+			addr_1_eq_addr_3 <= '1';
+		else
+			addr_1_eq_addr_3 <= '0';
+		end if;
+	end process;
 
-	addr_1_eq_addr_3 <= ( (to_bit(ADDR_1(10)) xnor to_bit(ADDR_3(10))) and
-	                      (to_bit(ADDR_1(9)) xnor to_bit(ADDR_3(9))) and
-	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_3(8))) and
-	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_3(7))) and
-	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_3(6))) and
-	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_3(5))) and
-	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_3(4))) and
-	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_3(3))) and
-	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_3(2))) and
-	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_3(1))) and
-	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_3(0))) );
+	process (ADDR_1, ADDR_4) begin
+		if (ADDR_1 = ADDR_4) then
+			addr_1_eq_addr_4 <= '1';
+		else
+			addr_1_eq_addr_4 <= '0';
+		end if;
+	end process;
 
-	addr_1_eq_addr_4 <= ( (to_bit(ADDR_1(10)) xnor to_bit(ADDR_4(10))) and
-	                      (to_bit(ADDR_1(9)) xnor to_bit(ADDR_4(9))) and
-	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_4(8))) and
-	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_4(7))) and
-	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_4(6))) and
-	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_4(5))) and
-	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_4(4))) and
-	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_4(3))) and
-	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_4(2))) and
-	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_4(1))) and
-	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_4(0))) );
+	process (ADDR_1, ADDR_5) begin
+		if (ADDR_1 = ADDR_5) then
+			addr_1_eq_addr_5 <= '1';
+		else
+			addr_1_eq_addr_5 <= '0';
+		end if;
+	end process;
 
-	addr_1_eq_addr_5 <= ( (to_bit(ADDR_1(10)) xnor to_bit(ADDR_5(10))) and
-	                      (to_bit(ADDR_1(9)) xnor to_bit(ADDR_5(9))) and
-	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_5(8))) and
-	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_5(7))) and
-	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_5(6))) and
-	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_5(5))) and
-	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_5(4))) and
-	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_5(3))) and
-	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_5(2))) and
-	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_5(1))) and
-	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_5(0))) );
+	process (ADDR_1, ADDR_6) begin
+		if (ADDR_1 = ADDR_6) then
+			addr_1_eq_addr_6 <= '1';
+		else
+			addr_1_eq_addr_6 <= '0';
+		end if;
+	end process;
 
-	addr_1_eq_addr_6 <= ( (to_bit(ADDR_1(10)) xnor to_bit(ADDR_6(10))) and
-	                      (to_bit(ADDR_1(9)) xnor to_bit(ADDR_6(9))) and
-	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_6(8))) and
-	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_6(7))) and
-	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_6(6))) and
-	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_6(5))) and
-	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_6(4))) and
-	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_6(3))) and
-	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_6(2))) and
-	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_6(1))) and
-	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_6(0))) );
+	process (ADDR_1, ADDR_7) begin
+		if (ADDR_1 = ADDR_7) then
+			addr_1_eq_addr_7 <= '1';
+		else
+			addr_1_eq_addr_7 <= '0';
+		end if;
+	end process;
 
-	addr_1_eq_addr_7 <= ( (to_bit(ADDR_1(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_1(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_1(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_1(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_1(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_1(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_1(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_1(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_1(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_1(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_1(0)) xnor to_bit(ADDR_7(0))) );
+	process (ADDR_2, ADDR_3) begin
+		if (ADDR_2 = ADDR_3) then
+			addr_2_eq_addr_3 <= '1';
+		else
+			addr_2_eq_addr_3 <= '0';
+		end if;
+	end process;
 
-	addr_2_eq_addr_3 <= ( (to_bit(ADDR_2(10)) xnor to_bit(ADDR_3(10))) and
-	                      (to_bit(ADDR_2(9)) xnor to_bit(ADDR_3(9))) and
-	                      (to_bit(ADDR_2(8)) xnor to_bit(ADDR_3(8))) and
-	                      (to_bit(ADDR_2(7)) xnor to_bit(ADDR_3(7))) and
-	                      (to_bit(ADDR_2(6)) xnor to_bit(ADDR_3(6))) and
-	                      (to_bit(ADDR_2(5)) xnor to_bit(ADDR_3(5))) and
-	                      (to_bit(ADDR_2(4)) xnor to_bit(ADDR_3(4))) and
-	                      (to_bit(ADDR_2(3)) xnor to_bit(ADDR_3(3))) and
-	                      (to_bit(ADDR_2(2)) xnor to_bit(ADDR_3(2))) and
-	                      (to_bit(ADDR_2(1)) xnor to_bit(ADDR_3(1))) and
-	                      (to_bit(ADDR_2(0)) xnor to_bit(ADDR_3(0))) );
+	process (ADDR_2, ADDR_4) begin
+		if (ADDR_2 = ADDR_4) then
+			addr_2_eq_addr_4 <= '1';
+		else
+			addr_2_eq_addr_4 <= '0';
+		end if;
+	end process;
 
-	addr_2_eq_addr_4 <= ( (to_bit(ADDR_2(10)) xnor to_bit(ADDR_4(10))) and
-	                      (to_bit(ADDR_2(9)) xnor to_bit(ADDR_4(9))) and
-	                      (to_bit(ADDR_2(8)) xnor to_bit(ADDR_4(8))) and
-	                      (to_bit(ADDR_2(7)) xnor to_bit(ADDR_4(7))) and
-	                      (to_bit(ADDR_2(6)) xnor to_bit(ADDR_4(6))) and
-	                      (to_bit(ADDR_2(5)) xnor to_bit(ADDR_4(5))) and
-	                      (to_bit(ADDR_2(4)) xnor to_bit(ADDR_4(4))) and
-	                      (to_bit(ADDR_2(3)) xnor to_bit(ADDR_4(3))) and
-	                      (to_bit(ADDR_2(2)) xnor to_bit(ADDR_4(2))) and
-	                      (to_bit(ADDR_2(1)) xnor to_bit(ADDR_4(1))) and
-	                      (to_bit(ADDR_2(0)) xnor to_bit(ADDR_4(0))) );
+	process (ADDR_2, ADDR_5) begin
+		if (ADDR_2 = ADDR_5) then
+			addr_2_eq_addr_5 <= '1';
+		else
+			addr_2_eq_addr_5 <= '0';
+		end if;
+	end process;
 
-	addr_2_eq_addr_5 <= ( (to_bit(ADDR_2(10)) xnor to_bit(ADDR_5(10))) and
-	                      (to_bit(ADDR_2(9)) xnor to_bit(ADDR_5(9))) and
-	                      (to_bit(ADDR_2(8)) xnor to_bit(ADDR_5(8))) and
-	                      (to_bit(ADDR_2(7)) xnor to_bit(ADDR_5(7))) and
-	                      (to_bit(ADDR_2(6)) xnor to_bit(ADDR_5(6))) and
-	                      (to_bit(ADDR_2(5)) xnor to_bit(ADDR_5(5))) and
-	                      (to_bit(ADDR_2(4)) xnor to_bit(ADDR_5(4))) and
-	                      (to_bit(ADDR_2(3)) xnor to_bit(ADDR_5(3))) and
-	                      (to_bit(ADDR_2(2)) xnor to_bit(ADDR_5(2))) and
-	                      (to_bit(ADDR_2(1)) xnor to_bit(ADDR_5(1))) and
-	                      (to_bit(ADDR_2(0)) xnor to_bit(ADDR_5(0))) );
+	process (ADDR_2, ADDR_6) begin
+		if (ADDR_2 = ADDR_6) then
+			addr_2_eq_addr_6 <= '1';
+		else
+			addr_2_eq_addr_6 <= '0';
+		end if;
+	end process;
 
-	addr_2_eq_addr_6 <= ( (to_bit(ADDR_2(10)) xnor to_bit(ADDR_6(10))) and
-	                      (to_bit(ADDR_2(9)) xnor to_bit(ADDR_6(9))) and
-	                      (to_bit(ADDR_2(8)) xnor to_bit(ADDR_6(8))) and
-	                      (to_bit(ADDR_2(7)) xnor to_bit(ADDR_6(7))) and
-	                      (to_bit(ADDR_2(6)) xnor to_bit(ADDR_6(6))) and
-	                      (to_bit(ADDR_2(5)) xnor to_bit(ADDR_6(5))) and
-	                      (to_bit(ADDR_2(4)) xnor to_bit(ADDR_6(4))) and
-	                      (to_bit(ADDR_2(3)) xnor to_bit(ADDR_6(3))) and
-	                      (to_bit(ADDR_2(2)) xnor to_bit(ADDR_6(2))) and
-	                      (to_bit(ADDR_2(1)) xnor to_bit(ADDR_6(1))) and
-	                      (to_bit(ADDR_2(0)) xnor to_bit(ADDR_6(0))) );
+	process (ADDR_2, ADDR_7) begin
+		if (ADDR_2 = ADDR_7) then
+			addr_2_eq_addr_7 <= '1';
+		else
+			addr_2_eq_addr_7 <= '0';
+		end if;
+	end process;
 
-	addr_2_eq_addr_7 <= ( (to_bit(ADDR_2(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_2(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_2(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_2(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_2(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_2(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_2(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_2(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_2(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_2(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_2(0)) xnor to_bit(ADDR_7(0))) );
+	process (ADDR_3, ADDR_4) begin
+		if (ADDR_3 = ADDR_4) then
+			addr_3_eq_addr_4 <= '1';
+		else
+			addr_3_eq_addr_4 <= '0';
+		end if;
+	end process;
 
-	addr_3_eq_addr_4 <= ( (to_bit(ADDR_3(10)) xnor to_bit(ADDR_4(10))) and
-	                      (to_bit(ADDR_3(9)) xnor to_bit(ADDR_4(9))) and
-	                      (to_bit(ADDR_3(8)) xnor to_bit(ADDR_4(8))) and
-	                      (to_bit(ADDR_3(7)) xnor to_bit(ADDR_4(7))) and
-	                      (to_bit(ADDR_3(6)) xnor to_bit(ADDR_4(6))) and
-	                      (to_bit(ADDR_3(5)) xnor to_bit(ADDR_4(5))) and
-	                      (to_bit(ADDR_3(4)) xnor to_bit(ADDR_4(4))) and
-	                      (to_bit(ADDR_3(3)) xnor to_bit(ADDR_4(3))) and
-	                      (to_bit(ADDR_3(2)) xnor to_bit(ADDR_4(2))) and
-	                      (to_bit(ADDR_3(1)) xnor to_bit(ADDR_4(1))) and
-	                      (to_bit(ADDR_3(0)) xnor to_bit(ADDR_4(0))) );
+	process (ADDR_3, ADDR_5) begin
+		if (ADDR_3 = ADDR_5) then
+			addr_3_eq_addr_5 <= '1';
+		else
+			addr_3_eq_addr_5 <= '0';
+		end if;
+	end process;
 
-	addr_3_eq_addr_5 <= ( (to_bit(ADDR_3(10)) xnor to_bit(ADDR_5(10))) and
-	                      (to_bit(ADDR_3(9)) xnor to_bit(ADDR_5(9))) and
-	                      (to_bit(ADDR_3(8)) xnor to_bit(ADDR_5(8))) and
-	                      (to_bit(ADDR_3(7)) xnor to_bit(ADDR_5(7))) and
-	                      (to_bit(ADDR_3(6)) xnor to_bit(ADDR_5(6))) and
-	                      (to_bit(ADDR_3(5)) xnor to_bit(ADDR_5(5))) and
-	                      (to_bit(ADDR_3(4)) xnor to_bit(ADDR_5(4))) and
-	                      (to_bit(ADDR_3(3)) xnor to_bit(ADDR_5(3))) and
-	                      (to_bit(ADDR_3(2)) xnor to_bit(ADDR_5(2))) and
-	                      (to_bit(ADDR_3(1)) xnor to_bit(ADDR_5(1))) and
-	                      (to_bit(ADDR_3(0)) xnor to_bit(ADDR_5(0))) );
+	process (ADDR_3, ADDR_6) begin
+		if (ADDR_3 = ADDR_6) then
+			addr_3_eq_addr_6 <= '1';
+		else
+			addr_3_eq_addr_6 <= '0';
+		end if;
+	end process;
 
-	addr_3_eq_addr_6 <= ( (to_bit(ADDR_3(10)) xnor to_bit(ADDR_6(10))) and
-	                      (to_bit(ADDR_3(9)) xnor to_bit(ADDR_6(9))) and
-	                      (to_bit(ADDR_3(8)) xnor to_bit(ADDR_6(8))) and
-	                      (to_bit(ADDR_3(7)) xnor to_bit(ADDR_6(7))) and
-	                      (to_bit(ADDR_3(6)) xnor to_bit(ADDR_6(6))) and
-	                      (to_bit(ADDR_3(5)) xnor to_bit(ADDR_6(5))) and
-	                      (to_bit(ADDR_3(4)) xnor to_bit(ADDR_6(4))) and
-	                      (to_bit(ADDR_3(3)) xnor to_bit(ADDR_6(3))) and
-	                      (to_bit(ADDR_3(2)) xnor to_bit(ADDR_6(2))) and
-	                      (to_bit(ADDR_3(1)) xnor to_bit(ADDR_6(1))) and
-	                      (to_bit(ADDR_3(0)) xnor to_bit(ADDR_6(0))) );
+	process (ADDR_3, ADDR_7) begin
+		if (ADDR_3 = ADDR_7) then
+			addr_3_eq_addr_7 <= '1';
+		else
+			addr_3_eq_addr_7 <= '0';
+		end if;
+	end process;
 
-	addr_3_eq_addr_7 <= ( (to_bit(ADDR_3(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_3(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_3(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_3(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_3(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_3(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_3(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_3(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_3(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_3(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_3(0)) xnor to_bit(ADDR_7(0))) );
+	process (ADDR_4, ADDR_5) begin
+		if (ADDR_4 = ADDR_5) then
+			addr_4_eq_addr_5 <= '1';
+		else
+			addr_4_eq_addr_5 <= '0';
+		end if;
+	end process;
 
-	addr_4_eq_addr_5 <= ( (to_bit(ADDR_4(10)) xnor to_bit(ADDR_5(10))) and
-	                      (to_bit(ADDR_4(9)) xnor to_bit(ADDR_5(9))) and
-	                      (to_bit(ADDR_4(8)) xnor to_bit(ADDR_5(8))) and
-	                      (to_bit(ADDR_4(7)) xnor to_bit(ADDR_5(7))) and
-	                      (to_bit(ADDR_4(6)) xnor to_bit(ADDR_5(6))) and
-	                      (to_bit(ADDR_4(5)) xnor to_bit(ADDR_5(5))) and
-	                      (to_bit(ADDR_4(4)) xnor to_bit(ADDR_5(4))) and
-	                      (to_bit(ADDR_4(3)) xnor to_bit(ADDR_5(3))) and
-	                      (to_bit(ADDR_4(2)) xnor to_bit(ADDR_5(2))) and
-	                      (to_bit(ADDR_4(1)) xnor to_bit(ADDR_5(1))) and
-	                      (to_bit(ADDR_4(0)) xnor to_bit(ADDR_5(0))) );
+	process (ADDR_4, ADDR_6) begin
+		if (ADDR_4 = ADDR_6) then
+			addr_4_eq_addr_6 <= '1';
+		else
+			addr_4_eq_addr_6 <= '0';
+		end if;
+	end process;
 
-	addr_4_eq_addr_6 <= ( (to_bit(ADDR_4(10)) xnor to_bit(ADDR_6(10))) and
-	                      (to_bit(ADDR_4(9)) xnor to_bit(ADDR_6(9))) and
-	                      (to_bit(ADDR_4(8)) xnor to_bit(ADDR_6(8))) and
-	                      (to_bit(ADDR_4(7)) xnor to_bit(ADDR_6(7))) and
-	                      (to_bit(ADDR_4(6)) xnor to_bit(ADDR_6(6))) and
-	                      (to_bit(ADDR_4(5)) xnor to_bit(ADDR_6(5))) and
-	                      (to_bit(ADDR_4(4)) xnor to_bit(ADDR_6(4))) and
-	                      (to_bit(ADDR_4(3)) xnor to_bit(ADDR_6(3))) and
-	                      (to_bit(ADDR_4(2)) xnor to_bit(ADDR_6(2))) and
-	                      (to_bit(ADDR_4(1)) xnor to_bit(ADDR_6(1))) and
-	                      (to_bit(ADDR_4(0)) xnor to_bit(ADDR_6(0))) );
+	process (ADDR_4, ADDR_7) begin
+		if (ADDR_4 = ADDR_7) then
+			addr_4_eq_addr_7 <= '1';
+		else
+			addr_4_eq_addr_7 <= '0';
+		end if;
+	end process;
 
-	addr_4_eq_addr_7 <= ( (to_bit(ADDR_4(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_4(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_4(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_4(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_4(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_4(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_4(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_4(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_4(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_4(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_4(0)) xnor to_bit(ADDR_7(0))) );
+	process (ADDR_5, ADDR_6) begin
+		if (ADDR_5 = ADDR_6) then
+			addr_5_eq_addr_6 <= '1';
+		else
+			addr_5_eq_addr_6 <= '0';
+		end if;
+	end process;
 
-	addr_5_eq_addr_6 <= ( (to_bit(ADDR_5(10)) xnor to_bit(ADDR_6(10))) and
-	                      (to_bit(ADDR_5(9)) xnor to_bit(ADDR_6(9))) and
-	                      (to_bit(ADDR_5(8)) xnor to_bit(ADDR_6(8))) and
-	                      (to_bit(ADDR_5(7)) xnor to_bit(ADDR_6(7))) and
-	                      (to_bit(ADDR_5(6)) xnor to_bit(ADDR_6(6))) and
-	                      (to_bit(ADDR_5(5)) xnor to_bit(ADDR_6(5))) and
-	                      (to_bit(ADDR_5(4)) xnor to_bit(ADDR_6(4))) and
-	                      (to_bit(ADDR_5(3)) xnor to_bit(ADDR_6(3))) and
-	                      (to_bit(ADDR_5(2)) xnor to_bit(ADDR_6(2))) and
-	                      (to_bit(ADDR_5(1)) xnor to_bit(ADDR_6(1))) and
-	                      (to_bit(ADDR_5(0)) xnor to_bit(ADDR_6(0))) );
+	process (ADDR_5, ADDR_7) begin
+		if (ADDR_5 = ADDR_7) then
+			addr_5_eq_addr_7 <= '1';
+		else
+			addr_5_eq_addr_7 <= '0';
+		end if;
+	end process;
 
-	addr_5_eq_addr_7 <= ( (to_bit(ADDR_5(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_5(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_5(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_5(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_5(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_5(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_5(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_5(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_5(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_5(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_5(0)) xnor to_bit(ADDR_7(0))) );
-
-	addr_6_eq_addr_7 <= ( (to_bit(ADDR_6(10)) xnor to_bit(ADDR_7(10))) and
-	                      (to_bit(ADDR_6(9)) xnor to_bit(ADDR_7(9))) and
-	                      (to_bit(ADDR_6(8)) xnor to_bit(ADDR_7(8))) and
-	                      (to_bit(ADDR_6(7)) xnor to_bit(ADDR_7(7))) and
-	                      (to_bit(ADDR_6(6)) xnor to_bit(ADDR_7(6))) and
-	                      (to_bit(ADDR_6(5)) xnor to_bit(ADDR_7(5))) and
-	                      (to_bit(ADDR_6(4)) xnor to_bit(ADDR_7(4))) and
-	                      (to_bit(ADDR_6(3)) xnor to_bit(ADDR_7(3))) and
-	                      (to_bit(ADDR_6(2)) xnor to_bit(ADDR_7(2))) and
-	                      (to_bit(ADDR_6(1)) xnor to_bit(ADDR_7(1))) and
-	                      (to_bit(ADDR_6(0)) xnor to_bit(ADDR_7(0))) );
+	process (ADDR_6, ADDR_7) begin
+		if (ADDR_6 = ADDR_7) then
+			addr_6_eq_addr_7 <= '1';
+		else
+			addr_6_eq_addr_7 <= '0';
+		end if;
+	end process;
 
 
 	k0_being_served <= to_bit(REQ_0);
@@ -933,44 +821,16 @@ begin
 	                                                                              bram_3_B_input_sel(0)) );
 
 
-	--
-	-- A process implementation alternative for the output controller
-	-- which could be used to update output signals only on BRAM_CLK
-	-- events or TRIG_CLK events:
-	--
-	-- TODO: decide whether using a process implementation could be better.
-	--
-	--k0_output_sel_controller : process (BRAM_CLK) begin
-		--if (BRAM_CLK'event and BRAM_CLK = '0') then
-			--if (ADDR_0(9 downto 9) = "0") then
-				--k0_output_sel(1 downto 1) <= "0";
-				--if (bram_0_B_input_sel = "00") then
-					--k0_output_sel(0) <= '1';
-				--else
-					--k0_output_sel(0) <= '0';
-				--end if;
-			--else
-				--k0_output_sel(1 downto 1) <= "1";
-				--if (bram_1_B_input_sel = "00") then
-					--k0_output_sel(0) <= '1';
-				--else
-					--k0_output_sel(0) <= '0';
-				--end if;
-			--end if;
-		--end if;
-	--end process k0_output_sel_controller;
-
-
 	input_controller_0 : block begin
 		with bram_0_A_input_sel select
-			bram_di(1 * 32 - 1 downto 0 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(1 * 32 - 1 downto 0 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_0_A_input_sel select
 			bram_addr(1 * 9 - 1 downto 0 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -993,14 +853,14 @@ begin
 
 	input_controller_1 : block begin
 		with bram_0_B_input_sel select
-			bram_di(2 * 32 - 1 downto 1 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(2 * 32 - 1 downto 1 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_0_B_input_sel select
 			bram_addr(2 * 9 - 1 downto 1 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1023,14 +883,14 @@ begin
 
 	input_controller_2 : block begin
 		with bram_1_A_input_sel select
-			bram_di(3 * 32 - 1 downto 2 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(3 * 32 - 1 downto 2 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_1_A_input_sel select
 			bram_addr(3 * 9 - 1 downto 2 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1053,14 +913,14 @@ begin
 
 	input_controller_3 : block begin
 		with bram_1_B_input_sel select
-			bram_di(4 * 32 - 1 downto 3 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(4 * 32 - 1 downto 3 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_1_B_input_sel select
 			bram_addr(4 * 9 - 1 downto 3 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1083,14 +943,14 @@ begin
 
 	input_controller_4 : block begin
 		with bram_2_A_input_sel select
-			bram_di(5 * 32 - 1 downto 4 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(5 * 32 - 1 downto 4 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_2_A_input_sel select
 			bram_addr(5 * 9 - 1 downto 4 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1113,14 +973,14 @@ begin
 
 	input_controller_5 : block begin
 		with bram_2_B_input_sel select
-			bram_di(6 * 32 - 1 downto 5 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(6 * 32 - 1 downto 5 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_2_B_input_sel select
 			bram_addr(6 * 9 - 1 downto 5 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1143,14 +1003,14 @@ begin
 
 	input_controller_6 : block begin
 		with bram_3_A_input_sel select
-			bram_di(7 * 32 - 1 downto 6 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(7 * 32 - 1 downto 6 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_3_A_input_sel select
 			bram_addr(7 * 9 - 1 downto 6 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1173,14 +1033,14 @@ begin
 
 	input_controller_7 : block begin
 		with bram_3_B_input_sel select
-			bram_di(8 * 32 - 1 downto 7 * 32)    <=  DI_0 when "000",
-			              DI_1 when "001",
-			              DI_2 when "010",
-			              DI_3 when "011",
-			              DI_4 when "100",
-			              DI_5 when "101",
-			              DI_6 when "110",
-			              DI_7 when "111";
+			bram_di(8 * 32 - 1 downto 7 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
+			              DI(32 * 2 - 1 downto 32 * 1) when "001",
+			              DI(32 * 3 - 1 downto 32 * 2) when "010",
+			              DI(32 * 4 - 1 downto 32 * 3) when "011",
+			              DI(32 * 5 - 1 downto 32 * 4) when "100",
+			              DI(32 * 6 - 1 downto 32 * 5) when "101",
+			              DI(32 * 7 - 1 downto 32 * 6) when "110",
+			              DI(32 * 8 - 1 downto 32 * 7) when "111";
 		with bram_3_B_input_sel select
 			bram_addr(8 * 9 - 1 downto 7 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
@@ -1204,7 +1064,7 @@ begin
 
 	output_controller_0 : block begin
 		with k0_output_sel select
-			DO_0 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 1 - 1 downto 32 * 0) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1216,7 +1076,7 @@ begin
 
 	output_controller_1 : block begin
 		with k1_output_sel select
-			DO_1 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 2 - 1 downto 32 * 1) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1228,7 +1088,7 @@ begin
 
 	output_controller_2 : block begin
 		with k2_output_sel select
-			DO_2 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 3 - 1 downto 32 * 2) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1240,7 +1100,7 @@ begin
 
 	output_controller_3 : block begin
 		with k3_output_sel select
-			DO_3 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 4 - 1 downto 32 * 3) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1252,7 +1112,7 @@ begin
 
 	output_controller_4 : block begin
 		with k4_output_sel select
-			DO_4 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 5 - 1 downto 32 * 4) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1264,7 +1124,7 @@ begin
 
 	output_controller_5 : block begin
 		with k5_output_sel select
-			DO_5 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 6 - 1 downto 32 * 5) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1276,7 +1136,7 @@ begin
 
 	output_controller_6 : block begin
 		with k6_output_sel select
-			DO_6 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 7 - 1 downto 32 * 6) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",
@@ -1288,7 +1148,7 @@ begin
 
 	output_controller_7 : block begin
 		with k7_output_sel select
-			DO_7 <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
+			DO(32 * 8 - 1 downto 32 * 7) <= bram_do(1 * 32 - 1 downto 0 * 32) when "000",
 			        bram_do(2 * 32 - 1 downto 1 * 32) when "001",
 			        bram_do(3 * 32 - 1 downto 2 * 32) when "010",
 			        bram_do(4 * 32 - 1 downto 3 * 32) when "011",

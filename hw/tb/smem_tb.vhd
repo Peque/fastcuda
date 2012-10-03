@@ -30,6 +30,15 @@ use ieee.numeric_std.all;
 
 
 entity smem_tb is
+
+	generic (
+
+		N_PORTS         : integer := 8;
+		N_BRAMS         : integer := 4;
+		LOG2_N_PORTS    : integer := 3  -- TODO: should be calculated from N_PORTS and then used only to generate the VHDL code
+
+	);
+
 end smem_tb;
 
 
@@ -59,8 +68,8 @@ architecture smem_tb_arch of smem_tb is
 
 		port (
 
-			DO_0, DO_1, DO_2, DO_3, DO_4, DO_5, DO_6, DO_7                     : out std_logic_vector(31 downto 0);    -- Data output ports
-			DI_0, DI_1, DI_2, DI_3, DI_4, DI_5, DI_6, DI_7                     : in  std_logic_vector(31 downto 0);    -- Data input ports
+			DO                     : out std_logic_vector(32 * N_PORTS - 1 downto 0);    -- Data output ports
+			DI                     : in  std_logic_vector(32 * N_PORTS - 1 downto 0);    -- Data input ports
 			ADDR_0, ADDR_1, ADDR_2, ADDR_3, ADDR_4, ADDR_5, ADDR_6, ADDR_7     : in  std_logic_vector(10 downto 0);    -- Address input ports
 			WE_0, WE_1, WE_2, WE_3, WE_4, WE_5, WE_6, WE_7                     : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports
 			BRAM_CLK, TRIG_CLK, RST                                            : in  std_logic;                        -- Clock and reset input ports
@@ -98,14 +107,14 @@ begin
 
 	port map (
 
-		DO_0 => DO_0,
-		DO_1 => DO_1,
-		DO_2 => DO_2,
-		DO_3 => DO_3,
-		DO_4 => DO_4,
-		DO_5 => DO_5,
-		DO_6 => DO_6,
-		DO_7 => DO_7,
+		DO(32 * 1 - 1 downto 32 * 0) => DO_0,
+		DO(32 * 2 - 1 downto 32 * 1) => DO_1,
+		DO(32 * 3 - 1 downto 32 * 2) => DO_2,
+		DO(32 * 4 - 1 downto 32 * 3) => DO_3,
+		DO(32 * 5 - 1 downto 32 * 4) => DO_4,
+		DO(32 * 6 - 1 downto 32 * 5) => DO_5,
+		DO(32 * 7 - 1 downto 32 * 6) => DO_6,
+		DO(32 * 8 - 1 downto 32 * 7) => DO_7,
 
 		ADDR_0 => ADDR_0,
 		ADDR_1 => ADDR_1,
@@ -120,14 +129,14 @@ begin
 		TRIG_CLK => TRIG_CLK,
 		RST => RST,
 
-		DI_0 => DI_0,
-		DI_1 => DI_1,
-		DI_2 => DI_2,
-		DI_3 => DI_3,
-		DI_4 => DI_4,
-		DI_5 => DI_5,
-		DI_6 => DI_6,
-		DI_7 => DI_7,
+		DI(32 * 1 - 1 downto 32 * 0) => DI_0,
+		DI(32 * 2 - 1 downto 32 * 1) => DI_1,
+		DI(32 * 3 - 1 downto 32 * 2) => DI_2,
+		DI(32 * 4 - 1 downto 32 * 3) => DI_3,
+		DI(32 * 5 - 1 downto 32 * 4) => DI_4,
+		DI(32 * 6 - 1 downto 32 * 5) => DI_5,
+		DI(32 * 7 - 1 downto 32 * 6) => DI_6,
+		DI(32 * 8 - 1 downto 32 * 7) => DI_7,
 
 		WE_0 => WE_0,
 		WE_1 => WE_1,
