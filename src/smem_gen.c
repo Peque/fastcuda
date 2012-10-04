@@ -27,7 +27,7 @@
 #include <string.h>
 
 // TODO: this should be passed through **argv
-#define N 8
+#define N 16
 
 
 void print_license()
@@ -90,7 +90,7 @@ void print_entity()
 		printf("ADDR_%d", i);
 		if (i<N-1) printf(", ");
 	}
-	printf("     : in  std_logic_vector(10 downto 0);    -- Address input ports\n");
+	printf("     : in  std_logic_vector(%d downto 0);    -- Address input ports\n", 8 + (int)log2(N) - 1);
 
 	printf("		");
 	for (i=0; i<N; i++) {
@@ -99,8 +99,18 @@ void print_entity()
 	}
 	printf("                     : in  std_logic_vector(3 downto 0);     -- Byte write enable input ports\n");
 	printf("		BRAM_CLK, TRIG_CLK, RST                                            : in  std_logic;                        -- Clock and reset input ports\n");
-	printf("		REQ_0, REQ_1, REQ_2, REQ_3, REQ_4, REQ_5, REQ_6, REQ_7             : in  std_logic;                        -- Request input ports\n");
-	printf("		RDY_0, RDY_1, RDY_2, RDY_3, RDY_4, RDY_5, RDY_6, RDY_7             : out std_logic                         -- Ready output port\n");
+	printf("		");
+	for (i=0; i<N; i++) {
+		printf("REQ_%d", i);
+		if (i<N-1) printf(", ");
+	}
+	printf("             : in  std_logic;                        -- Request input ports\n");
+	printf("		");
+	for (i=0; i<N; i++) {
+		printf("RDY_%d", i);
+		if (i<N-1) printf(", ");
+	}
+	printf("             : out std_logic                         -- Ready output port\n");
 	printf("\n");
 	printf("	);\n");
 	printf("\n");
@@ -229,6 +239,7 @@ void print_bram_input_sel()
 						printf(" and (not k%d_needs_bram_%d)", (int)exp2(j+1)*c-d+1+2*(b-1), i);
 					}
 					if ((a < N/((int)exp2(j+1)) - 1) && (c == a-1)) printf(") or (");
+					else if (c==a-1) printf(")");
 				}
 			}
 			printf(");\n");
@@ -255,6 +266,7 @@ void print_bram_input_sel()
 						printf(" and (not k%d_needs_bram_%d)", N - 1 - ((int)exp2(j+1)*c-d+1+2*(b-1)), i);
 					}
 					if ((a < N/((int)exp2(j+1)) - 1) && (c == a-1)) printf(") or (");
+					else if (c==a-1) printf(")");
 				}
 			}
 			printf(";\n");
