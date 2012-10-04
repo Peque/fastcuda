@@ -67,29 +67,6 @@ architecture smem_arch of smem is
 	constant REGCE_value       : std_logic := '0';
 	constant EN_value          : std_logic := '1';
 
-	--
-	-- Signals
-	--
-	--   TODO: update comments bellow! (outdated signals)
-	--
-	--   k#_needs_attention   Flag which says wether kernel # needs to be attended
-	--   k#_given_port        Within a BRAM, this bit sets with port (A|B) kernel # has been assigned
-	--   k#_requested_bram    BRAM from/to which we need to read/write (first ADDR_# bits)
-	--   k#_output_sel        Output port from which kernel # needs to read
-	--
-	--
-	--   DO_#_[A|B]           Data output of BRAM # in port [A|B]
-	--   DI_#_[A|B]           Data input of BRAM # in port [A|B]
-	--   ADDR_#_[A|B]         Address input of BRAM # in port [A|B]
-	--   WE_#_[A|B]           Byte write enable input of BRAM # in port [A|B]
-	--   EN_#_[A|B]           Enable input of BRAM # in port [A|B]
-	--
-	--   bram_#_controller_din_[A|B]
-	--   bram_#_controller_dout_[A|B]
-	--   bram_#_controller_addr_[A|B]
-	--   bram_#_controller_we_[A|B]
-	--
-
 	signal k0_output_sel       : bit_vector(2 downto 0) := "000";
 	signal k1_output_sel       : bit_vector(2 downto 0) := "000";
 	signal k2_output_sel       : bit_vector(2 downto 0) := "000";
@@ -155,14 +132,14 @@ architecture smem_arch of smem is
 	signal we_6_safe           : std_logic_vector(3 downto 0) := "0000";
 	signal we_7_safe           : std_logic_vector(3 downto 0) := "0000";
 
-	signal bram_0_A_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_0_B_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_1_A_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_1_B_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_2_A_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_2_B_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_3_A_input_sel  : bit_vector(2 downto 0) := "000";
-	signal bram_3_B_input_sel  : bit_vector(2 downto 0) := "000";
+	signal bram_0_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_1_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_2_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_3_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_4_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_5_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_6_input_sel    : bit_vector(2 downto 0) := "000";
+	signal bram_7_input_sel    : bit_vector(2 downto 0) := "000";
 
 	signal k0_needs_bram_0     : bit := '0';
 	signal k0_needs_bram_1     : bit := '0';
@@ -326,36 +303,36 @@ begin
 	k7_needs_bram_3 <= k7_needs_attention and     to_bit(ADDR_7(10)) and     to_bit(ADDR_7(9));
 
 
-	bram_0_A_input_sel(2) <= not (k0_needs_bram_0 or k1_needs_bram_0 or k2_needs_bram_0 or k3_needs_bram_0);
-	bram_1_A_input_sel(2) <= not (k0_needs_bram_1 or k1_needs_bram_1 or k2_needs_bram_1 or k3_needs_bram_1);
-	bram_2_A_input_sel(2) <= not (k0_needs_bram_2 or k1_needs_bram_2 or k2_needs_bram_2 or k3_needs_bram_2);
-	bram_3_A_input_sel(2) <= not (k0_needs_bram_3 or k1_needs_bram_3 or k2_needs_bram_3 or k3_needs_bram_3);
+	bram_0_input_sel(2) <= not (k0_needs_bram_0 or k1_needs_bram_0 or k2_needs_bram_0 or k3_needs_bram_0);
+	bram_2_input_sel(2) <= not (k0_needs_bram_1 or k1_needs_bram_1 or k2_needs_bram_1 or k3_needs_bram_1);
+	bram_4_input_sel(2) <= not (k0_needs_bram_2 or k1_needs_bram_2 or k2_needs_bram_2 or k3_needs_bram_2);
+	bram_6_input_sel(2) <= not (k0_needs_bram_3 or k1_needs_bram_3 or k2_needs_bram_3 or k3_needs_bram_3);
 
-	bram_0_A_input_sel(1) <= not (k0_needs_bram_0 or k1_needs_bram_0 or ((k4_needs_bram_0 or k5_needs_bram_0) and (not k3_needs_bram_0) and (not k2_needs_bram_0)));
-	bram_1_A_input_sel(1) <= not (k0_needs_bram_1 or k1_needs_bram_1 or ((k4_needs_bram_1 or k5_needs_bram_1) and (not k3_needs_bram_1) and (not k2_needs_bram_1)));
-	bram_2_A_input_sel(1) <= not (k0_needs_bram_2 or k1_needs_bram_2 or ((k4_needs_bram_2 or k5_needs_bram_2) and (not k3_needs_bram_2) and (not k2_needs_bram_2)));
-	bram_3_A_input_sel(1) <= not (k0_needs_bram_3 or k1_needs_bram_3 or ((k4_needs_bram_3 or k5_needs_bram_3) and (not k3_needs_bram_3) and (not k2_needs_bram_3)));
+	bram_0_input_sel(1) <= not (k0_needs_bram_0 or k1_needs_bram_0 or ((k4_needs_bram_0 or k5_needs_bram_0) and (not k3_needs_bram_0) and (not k2_needs_bram_0)));
+	bram_2_input_sel(1) <= not (k0_needs_bram_1 or k1_needs_bram_1 or ((k4_needs_bram_1 or k5_needs_bram_1) and (not k3_needs_bram_1) and (not k2_needs_bram_1)));
+	bram_4_input_sel(1) <= not (k0_needs_bram_2 or k1_needs_bram_2 or ((k4_needs_bram_2 or k5_needs_bram_2) and (not k3_needs_bram_2) and (not k2_needs_bram_2)));
+	bram_6_input_sel(1) <= not (k0_needs_bram_3 or k1_needs_bram_3 or ((k4_needs_bram_3 or k5_needs_bram_3) and (not k3_needs_bram_3) and (not k2_needs_bram_3)));
 
-	bram_0_A_input_sel(0) <= not (k0_needs_bram_0 or (k2_needs_bram_0 and not k1_needs_bram_0) or (k4_needs_bram_0 and not k3_needs_bram_0 and not k1_needs_bram_0) or (k6_needs_bram_0 and not k5_needs_bram_0 and not k3_needs_bram_0 and not k1_needs_bram_0));
-	bram_1_A_input_sel(0) <= not (k0_needs_bram_1 or (k2_needs_bram_1 and not k1_needs_bram_1) or (k4_needs_bram_1 and not k3_needs_bram_1 and not k1_needs_bram_1) or (k6_needs_bram_1 and not k5_needs_bram_1 and not k3_needs_bram_1 and not k1_needs_bram_1));
-	bram_2_A_input_sel(0) <= not (k0_needs_bram_2 or (k2_needs_bram_2 and not k1_needs_bram_2) or (k4_needs_bram_2 and not k3_needs_bram_2 and not k1_needs_bram_2) or (k6_needs_bram_2 and not k5_needs_bram_2 and not k3_needs_bram_2 and not k1_needs_bram_2));
-	bram_3_A_input_sel(0) <= not (k0_needs_bram_3 or (k2_needs_bram_3 and not k1_needs_bram_3) or (k4_needs_bram_3 and not k3_needs_bram_3 and not k1_needs_bram_3) or (k6_needs_bram_3 and not k5_needs_bram_3 and not k3_needs_bram_3 and not k1_needs_bram_3));
+	bram_0_input_sel(0) <= not (k0_needs_bram_0 or (k2_needs_bram_0 and not k1_needs_bram_0) or (k4_needs_bram_0 and not k3_needs_bram_0 and not k1_needs_bram_0) or (k6_needs_bram_0 and not k5_needs_bram_0 and not k3_needs_bram_0 and not k1_needs_bram_0));
+	bram_2_input_sel(0) <= not (k0_needs_bram_1 or (k2_needs_bram_1 and not k1_needs_bram_1) or (k4_needs_bram_1 and not k3_needs_bram_1 and not k1_needs_bram_1) or (k6_needs_bram_1 and not k5_needs_bram_1 and not k3_needs_bram_1 and not k1_needs_bram_1));
+	bram_4_input_sel(0) <= not (k0_needs_bram_2 or (k2_needs_bram_2 and not k1_needs_bram_2) or (k4_needs_bram_2 and not k3_needs_bram_2 and not k1_needs_bram_2) or (k6_needs_bram_2 and not k5_needs_bram_2 and not k3_needs_bram_2 and not k1_needs_bram_2));
+	bram_6_input_sel(0) <= not (k0_needs_bram_3 or (k2_needs_bram_3 and not k1_needs_bram_3) or (k4_needs_bram_3 and not k3_needs_bram_3 and not k1_needs_bram_3) or (k6_needs_bram_3 and not k5_needs_bram_3 and not k3_needs_bram_3 and not k1_needs_bram_3));
 
 
-	bram_0_B_input_sel(2) <= k7_needs_bram_0 or k6_needs_bram_0 or k5_needs_bram_0 or k4_needs_bram_0;
-	bram_1_B_input_sel(2) <= k7_needs_bram_1 or k6_needs_bram_1 or k5_needs_bram_1 or k4_needs_bram_1;
-	bram_2_B_input_sel(2) <= k7_needs_bram_2 or k6_needs_bram_2 or k5_needs_bram_2 or k4_needs_bram_2;
-	bram_3_B_input_sel(2) <= k7_needs_bram_3 or k6_needs_bram_3 or k5_needs_bram_3 or k4_needs_bram_3;
+	bram_1_input_sel(2) <= k7_needs_bram_0 or k6_needs_bram_0 or k5_needs_bram_0 or k4_needs_bram_0;
+	bram_3_input_sel(2) <= k7_needs_bram_1 or k6_needs_bram_1 or k5_needs_bram_1 or k4_needs_bram_1;
+	bram_5_input_sel(2) <= k7_needs_bram_2 or k6_needs_bram_2 or k5_needs_bram_2 or k4_needs_bram_2;
+	bram_7_input_sel(2) <= k7_needs_bram_3 or k6_needs_bram_3 or k5_needs_bram_3 or k4_needs_bram_3;
 
-	bram_0_B_input_sel(1) <= k7_needs_bram_0 or k6_needs_bram_0 or ((k3_needs_bram_0 or k2_needs_bram_0) and (not k4_needs_bram_0) and (not k5_needs_bram_0));
-	bram_1_B_input_sel(1) <= k7_needs_bram_1 or k6_needs_bram_1 or ((k3_needs_bram_1 or k2_needs_bram_1) and (not k4_needs_bram_1) and (not k5_needs_bram_1));
-	bram_2_B_input_sel(1) <= k7_needs_bram_2 or k6_needs_bram_2 or ((k3_needs_bram_2 or k2_needs_bram_2) and (not k4_needs_bram_2) and (not k5_needs_bram_2));
-	bram_3_B_input_sel(1) <= k7_needs_bram_3 or k6_needs_bram_3 or ((k3_needs_bram_3 or k2_needs_bram_3) and (not k4_needs_bram_3) and (not k5_needs_bram_3));
+	bram_1_input_sel(1) <= k7_needs_bram_0 or k6_needs_bram_0 or ((k3_needs_bram_0 or k2_needs_bram_0) and (not k4_needs_bram_0) and (not k5_needs_bram_0));
+	bram_3_input_sel(1) <= k7_needs_bram_1 or k6_needs_bram_1 or ((k3_needs_bram_1 or k2_needs_bram_1) and (not k4_needs_bram_1) and (not k5_needs_bram_1));
+	bram_5_input_sel(1) <= k7_needs_bram_2 or k6_needs_bram_2 or ((k3_needs_bram_2 or k2_needs_bram_2) and (not k4_needs_bram_2) and (not k5_needs_bram_2));
+	bram_7_input_sel(1) <= k7_needs_bram_3 or k6_needs_bram_3 or ((k3_needs_bram_3 or k2_needs_bram_3) and (not k4_needs_bram_3) and (not k5_needs_bram_3));
 
-	bram_0_B_input_sel(0) <= k7_needs_bram_0 or (k5_needs_bram_0 and not k6_needs_bram_0) or (k3_needs_bram_0 and not k4_needs_bram_0 and not k6_needs_bram_0) or (k1_needs_bram_0 and not k2_needs_bram_0 and not k4_needs_bram_0 and not k6_needs_bram_0);
-	bram_1_B_input_sel(0) <= k7_needs_bram_1 or (k5_needs_bram_1 and not k6_needs_bram_1) or (k3_needs_bram_1 and not k4_needs_bram_1 and not k6_needs_bram_1) or (k1_needs_bram_1 and not k2_needs_bram_1 and not k4_needs_bram_1 and not k6_needs_bram_1);
-	bram_2_B_input_sel(0) <= k7_needs_bram_2 or (k5_needs_bram_2 and not k6_needs_bram_2) or (k3_needs_bram_2 and not k4_needs_bram_2 and not k6_needs_bram_2) or (k1_needs_bram_2 and not k2_needs_bram_2 and not k4_needs_bram_2 and not k6_needs_bram_2);
-	bram_3_B_input_sel(0) <= k7_needs_bram_3 or (k5_needs_bram_3 and not k6_needs_bram_3) or (k3_needs_bram_3 and not k4_needs_bram_3 and not k6_needs_bram_3) or (k1_needs_bram_3 and not k2_needs_bram_3 and not k4_needs_bram_3 and not k6_needs_bram_3);
+	bram_1_input_sel(0) <= k7_needs_bram_0 or (k5_needs_bram_0 and not k6_needs_bram_0) or (k3_needs_bram_0 and not k4_needs_bram_0 and not k6_needs_bram_0) or (k1_needs_bram_0 and not k2_needs_bram_0 and not k4_needs_bram_0 and not k6_needs_bram_0);
+	bram_3_input_sel(0) <= k7_needs_bram_1 or (k5_needs_bram_1 and not k6_needs_bram_1) or (k3_needs_bram_1 and not k4_needs_bram_1 and not k6_needs_bram_1) or (k1_needs_bram_1 and not k2_needs_bram_1 and not k4_needs_bram_1 and not k6_needs_bram_1);
+	bram_5_input_sel(0) <= k7_needs_bram_2 or (k5_needs_bram_2 and not k6_needs_bram_2) or (k3_needs_bram_2 and not k4_needs_bram_2 and not k6_needs_bram_2) or (k1_needs_bram_2 and not k2_needs_bram_2 and not k4_needs_bram_2 and not k6_needs_bram_2);
+	bram_7_input_sel(0) <= k7_needs_bram_3 or (k5_needs_bram_3 and not k6_needs_bram_3) or (k3_needs_bram_3 and not k4_needs_bram_3 and not k6_needs_bram_3) or (k1_needs_bram_3 and not k2_needs_bram_3 and not k4_needs_bram_3 and not k6_needs_bram_3);
 
 	process (ADDR_0, ADDR_1) begin
 		if (ADDR_0 = ADDR_1) then
@@ -585,92 +562,92 @@ begin
 	k0_being_served <= to_bit(REQ_0);
 
 	k1_being_served <= to_bit(REQ_1) and (
-	                       ( not k1_output_sel(1) and not k1_output_sel(0) and ( ( not bram_0_A_input_sel(2) and not bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
-	                                                                             ( not bram_0_B_input_sel(2) and not bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) ) )
+	                       ( not k1_output_sel(1) and not k1_output_sel(0) and ( ( not bram_0_input_sel(2) and not bram_0_input_sel(1) and     bram_0_input_sel(0)) or
+	                                                                             ( not bram_1_input_sel(2) and not bram_1_input_sel(1) and     bram_1_input_sel(0)) ) )
 	                       or
-	                       ( not k1_output_sel(1) and     k1_output_sel(0) and ( ( not bram_1_A_input_sel(2) and not bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
-	                                                                             ( not bram_1_B_input_sel(2) and not bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) ) )
+	                       ( not k1_output_sel(1) and     k1_output_sel(0) and ( ( not bram_2_input_sel(2) and not bram_2_input_sel(1) and     bram_2_input_sel(0)) or
+	                                                                             ( not bram_3_input_sel(2) and not bram_3_input_sel(1) and     bram_3_input_sel(0)) ) )
 	                       or
-	                       (     k1_output_sel(1) and not k1_output_sel(0) and ( ( not bram_2_A_input_sel(2) and not bram_2_A_input_sel(1) and     bram_2_A_input_sel(0)) or
-	                                                                             ( not bram_2_B_input_sel(2) and not bram_2_B_input_sel(1) and     bram_2_B_input_sel(0)) ) )
+	                       (     k1_output_sel(1) and not k1_output_sel(0) and ( ( not bram_4_input_sel(2) and not bram_4_input_sel(1) and     bram_4_input_sel(0)) or
+	                                                                             ( not bram_5_input_sel(2) and not bram_5_input_sel(1) and     bram_5_input_sel(0)) ) )
 	                       or
-	                       (     k1_output_sel(1) and     k1_output_sel(0) and ( ( not bram_3_A_input_sel(2) and not bram_3_A_input_sel(1) and     bram_3_A_input_sel(0)) or
-	                                                                             ( not bram_3_B_input_sel(2) and not bram_3_B_input_sel(1) and     bram_3_B_input_sel(0)) ) )
+	                       (     k1_output_sel(1) and     k1_output_sel(0) and ( ( not bram_6_input_sel(2) and not bram_6_input_sel(1) and     bram_6_input_sel(0)) or
+	                                                                             ( not bram_7_input_sel(2) and not bram_7_input_sel(1) and     bram_7_input_sel(0)) ) )
 	                       or
 	                       (not k1_needs_attention) );
 
 	k2_being_served <= to_bit(REQ_2) and (
-	                       ( not k2_output_sel(1) and not k2_output_sel(0) and ( ( not bram_0_A_input_sel(2) and     bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
-	                                                                             ( not bram_0_B_input_sel(2) and     bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) ) )
+	                       ( not k2_output_sel(1) and not k2_output_sel(0) and ( ( not bram_0_input_sel(2) and     bram_0_input_sel(1) and not bram_0_input_sel(0)) or
+	                                                                             ( not bram_1_input_sel(2) and     bram_1_input_sel(1) and not bram_1_input_sel(0)) ) )
 	                       or
-	                       ( not k2_output_sel(1) and     k2_output_sel(0) and ( ( not bram_1_A_input_sel(2) and     bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
-	                                                                             ( not bram_1_B_input_sel(2) and     bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) ) )
+	                       ( not k2_output_sel(1) and     k2_output_sel(0) and ( ( not bram_2_input_sel(2) and     bram_2_input_sel(1) and not bram_2_input_sel(0)) or
+	                                                                             ( not bram_3_input_sel(2) and     bram_3_input_sel(1) and not bram_3_input_sel(0)) ) )
 	                       or
-	                       (     k2_output_sel(1) and not k2_output_sel(0) and ( ( not bram_2_A_input_sel(2) and     bram_2_A_input_sel(1) and not bram_2_A_input_sel(0)) or
-	                                                                             ( not bram_2_B_input_sel(2) and     bram_2_B_input_sel(1) and not bram_2_B_input_sel(0)) ) )
+	                       (     k2_output_sel(1) and not k2_output_sel(0) and ( ( not bram_4_input_sel(2) and     bram_4_input_sel(1) and not bram_4_input_sel(0)) or
+	                                                                             ( not bram_5_input_sel(2) and     bram_5_input_sel(1) and not bram_5_input_sel(0)) ) )
 	                       or
-	                       (     k2_output_sel(1) and     k2_output_sel(0) and ( ( not bram_3_A_input_sel(2) and     bram_3_A_input_sel(1) and not bram_3_A_input_sel(0)) or
-	                                                                             ( not bram_3_B_input_sel(2) and     bram_3_B_input_sel(1) and not bram_3_B_input_sel(0)) ) )
+	                       (     k2_output_sel(1) and     k2_output_sel(0) and ( ( not bram_6_input_sel(2) and     bram_6_input_sel(1) and not bram_6_input_sel(0)) or
+	                                                                             ( not bram_7_input_sel(2) and     bram_7_input_sel(1) and not bram_7_input_sel(0)) ) )
 	                       or
 	                       (not k2_needs_attention) );
 
 	k3_being_served <= to_bit(REQ_3) and (
-	                       ( not k3_output_sel(1) and not k3_output_sel(0) and ( ( not bram_0_A_input_sel(2) and     bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
-	                                                                             ( not bram_0_B_input_sel(2) and     bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) ) )
+	                       ( not k3_output_sel(1) and not k3_output_sel(0) and ( ( not bram_0_input_sel(2) and     bram_0_input_sel(1) and     bram_0_input_sel(0)) or
+	                                                                             ( not bram_1_input_sel(2) and     bram_1_input_sel(1) and     bram_1_input_sel(0)) ) )
 	                       or
-	                       ( not k3_output_sel(1) and     k3_output_sel(0) and ( ( not bram_1_A_input_sel(2) and     bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
-	                                                                             ( not bram_1_B_input_sel(2) and     bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) ) )
+	                       ( not k3_output_sel(1) and     k3_output_sel(0) and ( ( not bram_2_input_sel(2) and     bram_2_input_sel(1) and     bram_2_input_sel(0)) or
+	                                                                             ( not bram_3_input_sel(2) and     bram_3_input_sel(1) and     bram_3_input_sel(0)) ) )
 	                       or
-	                       (     k3_output_sel(1) and not k3_output_sel(0) and ( ( not bram_2_A_input_sel(2) and     bram_2_A_input_sel(1) and     bram_2_A_input_sel(0)) or
-	                                                                             ( not bram_2_B_input_sel(2) and     bram_2_B_input_sel(1) and     bram_2_B_input_sel(0)) ) )
+	                       (     k3_output_sel(1) and not k3_output_sel(0) and ( ( not bram_4_input_sel(2) and     bram_4_input_sel(1) and     bram_4_input_sel(0)) or
+	                                                                             ( not bram_5_input_sel(2) and     bram_5_input_sel(1) and     bram_5_input_sel(0)) ) )
 	                       or
-	                       (     k3_output_sel(1) and     k3_output_sel(0) and ( ( not bram_3_A_input_sel(2) and     bram_3_A_input_sel(1) and     bram_3_A_input_sel(0)) or
-	                                                                             ( not bram_3_B_input_sel(2) and     bram_3_B_input_sel(1) and     bram_3_B_input_sel(0)) ) )
+	                       (     k3_output_sel(1) and     k3_output_sel(0) and ( ( not bram_6_input_sel(2) and     bram_6_input_sel(1) and     bram_6_input_sel(0)) or
+	                                                                             ( not bram_7_input_sel(2) and     bram_7_input_sel(1) and     bram_7_input_sel(0)) ) )
 	                       or
 	                       (not k3_needs_attention) );
 
 	k4_being_served <= to_bit(REQ_4) and (
-	                       ( not k4_output_sel(1) and not k4_output_sel(0) and ( (     bram_0_A_input_sel(2) and not bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
-	                                                                             (     bram_0_B_input_sel(2) and not bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) ) )
+	                       ( not k4_output_sel(1) and not k4_output_sel(0) and ( (     bram_0_input_sel(2) and not bram_0_input_sel(1) and not bram_0_input_sel(0)) or
+	                                                                             (     bram_1_input_sel(2) and not bram_1_input_sel(1) and not bram_1_input_sel(0)) ) )
 	                       or
-	                       ( not k4_output_sel(1) and     k4_output_sel(0) and ( (     bram_1_A_input_sel(2) and not bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
-	                                                                             (     bram_1_B_input_sel(2) and not bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) ) )
+	                       ( not k4_output_sel(1) and     k4_output_sel(0) and ( (     bram_2_input_sel(2) and not bram_2_input_sel(1) and not bram_2_input_sel(0)) or
+	                                                                             (     bram_3_input_sel(2) and not bram_3_input_sel(1) and not bram_3_input_sel(0)) ) )
 	                       or
-	                       (     k4_output_sel(1) and not k4_output_sel(0) and ( (     bram_2_A_input_sel(2) and not bram_2_A_input_sel(1) and not bram_2_A_input_sel(0)) or
-	                                                                             (     bram_2_B_input_sel(2) and not bram_2_B_input_sel(1) and not bram_2_B_input_sel(0)) ) )
+	                       (     k4_output_sel(1) and not k4_output_sel(0) and ( (     bram_4_input_sel(2) and not bram_4_input_sel(1) and not bram_4_input_sel(0)) or
+	                                                                             (     bram_5_input_sel(2) and not bram_5_input_sel(1) and not bram_5_input_sel(0)) ) )
 	                       or
-	                       (     k4_output_sel(1) and     k4_output_sel(0) and ( (     bram_3_A_input_sel(2) and not bram_3_A_input_sel(1) and not bram_3_A_input_sel(0)) or
-	                                                                             (     bram_3_B_input_sel(2) and not bram_3_B_input_sel(1) and not bram_3_B_input_sel(0)) ) )
+	                       (     k4_output_sel(1) and     k4_output_sel(0) and ( (     bram_6_input_sel(2) and not bram_6_input_sel(1) and not bram_6_input_sel(0)) or
+	                                                                             (     bram_7_input_sel(2) and not bram_7_input_sel(1) and not bram_7_input_sel(0)) ) )
 	                       or
 	                       (not k4_needs_attention) );
 
 	k5_being_served <= to_bit(REQ_5) and (
-	                       ( not k5_output_sel(1) and not k5_output_sel(0) and ( (     bram_0_A_input_sel(2) and not bram_0_A_input_sel(1) and     bram_0_A_input_sel(0)) or
-	                                                                             (     bram_0_B_input_sel(2) and not bram_0_B_input_sel(1) and     bram_0_B_input_sel(0)) ) )
+	                       ( not k5_output_sel(1) and not k5_output_sel(0) and ( (     bram_0_input_sel(2) and not bram_0_input_sel(1) and     bram_0_input_sel(0)) or
+	                                                                             (     bram_1_input_sel(2) and not bram_1_input_sel(1) and     bram_1_input_sel(0)) ) )
 	                       or
-	                       ( not k5_output_sel(1) and     k5_output_sel(0) and ( (     bram_1_A_input_sel(2) and not bram_1_A_input_sel(1) and     bram_1_A_input_sel(0)) or
-	                                                                             (     bram_1_B_input_sel(2) and not bram_1_B_input_sel(1) and     bram_1_B_input_sel(0)) ) )
+	                       ( not k5_output_sel(1) and     k5_output_sel(0) and ( (     bram_2_input_sel(2) and not bram_2_input_sel(1) and     bram_2_input_sel(0)) or
+	                                                                             (     bram_3_input_sel(2) and not bram_3_input_sel(1) and     bram_3_input_sel(0)) ) )
 	                       or
-	                       (     k5_output_sel(1) and not k5_output_sel(0) and ( (     bram_2_A_input_sel(2) and not bram_2_A_input_sel(1) and     bram_2_A_input_sel(0)) or
-	                                                                             (     bram_2_B_input_sel(2) and not bram_2_B_input_sel(1) and     bram_2_B_input_sel(0)) ) )
+	                       (     k5_output_sel(1) and not k5_output_sel(0) and ( (     bram_4_input_sel(2) and not bram_4_input_sel(1) and     bram_4_input_sel(0)) or
+	                                                                             (     bram_5_input_sel(2) and not bram_5_input_sel(1) and     bram_5_input_sel(0)) ) )
 	                       or
-	                       (     k5_output_sel(1) and     k5_output_sel(0) and ( (     bram_3_A_input_sel(2) and not bram_3_A_input_sel(1) and     bram_3_A_input_sel(0)) or
-	                                                                             (     bram_3_B_input_sel(2) and not bram_3_B_input_sel(1) and     bram_3_B_input_sel(0)) ) )
+	                       (     k5_output_sel(1) and     k5_output_sel(0) and ( (     bram_6_input_sel(2) and not bram_6_input_sel(1) and     bram_6_input_sel(0)) or
+	                                                                             (     bram_7_input_sel(2) and not bram_7_input_sel(1) and     bram_7_input_sel(0)) ) )
 	                       or
 	                       (not k5_needs_attention) );
 
 	k6_being_served <= to_bit(REQ_6) and (
-	                       ( not k6_output_sel(1) and not k6_output_sel(0) and ( (     bram_0_A_input_sel(2) and     bram_0_A_input_sel(1) and not bram_0_A_input_sel(0)) or
-	                                                                             (     bram_0_B_input_sel(2) and     bram_0_B_input_sel(1) and not bram_0_B_input_sel(0)) ) )
+	                       ( not k6_output_sel(1) and not k6_output_sel(0) and ( (     bram_0_input_sel(2) and     bram_0_input_sel(1) and not bram_0_input_sel(0)) or
+	                                                                             (     bram_1_input_sel(2) and     bram_1_input_sel(1) and not bram_1_input_sel(0)) ) )
 	                       or
-	                       ( not k6_output_sel(1) and     k6_output_sel(0) and ( (     bram_1_A_input_sel(2) and     bram_1_A_input_sel(1) and not bram_1_A_input_sel(0)) or
-	                                                                             (     bram_1_B_input_sel(2) and     bram_1_B_input_sel(1) and not bram_1_B_input_sel(0)) ) )
+	                       ( not k6_output_sel(1) and     k6_output_sel(0) and ( (     bram_2_input_sel(2) and     bram_2_input_sel(1) and not bram_2_input_sel(0)) or
+	                                                                             (     bram_3_input_sel(2) and     bram_3_input_sel(1) and not bram_3_input_sel(0)) ) )
 	                       or
-	                       (     k6_output_sel(1) and not k6_output_sel(0) and ( (     bram_2_A_input_sel(2) and     bram_2_A_input_sel(1) and not bram_2_A_input_sel(0)) or
-	                                                                             (     bram_2_B_input_sel(2) and     bram_2_B_input_sel(1) and not bram_2_B_input_sel(0)) ) )
+	                       (     k6_output_sel(1) and not k6_output_sel(0) and ( (     bram_4_input_sel(2) and     bram_4_input_sel(1) and not bram_4_input_sel(0)) or
+	                                                                             (     bram_5_input_sel(2) and     bram_5_input_sel(1) and not bram_5_input_sel(0)) ) )
 	                       or
-	                       (     k6_output_sel(1) and     k6_output_sel(0) and ( (     bram_3_A_input_sel(2) and     bram_3_A_input_sel(1) and not bram_3_A_input_sel(0)) or
-	                                                                             (     bram_3_B_input_sel(2) and     bram_3_B_input_sel(1) and not bram_3_B_input_sel(0)) ) )
+	                       (     k6_output_sel(1) and     k6_output_sel(0) and ( (     bram_6_input_sel(2) and     bram_6_input_sel(1) and not bram_6_input_sel(0)) or
+	                                                                             (     bram_7_input_sel(2) and     bram_7_input_sel(1) and not bram_7_input_sel(0)) ) )
 	                       or
 	                       (not k6_needs_attention) );
 
@@ -692,137 +669,137 @@ begin
 	k7_output_sel(2 downto 1) <= to_bitvector(ADDR_7(10 downto 9));
 
 
-	k0_output_sel(0) <= ( not k0_output_sel(2) and not k0_output_sel(1) and ( not bram_0_B_input_sel(2) and
-	                                                                          not bram_0_B_input_sel(1) and
-	                                                                          not bram_0_B_input_sel(0)) )
+	k0_output_sel(0) <= ( not k0_output_sel(2) and not k0_output_sel(1) and ( not bram_1_input_sel(2) and
+	                                                                          not bram_1_input_sel(1) and
+	                                                                          not bram_1_input_sel(0)) )
 	                    or
-	                    ( not k0_output_sel(2) and     k0_output_sel(1) and ( not bram_1_B_input_sel(2) and
-	                                                                          not bram_1_B_input_sel(1) and
-	                                                                          not bram_1_B_input_sel(0)) )
+	                    ( not k0_output_sel(2) and     k0_output_sel(1) and ( not bram_3_input_sel(2) and
+	                                                                          not bram_3_input_sel(1) and
+	                                                                          not bram_3_input_sel(0)) )
 	                    or
-	                    (     k0_output_sel(2) and not k0_output_sel(1) and ( not bram_2_B_input_sel(2) and
-	                                                                          not bram_2_B_input_sel(1) and
-	                                                                          not bram_2_B_input_sel(0)) )
+	                    (     k0_output_sel(2) and not k0_output_sel(1) and ( not bram_5_input_sel(2) and
+	                                                                          not bram_5_input_sel(1) and
+	                                                                          not bram_5_input_sel(0)) )
 	                    or
-	                    (     k0_output_sel(2) and     k0_output_sel(1) and ( not bram_3_B_input_sel(2) and
-	                                                                          not bram_3_B_input_sel(1) and
-	                                                                          not bram_3_B_input_sel(0)) );
+	                    (     k0_output_sel(2) and     k0_output_sel(1) and ( not bram_7_input_sel(2) and
+	                                                                          not bram_7_input_sel(1) and
+	                                                                          not bram_7_input_sel(0)) );
 
-	k1_output_sel(0) <= ( not k1_output_sel(2) and not k1_output_sel(1) and ( not bram_0_B_input_sel(2) and
-	                                                                          not bram_0_B_input_sel(1) and
-	                                                                              bram_0_B_input_sel(0)) )
+	k1_output_sel(0) <= ( not k1_output_sel(2) and not k1_output_sel(1) and ( not bram_1_input_sel(2) and
+	                                                                          not bram_1_input_sel(1) and
+	                                                                              bram_1_input_sel(0)) )
 	                    or
-	                    ( not k1_output_sel(2) and     k1_output_sel(1) and ( not bram_1_B_input_sel(2) and
-	                                                                          not bram_1_B_input_sel(1) and
-	                                                                              bram_1_B_input_sel(0)) )
+	                    ( not k1_output_sel(2) and     k1_output_sel(1) and ( not bram_3_input_sel(2) and
+	                                                                          not bram_3_input_sel(1) and
+	                                                                              bram_3_input_sel(0)) )
 	                    or
-	                    (     k1_output_sel(2) and not k1_output_sel(1) and ( not bram_2_B_input_sel(2) and
-	                                                                          not bram_2_B_input_sel(1) and
-	                                                                              bram_2_B_input_sel(0)) )
+	                    (     k1_output_sel(2) and not k1_output_sel(1) and ( not bram_5_input_sel(2) and
+	                                                                          not bram_5_input_sel(1) and
+	                                                                              bram_5_input_sel(0)) )
 	                    or
-	                    (     k1_output_sel(2) and     k1_output_sel(1) and ( not bram_3_B_input_sel(2) and
-	                                                                          not bram_3_B_input_sel(1) and
-	                                                                              bram_3_B_input_sel(0)) );
+	                    (     k1_output_sel(2) and     k1_output_sel(1) and ( not bram_7_input_sel(2) and
+	                                                                          not bram_7_input_sel(1) and
+	                                                                              bram_7_input_sel(0)) );
 
-	k2_output_sel(0) <= ( not k2_output_sel(2) and not k2_output_sel(1) and ( not bram_0_B_input_sel(2) and
-	                                                                              bram_0_B_input_sel(1) and
-	                                                                          not bram_0_B_input_sel(0)) )
+	k2_output_sel(0) <= ( not k2_output_sel(2) and not k2_output_sel(1) and ( not bram_1_input_sel(2) and
+	                                                                              bram_1_input_sel(1) and
+	                                                                          not bram_1_input_sel(0)) )
 	                    or
-	                    ( not k2_output_sel(2) and     k2_output_sel(1) and ( not bram_1_B_input_sel(2) and
-	                                                                              bram_1_B_input_sel(1) and
-	                                                                          not bram_1_B_input_sel(0)) )
+	                    ( not k2_output_sel(2) and     k2_output_sel(1) and ( not bram_3_input_sel(2) and
+	                                                                              bram_3_input_sel(1) and
+	                                                                          not bram_3_input_sel(0)) )
 	                    or
-	                    (     k2_output_sel(2) and not k2_output_sel(1) and ( not bram_2_B_input_sel(2) and
-	                                                                              bram_2_B_input_sel(1) and
-	                                                                          not bram_2_B_input_sel(0)) )
+	                    (     k2_output_sel(2) and not k2_output_sel(1) and ( not bram_5_input_sel(2) and
+	                                                                              bram_5_input_sel(1) and
+	                                                                          not bram_5_input_sel(0)) )
 	                    or
-	                    (     k2_output_sel(2) and     k2_output_sel(1) and ( not bram_3_B_input_sel(2) and
-	                                                                              bram_3_B_input_sel(1) and
-	                                                                          not bram_3_B_input_sel(0)) );
+	                    (     k2_output_sel(2) and     k2_output_sel(1) and ( not bram_7_input_sel(2) and
+	                                                                              bram_7_input_sel(1) and
+	                                                                          not bram_7_input_sel(0)) );
 
-	k3_output_sel(0) <= ( not k3_output_sel(2) and not k3_output_sel(1) and ( not bram_0_B_input_sel(2) and
-	                                                                              bram_0_B_input_sel(1) and
-	                                                                              bram_0_B_input_sel(0)) )
+	k3_output_sel(0) <= ( not k3_output_sel(2) and not k3_output_sel(1) and ( not bram_1_input_sel(2) and
+	                                                                              bram_1_input_sel(1) and
+	                                                                              bram_1_input_sel(0)) )
 	                    or
-	                    ( not k3_output_sel(2) and     k3_output_sel(1) and ( not bram_1_B_input_sel(2) and
-	                                                                              bram_1_B_input_sel(1) and
-	                                                                              bram_1_B_input_sel(0)) )
+	                    ( not k3_output_sel(2) and     k3_output_sel(1) and ( not bram_3_input_sel(2) and
+	                                                                              bram_3_input_sel(1) and
+	                                                                              bram_3_input_sel(0)) )
 	                    or
-	                    (     k3_output_sel(2) and not k3_output_sel(1) and ( not bram_2_B_input_sel(2) and
-	                                                                              bram_2_B_input_sel(1) and
-	                                                                              bram_2_B_input_sel(0)) )
+	                    (     k3_output_sel(2) and not k3_output_sel(1) and ( not bram_5_input_sel(2) and
+	                                                                              bram_5_input_sel(1) and
+	                                                                              bram_5_input_sel(0)) )
 	                    or
-	                    (     k3_output_sel(2) and     k3_output_sel(1) and ( not bram_3_B_input_sel(2) and
-	                                                                              bram_3_B_input_sel(1) and
-	                                                                              bram_3_B_input_sel(0)) );
+	                    (     k3_output_sel(2) and     k3_output_sel(1) and ( not bram_7_input_sel(2) and
+	                                                                              bram_7_input_sel(1) and
+	                                                                              bram_7_input_sel(0)) );
 
-	k4_output_sel(0) <= ( not k4_output_sel(2) and not k4_output_sel(1) and (     bram_0_B_input_sel(2) and
-	                                                                          not bram_0_B_input_sel(1) and
-	                                                                          not bram_0_B_input_sel(0)) )
+	k4_output_sel(0) <= ( not k4_output_sel(2) and not k4_output_sel(1) and (     bram_1_input_sel(2) and
+	                                                                          not bram_1_input_sel(1) and
+	                                                                          not bram_1_input_sel(0)) )
 	                    or
-	                    ( not k4_output_sel(2) and     k4_output_sel(1) and (     bram_1_B_input_sel(2) and
-	                                                                          not bram_1_B_input_sel(1) and
-	                                                                          not bram_1_B_input_sel(0)) )
+	                    ( not k4_output_sel(2) and     k4_output_sel(1) and (     bram_3_input_sel(2) and
+	                                                                          not bram_3_input_sel(1) and
+	                                                                          not bram_3_input_sel(0)) )
 	                    or
-	                    (     k4_output_sel(2) and not k4_output_sel(1) and (     bram_2_B_input_sel(2) and
-	                                                                          not bram_2_B_input_sel(1) and
-	                                                                          not bram_2_B_input_sel(0)) )
+	                    (     k4_output_sel(2) and not k4_output_sel(1) and (     bram_5_input_sel(2) and
+	                                                                          not bram_5_input_sel(1) and
+	                                                                          not bram_5_input_sel(0)) )
 	                    or
-	                    (     k4_output_sel(2) and     k4_output_sel(1) and (     bram_3_B_input_sel(2) and
-	                                                                          not bram_3_B_input_sel(1) and
-	                                                                          not bram_3_B_input_sel(0)) );
+	                    (     k4_output_sel(2) and     k4_output_sel(1) and (     bram_7_input_sel(2) and
+	                                                                          not bram_7_input_sel(1) and
+	                                                                          not bram_7_input_sel(0)) );
 
-	k5_output_sel(0) <= ( not k5_output_sel(2) and not k5_output_sel(1) and (     bram_0_B_input_sel(2) and
-	                                                                          not bram_0_B_input_sel(1) and
-	                                                                              bram_0_B_input_sel(0)) )
+	k5_output_sel(0) <= ( not k5_output_sel(2) and not k5_output_sel(1) and (     bram_1_input_sel(2) and
+	                                                                          not bram_1_input_sel(1) and
+	                                                                              bram_1_input_sel(0)) )
 	                    or
-	                    ( not k5_output_sel(2) and     k5_output_sel(1) and (     bram_1_B_input_sel(2) and
-	                                                                          not bram_1_B_input_sel(1) and
-	                                                                              bram_1_B_input_sel(0)) )
+	                    ( not k5_output_sel(2) and     k5_output_sel(1) and (     bram_3_input_sel(2) and
+	                                                                          not bram_3_input_sel(1) and
+	                                                                              bram_3_input_sel(0)) )
 	                    or
-	                    (     k5_output_sel(2) and not k5_output_sel(1) and (     bram_2_B_input_sel(2) and
-	                                                                          not bram_2_B_input_sel(1) and
-	                                                                              bram_2_B_input_sel(0)) )
+	                    (     k5_output_sel(2) and not k5_output_sel(1) and (     bram_5_input_sel(2) and
+	                                                                          not bram_5_input_sel(1) and
+	                                                                              bram_5_input_sel(0)) )
 	                    or
-	                    (     k5_output_sel(2) and     k5_output_sel(1) and (     bram_3_B_input_sel(2) and
-	                                                                          not bram_3_B_input_sel(1) and
-	                                                                              bram_3_B_input_sel(0)) );
+	                    (     k5_output_sel(2) and     k5_output_sel(1) and (     bram_7_input_sel(2) and
+	                                                                          not bram_7_input_sel(1) and
+	                                                                              bram_7_input_sel(0)) );
 
-	k6_output_sel(0) <= ( not k6_output_sel(2) and not k6_output_sel(1) and (     bram_0_B_input_sel(2) and
-	                                                                              bram_0_B_input_sel(1) and
-	                                                                          not bram_0_B_input_sel(0)) )
+	k6_output_sel(0) <= ( not k6_output_sel(2) and not k6_output_sel(1) and (     bram_1_input_sel(2) and
+	                                                                              bram_1_input_sel(1) and
+	                                                                          not bram_1_input_sel(0)) )
 	                    or
-	                    ( not k6_output_sel(2) and     k6_output_sel(1) and (     bram_1_B_input_sel(2) and
-	                                                                              bram_1_B_input_sel(1) and
-	                                                                          not bram_1_B_input_sel(0)) )
+	                    ( not k6_output_sel(2) and     k6_output_sel(1) and (     bram_3_input_sel(2) and
+	                                                                              bram_3_input_sel(1) and
+	                                                                          not bram_3_input_sel(0)) )
 	                    or
-	                    (     k6_output_sel(2) and not k6_output_sel(1) and (     bram_2_B_input_sel(2) and
-	                                                                              bram_2_B_input_sel(1) and
-	                                                                          not bram_2_B_input_sel(0)) )
+	                    (     k6_output_sel(2) and not k6_output_sel(1) and (     bram_5_input_sel(2) and
+	                                                                              bram_5_input_sel(1) and
+	                                                                          not bram_5_input_sel(0)) )
 	                    or
-	                    (     k6_output_sel(2) and     k6_output_sel(1) and (     bram_3_B_input_sel(2) and
-	                                                                              bram_3_B_input_sel(1) and
-	                                                                          not bram_3_B_input_sel(0)) );
+	                    (     k6_output_sel(2) and     k6_output_sel(1) and (     bram_7_input_sel(2) and
+	                                                                              bram_7_input_sel(1) and
+	                                                                          not bram_7_input_sel(0)) );
 
-	k7_output_sel(0) <= ( not k7_output_sel(2) and not k7_output_sel(1) and (     bram_0_B_input_sel(2) and
-	                                                                              bram_0_B_input_sel(1) and
-	                                                                              bram_0_B_input_sel(0)) )
+	k7_output_sel(0) <= ( not k7_output_sel(2) and not k7_output_sel(1) and (     bram_1_input_sel(2) and
+	                                                                              bram_1_input_sel(1) and
+	                                                                              bram_1_input_sel(0)) )
 	                    or
-	                    ( not k7_output_sel(2) and     k7_output_sel(1) and (     bram_1_B_input_sel(2) and
-	                                                                              bram_1_B_input_sel(1) and
-	                                                                              bram_1_B_input_sel(0)) )
+	                    ( not k7_output_sel(2) and     k7_output_sel(1) and (     bram_3_input_sel(2) and
+	                                                                              bram_3_input_sel(1) and
+	                                                                              bram_3_input_sel(0)) )
 	                    or
-	                    (     k7_output_sel(2) and not k7_output_sel(1) and (     bram_2_B_input_sel(2) and
-	                                                                              bram_2_B_input_sel(1) and
-	                                                                              bram_2_B_input_sel(0)) )
+	                    (     k7_output_sel(2) and not k7_output_sel(1) and (     bram_5_input_sel(2) and
+	                                                                              bram_5_input_sel(1) and
+	                                                                              bram_5_input_sel(0)) )
 	                    or
-	                    (     k7_output_sel(2) and     k7_output_sel(1) and (     bram_3_B_input_sel(2) and
-	                                                                              bram_3_B_input_sel(1) and
-	                                                                              bram_3_B_input_sel(0)) );
+	                    (     k7_output_sel(2) and     k7_output_sel(1) and (     bram_7_input_sel(2) and
+	                                                                              bram_7_input_sel(1) and
+	                                                                              bram_7_input_sel(0)) );
 
 
 	input_controller_0 : block begin
-		with bram_0_A_input_sel select
+		with bram_0_input_sel select
 			bram_di(1 * 32 - 1 downto 0 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -831,7 +808,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_0_A_input_sel select
+		with bram_0_input_sel select
 			bram_addr(1 * 9 - 1 downto 0 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -840,7 +817,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_0_A_input_sel select
+		with bram_0_input_sel select
 			bram_we(1 * 4 - 1 downto 0 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -852,7 +829,7 @@ begin
 	end block input_controller_0;
 
 	input_controller_1 : block begin
-		with bram_0_B_input_sel select
+		with bram_1_input_sel select
 			bram_di(2 * 32 - 1 downto 1 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -861,7 +838,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_0_B_input_sel select
+		with bram_1_input_sel select
 			bram_addr(2 * 9 - 1 downto 1 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -870,7 +847,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_0_B_input_sel select
+		with bram_1_input_sel select
 			bram_we(2 * 4 - 1 downto 1 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -882,7 +859,7 @@ begin
 	end block input_controller_1;
 
 	input_controller_2 : block begin
-		with bram_1_A_input_sel select
+		with bram_2_input_sel select
 			bram_di(3 * 32 - 1 downto 2 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -891,7 +868,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_1_A_input_sel select
+		with bram_2_input_sel select
 			bram_addr(3 * 9 - 1 downto 2 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -900,7 +877,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_1_A_input_sel select
+		with bram_2_input_sel select
 			bram_we(3 * 4 - 1 downto 2 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -912,7 +889,7 @@ begin
 	end block input_controller_2;
 
 	input_controller_3 : block begin
-		with bram_1_B_input_sel select
+		with bram_3_input_sel select
 			bram_di(4 * 32 - 1 downto 3 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -921,7 +898,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_1_B_input_sel select
+		with bram_3_input_sel select
 			bram_addr(4 * 9 - 1 downto 3 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -930,7 +907,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_1_B_input_sel select
+		with bram_3_input_sel select
 			bram_we(4 * 4 - 1 downto 3 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -942,7 +919,7 @@ begin
 	end block input_controller_3;
 
 	input_controller_4 : block begin
-		with bram_2_A_input_sel select
+		with bram_4_input_sel select
 			bram_di(5 * 32 - 1 downto 4 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -951,7 +928,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_2_A_input_sel select
+		with bram_4_input_sel select
 			bram_addr(5 * 9 - 1 downto 4 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -960,7 +937,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_2_A_input_sel select
+		with bram_4_input_sel select
 			bram_we(5 * 4 - 1 downto 4 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -972,7 +949,7 @@ begin
 	end block input_controller_4;
 
 	input_controller_5 : block begin
-		with bram_2_B_input_sel select
+		with bram_5_input_sel select
 			bram_di(6 * 32 - 1 downto 5 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -981,7 +958,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_2_B_input_sel select
+		with bram_5_input_sel select
 			bram_addr(6 * 9 - 1 downto 5 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -990,7 +967,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_2_B_input_sel select
+		with bram_5_input_sel select
 			bram_we(6 * 4 - 1 downto 5 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -1002,7 +979,7 @@ begin
 	end block input_controller_5;
 
 	input_controller_6 : block begin
-		with bram_3_A_input_sel select
+		with bram_6_input_sel select
 			bram_di(7 * 32 - 1 downto 6 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -1011,7 +988,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_3_A_input_sel select
+		with bram_6_input_sel select
 			bram_addr(7 * 9 - 1 downto 6 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -1020,7 +997,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_3_A_input_sel select
+		with bram_6_input_sel select
 			bram_we(7 * 4 - 1 downto 6 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
@@ -1032,7 +1009,7 @@ begin
 	end block input_controller_6;
 
 	input_controller_7 : block begin
-		with bram_3_B_input_sel select
+		with bram_7_input_sel select
 			bram_di(8 * 32 - 1 downto 7 * 32)    <=  DI(32 * 1 - 1 downto 32 * 0) when "000",
 			              DI(32 * 2 - 1 downto 32 * 1) when "001",
 			              DI(32 * 3 - 1 downto 32 * 2) when "010",
@@ -1041,7 +1018,7 @@ begin
 			              DI(32 * 6 - 1 downto 32 * 5) when "101",
 			              DI(32 * 7 - 1 downto 32 * 6) when "110",
 			              DI(32 * 8 - 1 downto 32 * 7) when "111";
-		with bram_3_B_input_sel select
+		with bram_7_input_sel select
 			bram_addr(8 * 9 - 1 downto 7 * 9)  <=  ADDR_0(8 downto 0) when "000",
 			              ADDR_1(8 downto 0) when "001",
 			              ADDR_2(8 downto 0) when "010",
@@ -1050,7 +1027,7 @@ begin
 			              ADDR_5(8 downto 0) when "101",
 			              ADDR_6(8 downto 0) when "110",
 			              ADDR_7(8 downto 0) when "111";
-		with bram_3_B_input_sel select
+		with bram_7_input_sel select
 			bram_we(8 * 4 - 1 downto 7 * 4)    <=  we_0_safe when "000",
 			              we_1_safe when "001",
 			              we_2_safe when "010",
