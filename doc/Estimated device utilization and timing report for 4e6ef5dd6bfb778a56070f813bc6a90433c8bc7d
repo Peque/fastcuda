@@ -1,0 +1,34 @@
+
+WARNING: ESTIMATED VALUES BEFORE PLACE AND ROUTE!
+
+
+  N  |  Logic Utilization       Used       Available       Utilization
+----------------------------------------------------------------------
+
+  2  |  Slice LUTs              162        27288           ~   0%
+  4  |  Slice LUTs              386        27288           ~   1%
+  8  |  Slice LUTs              1617       27288           ~   5%
+ 16  |  Slice LUTs              6606       27288           ~  24%
+ 32  |  Slice LUTs              32407      27288           ~ 118%
+ 64  |  Slice LUTs              138162     27288           ~ 506%
+  2  |  BRAM                    1          116             ~   0%
+  4  |  BRAM                    2          116             ~   1%
+  8  |  BRAM                    4          116             ~   3%
+ 16  |  BRAM                    8          116             ~   6%
+ 32  |  BRAM                    16         116             ~  13%
+ 64  |  BRAM                    32         116             ~  27%
+
+
+  N  |  MIATBC (%route)       MORTAC (%route)       MACPD
+----------------------------------------------------------------------
+
+  2  |    8.703 (68)           6.777 (22)            11.215
+  4  |   13.917 (75)           7.027 (25)            18.496
+  8  |   22.897 (78)           7.342 (26)            29.363
+ 16  |   41.666 (82)           7.732 (27)            49.688
+ 32  |   85.102 (83)           9.130 (37)            82.300
+ 64  |  149.616 (86)          10.577 (45)           159.727
+
+MIATBC: Minimum input arrival time before clock (ns)
+MORTAC: Maximum output required time after clock (ns)
+MACPD: Maximum combinational path delay (ns)
