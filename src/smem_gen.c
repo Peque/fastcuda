@@ -26,8 +26,8 @@
 #include <math.h>
 #include <string.h>
 
-// TODO: this should be passed through **argv
-#define N 16
+
+int N;
 
 
 void print_license()
@@ -612,6 +612,8 @@ void print_arch()
 
 int main(int argc, char **argv)
 {
+	sscanf(argv[1], "%d", &N);
+
 	print_license();
 	printf("\n");
 	printf("\n");
