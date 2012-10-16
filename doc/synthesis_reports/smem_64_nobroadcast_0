@@ -1,0 +1,659 @@
+Release 14.2 - xst P.28xd (lin64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+-->
+Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.04 secs
+
+-->
+Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.04 secs
+
+-->
+Reading design: smem.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Parsing
+  3) HDL Elaboration
+  4) HDL Synthesis
+       4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+       5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Partition Report
+  8) Design Summary
+       8.1) Primitive and Black Box Usage
+       8.2) Device utilization summary
+       8.3) Partition Resource Summary
+       8.4) Timing Report
+            8.4.1) Clock Information
+            8.4.2) Asynchronous Control Signals Information
+            8.4.3) Timing Summary
+            8.4.4) Timing Details
+            8.4.5) Cross Clock Domains Report
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "smem.prj"
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "smem"
+Output Format                      : NGC
+Target Device                      : xc6slx45-3-csg324
+
+---- Source Options
+Top Module Name                    : smem
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Shift Register Extraction          : YES
+ROM Style                          : Auto
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Shift Register Minimum Size        : 2
+Use DSP Block                      : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+LUT Combining                      : Auto
+Reduce Control Sets                : Auto
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 16
+Register Duplication               : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Auto
+Use Synchronous Set                : Auto
+Use Synchronous Reset              : Auto
+Pack IO Registers into IOBs        : True
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Area
+Optimization Effort                : 1
+Power Reduction                    : NO
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+DSP48 Utilization Ratio            : 100
+Auto BRAM Packing                  : YES
+Slice Utilization Ratio Delta      : 5
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Parsing                                  *
+=========================================================================
+Parsing VHDL file "/home/peque/xilinx/testbench/smem.vhd" into library work
+Parsing entity <smem>.
+Parsing architecture <smem_arch> of entity <smem>.
+
+=========================================================================
+*                            HDL Elaboration                            *
+=========================================================================
+
+Elaborating entity <smem> (architecture <smem_arch>) with generics from library <work>.
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <smem>.
+    Related source file is "/home/peque/xilinx/testbench/smem.vhd".
+        N_PORTS = 64
+        N_BRAMS = 32
+        LOG2_N_PORTS = 6
+WARNING:Xst:647 - Input <TRIG_CLK> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<31:0>> created at line 25900.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<8:0>> created at line 25965.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<3:0>> created at line 26030.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<63:32>> created at line 26098.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<17:9>> created at line 26163.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<7:4>> created at line 26228.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<95:64>> created at line 26296.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<26:18>> created at line 26361.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<11:8>> created at line 26426.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<127:96>> created at line 26494.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<35:27>> created at line 26559.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<15:12>> created at line 26624.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<159:128>> created at line 26692.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<44:36>> created at line 26757.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<19:16>> created at line 26822.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<191:160>> created at line 26890.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<53:45>> created at line 26955.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<23:20>> created at line 27020.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<223:192>> created at line 27088.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<62:54>> created at line 27153.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<27:24>> created at line 27218.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<255:224>> created at line 27286.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<71:63>> created at line 27351.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<31:28>> created at line 27416.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<287:256>> created at line 27484.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<80:72>> created at line 27549.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<35:32>> created at line 27614.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<319:288>> created at line 27682.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<89:81>> created at line 27747.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<39:36>> created at line 27812.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<351:320>> created at line 27880.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<98:90>> created at line 27945.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<43:40>> created at line 28010.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<383:352>> created at line 28078.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<107:99>> created at line 28143.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<47:44>> created at line 28208.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<415:384>> created at line 28276.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<116:108>> created at line 28341.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<51:48>> created at line 28406.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<447:416>> created at line 28474.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<125:117>> created at line 28539.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<55:52>> created at line 28604.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<479:448>> created at line 28672.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<134:126>> created at line 28737.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<59:56>> created at line 28802.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<511:480>> created at line 28870.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<143:135>> created at line 28935.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<63:60>> created at line 29000.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<543:512>> created at line 29068.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<152:144>> created at line 29133.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<67:64>> created at line 29198.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<575:544>> created at line 29266.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<161:153>> created at line 29331.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<71:68>> created at line 29396.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<607:576>> created at line 29464.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<170:162>> created at line 29529.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<75:72>> created at line 29594.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<639:608>> created at line 29662.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<179:171>> created at line 29727.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<79:76>> created at line 29792.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<671:640>> created at line 29860.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<188:180>> created at line 29925.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<83:80>> created at line 29990.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<703:672>> created at line 30058.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<197:189>> created at line 30123.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<87:84>> created at line 30188.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<735:704>> created at line 30256.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<206:198>> created at line 30321.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<91:88>> created at line 30386.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<767:736>> created at line 30454.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<215:207>> created at line 30519.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<95:92>> created at line 30584.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<799:768>> created at line 30652.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<224:216>> created at line 30717.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<99:96>> created at line 30782.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<831:800>> created at line 30850.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<233:225>> created at line 30915.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<103:100>> created at line 30980.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<863:832>> created at line 31048.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<242:234>> created at line 31113.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<107:104>> created at line 31178.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<895:864>> created at line 31246.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<251:243>> created at line 31311.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<111:108>> created at line 31376.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<927:896>> created at line 31444.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<260:252>> created at line 31509.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<115:112>> created at line 31574.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<959:928>> created at line 31642.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<269:261>> created at line 31707.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<119:116>> created at line 31772.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<991:960>> created at line 31840.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<278:270>> created at line 31905.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<123:120>> created at line 31970.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1023:992>> created at line 32038.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<287:279>> created at line 32103.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<127:124>> created at line 32168.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1055:1024>> created at line 32236.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<296:288>> created at line 32301.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<131:128>> created at line 32366.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1087:1056>> created at line 32434.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<305:297>> created at line 32499.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<135:132>> created at line 32564.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1119:1088>> created at line 32632.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<314:306>> created at line 32697.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<139:136>> created at line 32762.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1151:1120>> created at line 32830.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<323:315>> created at line 32895.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<143:140>> created at line 32960.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1183:1152>> created at line 33028.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<332:324>> created at line 33093.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<147:144>> created at line 33158.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1215:1184>> created at line 33226.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<341:333>> created at line 33291.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<151:148>> created at line 33356.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1247:1216>> created at line 33424.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<350:342>> created at line 33489.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<155:152>> created at line 33554.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1279:1248>> created at line 33622.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<359:351>> created at line 33687.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<159:156>> created at line 33752.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1311:1280>> created at line 33820.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<368:360>> created at line 33885.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<163:160>> created at line 33950.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1343:1312>> created at line 34018.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<377:369>> created at line 34083.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<167:164>> created at line 34148.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1375:1344>> created at line 34216.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<386:378>> created at line 34281.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<171:168>> created at line 34346.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1407:1376>> created at line 34414.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<395:387>> created at line 34479.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<175:172>> created at line 34544.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1439:1408>> created at line 34612.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<404:396>> created at line 34677.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<179:176>> created at line 34742.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1471:1440>> created at line 34810.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<413:405>> created at line 34875.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<183:180>> created at line 34940.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1503:1472>> created at line 35008.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<422:414>> created at line 35073.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<187:184>> created at line 35138.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1535:1504>> created at line 35206.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<431:423>> created at line 35271.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<191:188>> created at line 35336.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1567:1536>> created at line 35404.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<440:432>> created at line 35469.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<195:192>> created at line 35534.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1599:1568>> created at line 35602.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<449:441>> created at line 35667.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<199:196>> created at line 35732.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1631:1600>> created at line 35800.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<458:450>> created at line 35865.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<203:200>> created at line 35930.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1663:1632>> created at line 35998.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<467:459>> created at line 36063.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<207:204>> created at line 36128.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1695:1664>> created at line 36196.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<476:468>> created at line 36261.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<211:208>> created at line 36326.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1727:1696>> created at line 36394.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<485:477>> created at line 36459.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<215:212>> created at line 36524.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1759:1728>> created at line 36592.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<494:486>> created at line 36657.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<219:216>> created at line 36722.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1791:1760>> created at line 36790.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<503:495>> created at line 36855.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<223:220>> created at line 36920.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1823:1792>> created at line 36988.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<512:504>> created at line 37053.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<227:224>> created at line 37118.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1855:1824>> created at line 37186.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<521:513>> created at line 37251.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<231:228>> created at line 37316.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1887:1856>> created at line 37384.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<530:522>> created at line 37449.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<235:232>> created at line 37514.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1919:1888>> created at line 37582.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<539:531>> created at line 37647.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<239:236>> created at line 37712.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1951:1920>> created at line 37780.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<548:540>> created at line 37845.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<243:240>> created at line 37910.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<1983:1952>> created at line 37978.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<557:549>> created at line 38043.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<247:244>> created at line 38108.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<2015:1984>> created at line 38176.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<566:558>> created at line 38241.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<251:248>> created at line 38306.
+    Found 32-bit 64-to-1 multiplexer for signal <bram_di<2047:2016>> created at line 38374.
+    Found 9-bit 64-to-1 multiplexer for signal <bram_addr<575:567>> created at line 38439.
+    Found 4-bit 64-to-1 multiplexer for signal <bram_we<255:252>> created at line 38504.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<31:0>> created at line 38573.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<63:32>> created at line 38641.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<95:64>> created at line 38709.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<127:96>> created at line 38777.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<159:128>> created at line 38845.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<191:160>> created at line 38913.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<223:192>> created at line 38981.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<255:224>> created at line 39049.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<287:256>> created at line 39117.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<319:288>> created at line 39185.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<351:320>> created at line 39253.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<383:352>> created at line 39321.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<415:384>> created at line 39389.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<447:416>> created at line 39457.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<479:448>> created at line 39525.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<511:480>> created at line 39593.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<543:512>> created at line 39661.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<575:544>> created at line 39729.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<607:576>> created at line 39797.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<639:608>> created at line 39865.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<671:640>> created at line 39933.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<703:672>> created at line 40001.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<735:704>> created at line 40069.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<767:736>> created at line 40137.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<799:768>> created at line 40205.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<831:800>> created at line 40273.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<863:832>> created at line 40341.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<895:864>> created at line 40409.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<927:896>> created at line 40477.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<959:928>> created at line 40545.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<991:960>> created at line 40613.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1023:992>> created at line 40681.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1055:1024>> created at line 40749.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1087:1056>> created at line 40817.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1119:1088>> created at line 40885.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1151:1120>> created at line 40953.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1183:1152>> created at line 41021.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1215:1184>> created at line 41089.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1247:1216>> created at line 41157.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1279:1248>> created at line 41225.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1311:1280>> created at line 41293.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1343:1312>> created at line 41361.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1375:1344>> created at line 41429.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1407:1376>> created at line 41497.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1439:1408>> created at line 41565.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1471:1440>> created at line 41633.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1503:1472>> created at line 41701.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1535:1504>> created at line 41769.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1567:1536>> created at line 41837.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1599:1568>> created at line 41905.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1631:1600>> created at line 41973.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1663:1632>> created at line 42041.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1695:1664>> created at line 42109.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1727:1696>> created at line 42177.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1759:1728>> created at line 42245.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1791:1760>> created at line 42313.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1823:1792>> created at line 42381.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1855:1824>> created at line 42449.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1887:1856>> created at line 42517.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1919:1888>> created at line 42585.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1951:1920>> created at line 42653.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<1983:1952>> created at line 42721.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<2015:1984>> created at line 42789.
+    Found 32-bit 64-to-1 multiplexer for signal <DO<2047:2016>> created at line 42857.
+    Summary:
+	inferred 256 Multiplexer(s).
+Unit <smem> synthesized.
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# Multiplexers                                         : 256
+ 32-bit 64-to-1 multiplexer                            : 128
+ 4-bit 64-to-1 multiplexer                             : 64
+ 9-bit 64-to-1 multiplexer                             : 64
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# Multiplexers                                         : 256
+ 32-bit 64-to-1 multiplexer                            : 128
+ 4-bit 64-to-1 multiplexer                             : 64
+ 9-bit 64-to-1 multiplexer                             : 64
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+
+Optimizing unit <smem> ...
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block smem, actual ratio is 638.
+Optimizing block <smem> to meet ratio 100 (+ 5) of 6822 slices :
+WARNING:Xst:2254 - Area constraint could not be met for block <smem>, final ratio is 635.
+
+Final Macro Processing ...
+
+=========================================================================
+Final Register Report
+
+Found no macro
+=========================================================================
+
+=========================================================================
+*                           Partition Report                            *
+=========================================================================
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+=========================================================================
+*                            Design Summary                             *
+=========================================================================
+
+Top Level Output File Name         : smem.ngc
+
+Primitive and Black Box Usage:
+------------------------------
+# BELS                             : 120262
+#      GND                         : 1
+#      LUT2                        : 561
+#      LUT3                        : 802
+#      LUT4                        : 2877
+#      LUT5                        : 1830
+#      LUT6                        : 114189
+#      MUXF7                       : 1
+#      VCC                         : 1
+# RAMS                             : 32
+#      RAMB16BWER                  : 32
+# Clock Buffers                    : 1
+#      BUFGP                       : 1
+# IO Buffers                       : 5377
+#      IBUF                        : 3265
+#      OBUF                        : 2112
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 6slx45csg324-3
+
+
+Slice Logic Utilization:
+ Number of Slice LUTs:                120259  out of  27288   440% (*)
+    Number used as Logic:             120259  out of  27288   440% (*)
+
+Slice Logic Distribution:
+ Number of LUT Flip Flop pairs used:  120259
+   Number with an unused Flip Flop:   120259  out of  120259   100%
+   Number with an unused LUT:             0  out of  120259     0%
+   Number of fully used LUT-FF pairs:     0  out of  120259     0%
+   Number of unique control sets:         0
+
+IO Utilization:
+ Number of IOs:                        5379
+ Number of bonded IOBs:                5378  out of    218   2466% (*)
+
+Specific Feature Utilization:
+ Number of Block RAM/FIFO:               32  out of    116    27%
+    Number using Block RAM only:         32
+ Number of BUFG/BUFGCTRLs:                1  out of     16     6%
+
+WARNING:Xst:1336 -  (*) More than 100% of Device resources are used
+
+---------------------------
+Partition Resource Summary:
+---------------------------
+
+  No Partitions were found in this design.
+
+---------------------------
+
+
+=========================================================================
+Timing Report
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+BRAM_CLK                           | BUFGP                  | 32    |
+-----------------------------------+------------------------+-------+
+
+Asynchronous Control Signals Information:
+----------------------------------------
+No asynchronous control signals found in this design
+
+Timing Summary:
+---------------
+Speed Grade: -3
+
+   Minimum period: No path found
+   Minimum input arrival time before clock: 21.168ns
+   Maximum output required time after clock: 9.150ns
+   Maximum combinational path delay: 32.697ns
+
+Timing Details:
+---------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'BRAM_CLK'
+  Total number of paths / destination ports: 51872288 / 2944
+-------------------------------------------------------------------------
+Offset:              21.168ns (Levels of Logic = 16)
+  Source:            ADDR_8<9> (PAD)
+  Destination:       bram_inst[5].RAMB16BWER_INST (RAM)
+  Destination Clock: BRAM_CLK rising
+
+  Data Path: ADDR_8<9> to bram_inst[5].RAMB16BWER_INST
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           587   1.222   2.473  ADDR_8_9_IBUF (ADDR_8_9_IBUF)
+     LUT6:I0->O           11   0.203   1.227  k8_needs_bram_51 (k8_needs_bram_5)
+     LUT6:I1->O            1   0.203   0.808  bram_11_input_sel<0>11 (bram_11_input_sel<0>11)
+     LUT5:I2->O            1   0.205   0.808  bram_11_input_sel<0>13_SW0 (N394)
+     LUT6:I3->O            1   0.205   0.808  bram_11_input_sel<0>13 (bram_11_input_sel<0>13)
+     LUT5:I2->O            1   0.205   0.808  bram_11_input_sel<0>15_SW0 (N396)
+     LUT6:I3->O            1   0.205   0.827  bram_11_input_sel<0>15 (bram_11_input_sel<0>15)
+     LUT5:I1->O            1   0.203   0.684  bram_11_input_sel<0>17_SW0 (N942)
+     LUT6:I4->O            1   0.203   0.808  bram_11_input_sel<0>17 (bram_11_input_sel<0>17)
+     LUT5:I2->O            1   0.205   0.808  bram_11_input_sel<0>19_SW0 (N398)
+     LUT6:I3->O            1   0.205   0.924  bram_11_input_sel<0>19 (bram_11_input_sel<0>19)
+     LUT6:I1->O            1   0.203   0.808  bram_11_input_sel<0>21 (bram_11_input_sel<0>21)
+     LUT5:I2->O          846   0.205   2.515  bram_11_input_sel<0>22 (bram_11_input_sel<0>)
+     LUT6:I1->O            1   0.203   0.827  Mmux_bram_addr<107:99>_122 (Mmux_bram_addr<107:99>_122)
+     LUT6:I2->O            1   0.203   0.827  Mmux_bram_addr<107:99>_7 (Mmux_bram_addr<107:99>_7)
+     LUT6:I2->O            1   0.203   0.579  bram_11_input_sel<5>321 (bram_addr<100>)
+     RAMB16BWER:ADDRB6         0.350          bram_inst[5].RAMB16BWER_INST
+    ----------------------------------------
+    Total                     21.168ns (4.631ns logic, 16.537ns route)
+                                       (21.9% logic, 78.1% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'BRAM_CLK'
+  Total number of paths / destination ports: 131072 / 2048
+-------------------------------------------------------------------------
+Offset:              9.150ns (Levels of Logic = 4)
+  Source:            bram_inst[13].RAMB16BWER_INST (RAM)
+  Destination:       DO<2047> (PAD)
+  Source Clock:      BRAM_CLK rising
+
+  Data Path: bram_inst[13].RAMB16BWER_INST to DO<2047>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     RAMB16BWER:CLKA->DOA31   64   1.850   1.887  bram_inst[13].RAMB16BWER_INST (bram_do<863>)
+     LUT6:I2->O            1   0.203   0.827  ADDR_0<13>_12140 (ADDR_0<13>_12140)
+     LUT6:I2->O            1   0.203   0.827  ADDR_0<13>_746 (ADDR_0<13>_746)
+     LUT6:I2->O            1   0.203   0.579  ADDR_0<13>241 (DO_31_OBUF)
+     OBUF:I->O                 2.571          DO_31_OBUF (DO<31>)
+    ----------------------------------------
+    Total                      9.150ns (5.030ns logic, 4.120ns route)
+                                       (55.0% logic, 45.0% route)
+
+=========================================================================
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 2306769760 / 2112
+-------------------------------------------------------------------------
+Delay:               32.697ns (Levels of Logic = 25)
+  Source:            ADDR_8<9> (PAD)
+  Destination:       RDY_7 (PAD)
+
+  Data Path: ADDR_8<9> to RDY_7
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O           587   1.222   2.473  ADDR_8_9_IBUF (ADDR_8_9_IBUF)
+     LUT6:I0->O           10   0.203   1.201  k8_needs_bram_81 (k8_needs_bram_8)
+     LUT6:I1->O            1   0.203   0.808  bram_17_input_sel<0>12 (bram_17_input_sel<0>12)
+     LUT5:I2->O            1   0.205   0.808  bram_17_input_sel<0>14_SW0 (N162)
+     LUT6:I3->O            1   0.205   0.808  bram_17_input_sel<0>14 (bram_17_input_sel<0>14)
+     LUT5:I2->O            1   0.205   0.808  bram_17_input_sel<0>16_SW0 (N164)
+     LUT6:I3->O            1   0.205   0.827  bram_17_input_sel<0>16 (bram_17_input_sel<0>16)
+     LUT5:I1->O            1   0.203   0.684  bram_17_input_sel<0>18_SW0 (N866)
+     LUT6:I4->O            1   0.203   0.808  bram_17_input_sel<0>18 (bram_17_input_sel<0>18)
+     LUT5:I2->O            1   0.205   0.808  bram_17_input_sel<0>20_SW0 (N166)
+     LUT6:I3->O            1   0.205   0.827  bram_17_input_sel<0>20 (bram_17_input_sel<0>20)
+     LUT5:I1->O            1   0.203   0.808  bram_17_input_sel<0>22_SW0 (N824)
+     LUT6:I3->O          846   0.205   2.418  bram_17_input_sel<0>22 (bram_17_input_sel<0>)
+     LUT4:I0->O            1   0.203   0.924  k15_output_sel<0>44 (k15_output_sel<0>44)
+     LUT5:I0->O            1   0.203   0.580  k15_output_sel<0>46 (k15_output_sel<0>46)
+     LUT6:I5->O            1   0.205   0.924  k15_output_sel<0>51 (k15_output_sel<0>51)
+     LUT5:I0->O            1   0.203   0.827  k15_output_sel<0>53 (k15_output_sel<0>53)
+     LUT5:I1->O            1   0.203   0.580  k15_output_sel<0>55 (k15_output_sel<0>55)
+     LUT6:I5->O          539   0.205   2.441  k15_output_sel<0>56 (k15_output_sel<0>)
+     LUT6:I1->O            1   0.203   0.580  k15_being_served24 (k15_being_served23)
+     LUT6:I5->O            1   0.205   0.944  k15_being_served29 (k15_being_served28)
+     LUT6:I0->O            1   0.203   0.944  k15_being_served40 (k15_being_served39)
+     LUT6:I0->O            1   0.203   0.808  k15_being_served58 (k15_being_served57)
+     LUT4:I1->O            1   0.205   0.579  k15_being_served77 (RDY_15_OBUF)
+     OBUF:I->O                 2.571          RDY_15_OBUF (RDY_15)
+    ----------------------------------------
+    Total                     32.697ns (8.484ns logic, 24.213ns route)
+                                       (25.9% logic, 74.1% route)
+
+=========================================================================
+
+Cross Clock Domains Report:
+--------------------------
+
+=========================================================================
+
+
+Total REAL time to Xst completion: 189.00 secs
+Total CPU time to Xst completion: 187.44 secs
+
+-->
+
+
+Total memory usage is 1427480 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    3 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
