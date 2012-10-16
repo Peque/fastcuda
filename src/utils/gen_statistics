@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#
+#  gen_statistics.sh
+#
+#  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
+
+
+SYNTHESIS_REPORT_DIR=../../doc/synthesis_reports
+
+cd $SYNTHESIS_REPORT_DIR
+file_list=$(ls -1)
+
+echo "N_PORTS:\
+BROADCAST_ENABLED:\
+TARGET_DEVICE:\
+DESIGN_GOAL:\
+DESIGN_STRATEGY:\
+GLOBAL_OPTIMIZATION:\
+SLICE_LUTS:\
+BLOCK_RAM:\
+MIATBC:\
+MORTAC"
+
+for f in *; do
+
+	# N_PORTS
+	echo -n $(echo $f | grep -o "\([0-9\.]\)\+" | head -n 1):
+
+	# BROADCAST_ENABLED
+	echo -n :
+
+	# TARGET_DEVICE
+	echo -n :
+
+	# DESIGN_GOAL
+	echo -n :
+
+	# DESIGN_STRATEGY
+	echo -n :
+
+	# GLOBAL_OPTIMIZATION
+	echo -n :
+
+	# SLICE_LUTS
+	echo -n $(grep -e "Number of Slice LUTs" $f | grep -o "[0-9\.]\+" | head -n 1):
+
+	# BLOCK_RAM
+	echo -n $(grep -e "Number of Block RAM/FIFO" $f | grep -o "[0-9\.]\+" | head -n 1):
+
+	# MIATBC
+	echo -n $(grep -e "Minimum input arrival time before clock" $f | grep -o "[0-9\.]\+" | head -n 1):
+
+	# MORTAC
+	echo -n $(grep -e "Maximum output required time after clock" $f | grep -o "[0-9\.]\+" | head -n 1)
+
+	echo ""
+
+done
+
