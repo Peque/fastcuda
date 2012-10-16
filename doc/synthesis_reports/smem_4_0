@@ -1,0 +1,397 @@
+Release 14.2 - xst P.28xd (lin64)
+Copyright (c) 1995-2012 Xilinx, Inc.  All rights reserved.
+-->
+Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.05 secs
+
+-->
+Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 1.00 secs
+Total CPU time to Xst completion: 0.05 secs
+
+-->
+Reading design: smem.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Parsing
+  3) HDL Elaboration
+  4) HDL Synthesis
+       4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+       5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Partition Report
+  8) Design Summary
+       8.1) Primitive and Black Box Usage
+       8.2) Device utilization summary
+       8.3) Partition Resource Summary
+       8.4) Timing Report
+            8.4.1) Clock Information
+            8.4.2) Asynchronous Control Signals Information
+            8.4.3) Timing Summary
+            8.4.4) Timing Details
+            8.4.5) Cross Clock Domains Report
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "smem.prj"
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "smem"
+Output Format                      : NGC
+Target Device                      : xc6slx45-2-csg324
+
+---- Source Options
+Top Module Name                    : smem
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Shift Register Extraction          : YES
+ROM Style                          : Auto
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Shift Register Minimum Size        : 2
+Use DSP Block                      : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+LUT Combining                      : Auto
+Reduce Control Sets                : Auto
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 16
+Register Duplication               : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Auto
+Use Synchronous Set                : Auto
+Use Synchronous Reset              : Auto
+Pack IO Registers into IOBs        : True
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Area
+Optimization Effort                : 1
+Power Reduction                    : NO
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+DSP48 Utilization Ratio            : 100
+Auto BRAM Packing                  : YES
+Slice Utilization Ratio Delta      : 5
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Parsing                                  *
+=========================================================================
+Parsing VHDL file "/home/peque/xilinx/testbench/smem.vhd" into library work
+Parsing entity <smem>.
+Parsing architecture <smem_arch> of entity <smem>.
+
+=========================================================================
+*                            HDL Elaboration                            *
+=========================================================================
+
+Elaborating entity <smem> (architecture <smem_arch>) with generics from library <work>.
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <smem>.
+    Related source file is "/home/peque/xilinx/testbench/smem.vhd".
+        N_PORTS = 4
+        N_BRAMS = 2
+        LOG2_N_PORTS = 2
+WARNING:Xst:647 - Input <TRIG_CLK> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+    Found 32-bit 4-to-1 multiplexer for signal <bram_di<31:0>> created at line 312.
+    Found 9-bit 4-to-1 multiplexer for signal <bram_addr<8:0>> created at line 317.
+    Found 4-bit 4-to-1 multiplexer for signal <bram_we<3:0>> created at line 322.
+    Found 32-bit 4-to-1 multiplexer for signal <bram_di<63:32>> created at line 330.
+    Found 9-bit 4-to-1 multiplexer for signal <bram_addr<17:9>> created at line 335.
+    Found 4-bit 4-to-1 multiplexer for signal <bram_we<7:4>> created at line 340.
+    Found 32-bit 4-to-1 multiplexer for signal <bram_di<95:64>> created at line 348.
+    Found 9-bit 4-to-1 multiplexer for signal <bram_addr<26:18>> created at line 353.
+    Found 4-bit 4-to-1 multiplexer for signal <bram_we<11:8>> created at line 358.
+    Found 32-bit 4-to-1 multiplexer for signal <bram_di<127:96>> created at line 366.
+    Found 9-bit 4-to-1 multiplexer for signal <bram_addr<35:27>> created at line 371.
+    Found 4-bit 4-to-1 multiplexer for signal <bram_we<15:12>> created at line 376.
+    Found 32-bit 4-to-1 multiplexer for signal <DO<31:0>> created at line 385.
+    Found 32-bit 4-to-1 multiplexer for signal <DO<63:32>> created at line 393.
+    Found 32-bit 4-to-1 multiplexer for signal <DO<95:64>> created at line 401.
+    Found 32-bit 4-to-1 multiplexer for signal <DO<127:96>> created at line 409.
+    Summary:
+	inferred  16 Multiplexer(s).
+Unit <smem> synthesized.
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# Multiplexers                                         : 16
+ 32-bit 4-to-1 multiplexer                             : 8
+ 4-bit 4-to-1 multiplexer                              : 4
+ 9-bit 4-to-1 multiplexer                              : 4
+# Xors                                                 : 60
+ 1-bit xor2                                            : 60
+
+=========================================================================
+
+=========================================================================
+*                       Advanced HDL Synthesis                          *
+=========================================================================
+
+
+=========================================================================
+Advanced HDL Synthesis Report
+
+Macro Statistics
+# Multiplexers                                         : 16
+ 32-bit 4-to-1 multiplexer                             : 8
+ 4-bit 4-to-1 multiplexer                              : 4
+ 9-bit 4-to-1 multiplexer                              : 4
+# Xors                                                 : 60
+ 1-bit xor2                                            : 60
+
+=========================================================================
+
+=========================================================================
+*                         Low Level Synthesis                           *
+=========================================================================
+
+Optimizing unit <smem> ...
+
+Mapping all equations...
+Building and optimizing final netlist ...
+Found area constraint ratio of 100 (+ 5) on block smem, actual ratio is 2.
+
+Final Macro Processing ...
+
+=========================================================================
+Final Register Report
+
+Found no macro
+=========================================================================
+
+=========================================================================
+*                           Partition Report                            *
+=========================================================================
+
+Partition Implementation Status
+-------------------------------
+
+  No Partitions were found in this design.
+
+-------------------------------
+
+=========================================================================
+*                            Design Summary                             *
+=========================================================================
+
+Top Level Output File Name         : smem.ngc
+
+Primitive and Black Box Usage:
+------------------------------
+# BELS                             : 388
+#      GND                         : 1
+#      LUT2                        : 12
+#      LUT3                        : 2
+#      LUT4                        : 5
+#      LUT5                        : 16
+#      LUT6                        : 350
+#      MUXF7                       : 1
+#      VCC                         : 1
+# RAMS                             : 2
+#      RAMB16BWER                  : 2
+# Clock Buffers                    : 1
+#      BUFGP                       : 1
+# IO Buffers                       : 321
+#      IBUF                        : 189
+#      OBUF                        : 132
+
+Device utilization summary:
+---------------------------
+
+Selected Device : 6slx45csg324-2
+
+
+Slice Logic Utilization:
+ Number of Slice LUTs:                  385  out of  27288     1%
+    Number used as Logic:               385  out of  27288     1%
+
+Slice Logic Distribution:
+ Number of LUT Flip Flop pairs used:    385
+   Number with an unused Flip Flop:     385  out of    385   100%
+   Number with an unused LUT:             0  out of    385     0%
+   Number of fully used LUT-FF pairs:     0  out of    385     0%
+   Number of unique control sets:         0
+
+IO Utilization:
+ Number of IOs:                         323
+ Number of bonded IOBs:                 322  out of    218   147% (*)
+
+Specific Feature Utilization:
+ Number of Block RAM/FIFO:                2  out of    116     1%
+    Number using Block RAM only:          2
+ Number of BUFG/BUFGCTRLs:                1  out of     16     6%
+
+WARNING:Xst:1336 -  (*) More than 100% of Device resources are used
+
+---------------------------
+Partition Resource Summary:
+---------------------------
+
+  No Partitions were found in this design.
+
+---------------------------
+
+
+=========================================================================
+Timing Report
+
+NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
+      FOR ACCURATE TIMING INFORMATION PLEASE REFER TO THE TRACE REPORT
+      GENERATED AFTER PLACE-and-ROUTE.
+
+Clock Information:
+------------------
+-----------------------------------+------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)  | Load  |
+-----------------------------------+------------------------+-------+
+BRAM_CLK                           | BUFGP                  | 2     |
+-----------------------------------+------------------------+-------+
+
+Asynchronous Control Signals Information:
+----------------------------------------
+No asynchronous control signals found in this design
+
+Timing Summary:
+---------------
+Speed Grade: -2
+
+   Minimum period: No path found
+   Minimum input arrival time before clock: 13.243ns
+   Maximum output required time after clock: 7.027ns
+   Maximum combinational path delay: 18.904ns
+
+Timing Details:
+---------------
+All values displayed in nanoseconds (ns)
+
+=========================================================================
+Timing constraint: Default OFFSET IN BEFORE for Clock 'BRAM_CLK'
+  Total number of paths / destination ports: 94864 / 184
+-------------------------------------------------------------------------
+Offset:              13.243ns (Levels of Logic = 8)
+  Source:            ADDR_1<9> (PAD)
+  Destination:       bram_inst[0].RAMB16BWER_INST (RAM)
+  Destination Clock: BRAM_CLK rising
+
+  Data Path: ADDR_1<9> to bram_inst[0].RAMB16BWER_INST
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O            45   1.328   2.013  ADDR_1_9_IBUF (ADDR_1_9_IBUF)
+     LUT6:I2->O            1   0.254   0.682  k1_needs_attention1 (k1_needs_attention1)
+     LUT3:I2->O            1   0.254   0.682  k1_needs_attention4 (k1_needs_attention4)
+     LUT6:I5->O           18   0.254   1.235  k1_needs_attention9 (k1_needs_attention)
+     LUT6:I5->O            1   0.254   1.137  k3_needs_attention16 (k3_needs_attention16)
+     LUT6:I0->O            8   0.254   1.052  k3_needs_attention23 (k3_needs_attention)
+     LUT4:I2->O           51   0.250   2.259  bram_3_input_sel<1>1 (bram_3_input_sel<1>)
+     LUT6:I1->O            1   0.254   0.681  Mmux_bram_addr<35:27>11 (bram_addr<27>)
+     RAMB16BWER:ADDRB5         0.400          bram_inst[1].RAMB16BWER_INST
+    ----------------------------------------
+    Total                     13.243ns (3.502ns logic, 9.741ns route)
+                                       (26.4% logic, 73.6% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'BRAM_CLK'
+  Total number of paths / destination ports: 512 / 128
+-------------------------------------------------------------------------
+Offset:              7.027ns (Levels of Logic = 2)
+  Source:            bram_inst[1].RAMB16BWER_INST (RAM)
+  Destination:       DO<127> (PAD)
+  Source Clock:      BRAM_CLK rising
+
+  Data Path: bram_inst[1].RAMB16BWER_INST to DO<127>
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     RAMB16BWER:CLKB->DOB31    4   2.100   1.080  bram_inst[1].RAMB16BWER_INST (bram_do<127>)
+     LUT6:I2->O            1   0.254   0.681  Mmux_DO<127:96>281 (DO_127_OBUF)
+     OBUF:I->O                 2.912          DO_127_OBUF (DO<127>)
+    ----------------------------------------
+    Total                      7.027ns (5.266ns logic, 1.761ns route)
+                                       (74.9% logic, 25.1% route)
+
+=========================================================================
+Timing constraint: Default path analysis
+  Total number of paths / destination ports: 206358 / 132
+-------------------------------------------------------------------------
+Delay:               18.904ns (Levels of Logic = 11)
+  Source:            ADDR_1<9> (PAD)
+  Destination:       RDY_2 (PAD)
+
+  Data Path: ADDR_1<9> to RDY_2
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     IBUF:I->O            45   1.328   2.013  ADDR_1_9_IBUF (ADDR_1_9_IBUF)
+     LUT6:I2->O            1   0.254   0.682  k1_needs_attention1 (k1_needs_attention1)
+     LUT3:I2->O            1   0.254   0.682  k1_needs_attention4 (k1_needs_attention4)
+     LUT6:I5->O           18   0.254   1.235  k1_needs_attention9 (k1_needs_attention)
+     LUT6:I5->O            1   0.254   1.137  k3_needs_attention16 (k3_needs_attention16)
+     LUT6:I0->O            8   0.254   1.052  k3_needs_attention23 (k3_needs_attention)
+     LUT4:I2->O           51   0.250   2.105  bram_3_input_sel<1>1 (bram_3_input_sel<1>)
+     LUT5:I1->O           34   0.254   2.008  k2_output_sel<0>1 (k2_output_sel<0>)
+     LUT6:I0->O            1   0.254   0.790  k2_being_served1 (k2_being_served)
+     LUT3:I1->O            1   0.250   0.681  k2_being_served3 (RDY_2_OBUF)
+     OBUF:I->O                 2.912          RDY_2_OBUF (RDY_2)
+    ----------------------------------------
+    Total                     18.904ns (6.518ns logic, 12.386ns route)
+                                       (34.5% logic, 65.5% route)
+
+=========================================================================
+
+Cross Clock Domains Report:
+--------------------------
+
+=========================================================================
+
+
+Total REAL time to Xst completion: 7.00 secs
+Total CPU time to Xst completion: 5.86 secs
+
+-->
+
+
+Total memory usage is 495400 kilobytes
+
+Number of errors   :    0 (   0 filtered)
+Number of warnings :    2 (   0 filtered)
+Number of infos    :    0 (   0 filtered)
+
