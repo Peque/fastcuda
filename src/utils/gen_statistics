@@ -22,6 +22,13 @@
 #
 
 
+function print_help {
+	echo -e "\nUsage:\n"
+	echo -e "  gen_statistics [name]\n"
+	echo -e "Being:\n"
+	echo -e "  [name]  = Optional file name to filter synthesis report files"
+	echo -e ""
+}
 
 SYNTHESIS_REPORT_DIR=../../doc/synthesis_reports
 
@@ -39,25 +46,25 @@ BLOCK_RAM:\
 MIATBC:\
 MORTAC"
 
-for f in *; do
+for f in $1*; do
 
 	# N_PORTS
 	echo -n $(echo $f | grep -o "\([0-9\.]\)\+" | head -n 1):
 
 	# BROADCAST_ENABLED
-	echo -n :
+	echo -n $(if [ "$(echo $f | grep nobroadcast)" = "" ]; then echo 1; else echo 0; fi;):
 
 	# TARGET_DEVICE
-	echo -n :
+	echo -n $(grep -e "Target Device.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
 	# DESIGN_GOAL
-	echo -n :
+	echo -n $(grep -e "Optimization Goal.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
 	# DESIGN_STRATEGY
-	echo -n :
+	echo -n $(grep -e "Optimization Effort.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
 	# GLOBAL_OPTIMIZATION
-	echo -n :
+	echo -n $(grep -e "Global Optimization.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
 	# SLICE_LUTS
 	echo -n $(grep -e "Number of Slice LUTs" $f | grep -o "[0-9\.]\+" | head -n 1):
