@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#
+#  plot
+#
+#  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
+function print_help {
+	echo -e "\nUsage:\n"
+	echo -e "  plot [data_file]\n"
+	echo -e "Being:\n"
+	echo -e "  [data_file]  = Optional data file. If not present it will read from stdin."
+	echo -e ""
+}
+
+function plot {
+	cat $1 | gnuplot -p -e 'plot "-" using 1:9 title "MIATBC", "-" using 1:10 title "MORTAC"'
+}
+
+
+if [ $# -lt 1 ]; then
+	while read pipe_line; do
+		echo "$pipe_line" | sed 's/:/\t/g' >> gnuplot_data
+	done
+else
+	cat $1 | sed 's/:/\t/g' >> gnuplot_data
+fi
+
+plot gnuplot_data
+rm gnuplot_data
