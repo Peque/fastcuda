@@ -48,34 +48,34 @@ MORTAC"
 
 for f in $1*; do
 
-	# N_PORTS
+	# 1) N_PORTS
 	echo -n $(echo $f | grep -o "\([0-9\.]\)\+" | head -n 1):
 
-	# BROADCAST_ENABLED
+	# 2) BROADCAST_ENABLED
 	echo -n $(if [ "$(echo $f | grep nobroadcast)" = "" ]; then echo broadcast; else echo no_broadcast; fi;):
 
-	# TARGET_DEVICE
+	# 3) TARGET_DEVICE
 	echo -n $(grep -e "Target Device.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
-	# DESIGN_GOAL
+	# 4) DESIGN_GOAL
 	echo -n $(grep -e "Optimization Goal.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
-	# DESIGN_STRATEGY
+	# 5) DESIGN_STRATEGY
 	echo -n $(grep -e "Optimization Effort.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
-	# GLOBAL_OPTIMIZATION
+	# 6) GLOBAL_OPTIMIZATION
 	echo -n $(grep -e "Global Optimization.*:" $f | grep -o "[^ ]\+" | tail -n 1):
 
-	# SLICE_LUTS
+	# 7) SLICE_LUTS
 	echo -n $(grep -e "Number of Slice LUTs" $f | grep -o "[0-9\.]\+" | head -n 1):
 
-	# BLOCK_RAM
+	# 8) BLOCK_RAM
 	echo -n $(grep -e "Number of Block RAM/FIFO" $f | grep -o "[0-9\.]\+" | head -n 1):
 
-	# MIATBC
+	# 9) MIATBC
 	echo -n $(grep -e "Minimum input arrival time before clock" $f | grep -o "[0-9\.]\+" | head -n 1):
 
-	# MORTAC
+	# 10) MORTAC
 	echo -n $(grep -e "Maximum output required time after clock" $f | grep -o "[0-9\.]\+" | head -n 1)
 
 	echo ""

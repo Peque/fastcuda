@@ -49,7 +49,7 @@ Ignore Synthesis Constraint File   : NO
 ---- Target Parameters
 Output File Name                   : "smem"
 Output Format                      : NGC
-Target Device                      : xc6slx45-2-csg324
+Target Device                      : xc6slx45-3-csg324
 
 ---- Source Options
 Top Module Name                    : smem
