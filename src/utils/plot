@@ -21,6 +21,7 @@
 #  MA 02110-1301, USA.
 #
 
+
 function print_help {
 	echo -e "\nUsage:\n"
 	echo -e "  plot [data_file]\n"
@@ -30,16 +31,45 @@ function print_help {
 }
 
 function plot {
-	cat $1 | gnuplot -p -e 'plot "-" using 1:9 title "MIATBC", "-" using 1:10 title "MORTAC"'
+	# TODO: generate this vectors automatically processing the data table
+	BROADCAST_ENABLED_OPTIONS=('0' '1')
+	TARGET_DEVICE_OPTIONS=('xc6slx45-2-csg324' 'xc6slx45-3-csg324')
+	DESIGN_GOAL_OPTIONS=('Area')
+	DESIGN_STRATEGY_OPTIONS=('1')
+	GLOBAL_OPTIMIZATION_OPTIONS=('AllClockNets')
+
+	for a in ${BROADCAST_ENABLED_OPTIONS[@]}; do
+		for b in ${TARGET_DEVICE_OPTIONS[@]}; do
+			for c in ${DESIGN_GOAL_OPTIONS[@]}; do
+				for d in ${DESIGN_STRATEGY_OPTIONS[@]}; do
+					for e in ${GLOBAL_OPTIMIZATION_OPTIONS[@]}; do
+						filtered_data=$(cat $1 | ./table_filter \
+							BROADCAST_ENABLED=$a \
+							TARGET_DEVICE=$b \
+							DESIGN_GOAL=$c \
+							DESIGN_STRATEGY=$d \
+							GLOBAL_OPTIMIZATION=$e \
+							| sed 's/:/\t/g' \
+							| sort -k +1n)             # Sort by number of kernels
+						cmd="set title '$a_$b_$c_$d_$e'; set key outside right center"
+						echo $cmd
+						echo "$filtered_data" | gnuplot -p -e "$cmd; plot '-' using 1:9 title 'MIATBC' with lines"
+						echo "$filtered_data" | gnuplot -p -e "$cmd; plot '-' using 1:10 title 'MORTAC' with lines"
+					done
+				done
+			done
+		done
+	done
+
 }
 
 
 if [ $# -lt 1 ]; then
 	while read pipe_line; do
-		echo "$pipe_line" | sed 's/:/\t/g' >> gnuplot_data
+		echo "$pipe_line" >> gnuplot_data
 	done
 else
-	cat $1 | sed 's/:/\t/g' >> gnuplot_data
+	cat $1 >> gnuplot_data
 fi
 
 plot gnuplot_data

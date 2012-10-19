@@ -1,0 +1,68 @@
+#!/bin/bash
+
+#
+#  table_filter
+#
+#  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
+
+function print_help {
+	echo -e "\nUsage:\n"
+	echo -e "  table_filter [FILTER=VALUE0,VALUE1...] [FILTER=VALUE0,VALUE1...] [...]\n"
+	echo -e "Being:\n"
+	echo -e "  FILTER  = Search values in column 'FILTER'."
+	echo -e "  VALUEX  = Values to accept for the filter."
+	echo -e ""
+}
+
+if [ $# -lt 1 ]; then
+	print_help
+	exit
+fi
+
+read pipe_line
+
+headers=$(echo $pipe_line | tr ":" "\n")
+
+declare -A header_pos
+i=0
+for header in $headers; do
+	header_pos[$header]=$i
+	((i++))
+done
+
+while read pipe_line; do
+	print_pipe_line=1
+	for i in $@; do
+		filter_column=$(echo $i | cut -d= -f1)
+		filter_data=$(echo $i | cut -d= -f2 | tr "," "\n")
+		filter_ok=0
+		for j in $filter_data; do
+			if [ "$(echo $pipe_line | cut -d: -f$(((${header_pos[$filter_column]}+1))))" == "$j" ]; then
+				filter_ok=1
+			fi
+		done
+		if [ $filter_ok == 0 ]; then
+			print_pipe_line=0
+		fi
+	done
+	if [ $print_pipe_line == 1 ]; then
+		echo $pipe_line
+	fi
+done
