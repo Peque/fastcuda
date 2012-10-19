@@ -52,7 +52,7 @@ for f in $1*; do
 	echo -n $(echo $f | grep -o "\([0-9\.]\)\+" | head -n 1):
 
 	# BROADCAST_ENABLED
-	echo -n $(if [ "$(echo $f | grep nobroadcast)" = "" ]; then echo 1; else echo 0; fi;):
+	echo -n $(if [ "$(echo $f | grep nobroadcast)" = "" ]; then echo broadcast; else echo no_broadcast; fi;):
 
 	# TARGET_DEVICE
 	echo -n $(grep -e "Target Device.*:" $f | grep -o "[^ ]\+" | tail -n 1):
