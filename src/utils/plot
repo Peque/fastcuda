@@ -51,10 +51,19 @@ function plot {
 							GLOBAL_OPTIMIZATION=$e \
 							| sed 's/:/\t/g' \
 							| sort -k +1n)             # Sort by number of kernels
-						cmd="set title '$a_$b_$c_$d_$e'; set key outside right center"
-						echo $cmd
-						echo "$filtered_data" | gnuplot -p -e "$cmd; plot '-' using 1:9 title 'MIATBC' with lines"
-						echo "$filtered_data" | gnuplot -p -e "$cmd; plot '-' using 1:10 title 'MORTAC' with lines"
+						cmd="set title 'Data for $a:$b:$c:$d:$e'; set key outside right center"
+						xlports="set xlabel 'Ports'"
+						ylns="set ylabel 'Delay (ns)'"
+
+						if [ "$filtered_data" != "" ]; then
+							echo "$filtered_data" > filtered_data
+							gnuplot -p -e "$cmd;$xlports;$ylns; plot 'filtered_data' using 1:9 smooth csplines title 'MIATBC (cspline)' with lines"
+							gnuplot -p -e "$cmd;$xlports;$ylns; plot 'filtered_data' using 1:9 smooth bezier title 'MIATBC (beizer)' with lines"
+							gnuplot -p -e "$cmd;$xlports;$ylns; plot 'filtered_data' using 1:9:(1.0) smooth acsplines title 'MIATBC (acspline)' with lines"
+							gnuplot -p -e "$cmd;$xlports;$ylns; plot 'filtered_data' using 1:9:(1.0) title 'MIATBC (yerr)' with yerrorbars"
+							#echo "$filtered_data" | gnuplot -p -e "$cmd;$xlports;$ylns; plot '-' using 1:10 title 'MORTAC' with lines"
+							rm filtered_data
+						fi
 					done
 				done
 			done
