@@ -44,7 +44,10 @@ GLOBAL_OPTIMIZATION:\
 SLICE_LUTS:\
 BLOCK_RAM:\
 MIATBC:\
-MORTAC"
+MORTAC:\
+MACPD:\
+MIATBC_ROUTE:\
+MORTAC_ROUTE"
 
 for f in $1*; do
 
@@ -76,7 +79,16 @@ for f in $1*; do
 	echo -n $(grep -e "Minimum input arrival time before clock" $f | grep -o "[0-9\.]\+" | head -n 1):
 
 	# 10) MORTAC
-	echo -n $(grep -e "Maximum output required time after clock" $f | grep -o "[0-9\.]\+" | head -n 1)
+	echo -n $(grep -e "Maximum output required time after clock" $f | grep -o "[0-9\.]\+" | head -n 1):
+
+	# 11) MACPD
+	echo -n $(grep -e "Maximum combinational path delay" $f | grep -o "[0-9\.]\+" | head -n 1):
+
+	# 12) MIATBC_ROUTE
+	echo -n $(grep -e "Timing constraint: Default OFFSET IN BEFORE for Clock" $f -A$((($(grep -e "Timing constraint: Default OFFSET OUT AFTER for Clock" $f -n | cut -d: -f1) - $(grep -e "Timing constraint: Default OFFSET IN BEFORE for Clock" -n $f | cut -d: -f1)))) | grep "Total.*logic.*route" | grep -o "[0-9\.]\+" | tail -n 1):
+
+	# 13) MORTAC_ROUTE
+	echo -n $(grep -e "Timing constraint: Default OFFSET OUT AFTER for Clock" $f -A$((($(grep -e "Timing constraint: Default path analysis" $f -n | cut -d: -f1) - $(grep -e "Timing constraint: Default OFFSET OUT AFTER for Clock" -n $f | cut -d: -f1)))) | grep "Total.*logic.*route" | grep -o "[0-9\.]\+" | tail -n 1)
 
 	echo ""
 
