@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#
+#  print_graphs
+#
+#  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
+
+function print_help {
+	echo -e "\nUsage:\n"
+	echo -e "  print_graph T=TITLE X=X_DATA XL=X_LABEL Y=Y_DATA1,Y_DATA2 YL=Y_LABEL D=DRAW1,DRAW2,... C=FACTOR1,FACTOR2... F=FACTOR1,FACTOR2...\n"
+	echo -e "Being:\n"
+	echo -e "  T    = Title."
+	echo -e "  X    = Data for the 'x' axis."
+	echo -e "  XL   = Label for the 'x' axis."
+	echo -e "  Y    = Data list for the 'y' axis."
+	echo -e "  YL   = Label for the 'y' axis."
+	echo -e "  D    = List of functions/data to be drawn: { POINTS, BEZIER, CSPLINE, YERR00.00 }."
+	echo -e "  C    = List of factors to be compared in the same graph."
+	echo -e "  F    = List of factors to be compared in different graphs."
+	echo -e ""
+}
+
+for i in $@; do
+	var=$(echo $i | cut -d= -f1)
+	val=$(echo $i | cut -d= -f2 | tr "," "\n")
+	case $var in
+		T)  T=$val;;
+		X)  X=$val;;
+		XL) XL=$val;;
+		Y)  Y=$val;;
+		YL) YL=$val;;
+		D)  D=$val;;
+		C)  C=$val;;
+		F)  F=$val;;
+	esac
+done
+
+if [[ "$X" == "" || "$Y" == "" || "$D" == "" || "$C" == "$F" ]]; then
+	print_help
+	exit
+fi
+
+statistics=$(./gen_statistics)
+
+i=0
+for f in $F; do
+	compare_value=$(echo "$statistics" | ./table_values $f)
+	compare[$i]=${compare_value[@]}
+	compare_size[$i]=${#compare_value[@]}
+	echo "${compare_value[0]}"
+	echo ${compare_size[$i]}
+	((i++))
+done

@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#
+#  table_values
+#
+#  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
+
+function print_help {
+	echo -e "\nUsage:\n"
+	echo -e "  table_values COLUMN\n"
+	echo -e "Being:\n"
+	echo -e "  COLUMN  = Search for different values in column 'COLUMN'."
+	echo -e ""
+}
+
+if [ $# -lt 1 ]; then
+	print_help
+	exit
+fi
+
+read pipe_line
+
+headers=$(echo $pipe_line | tr ":" "\n")
+
+declare -A header_pos
+i=0
+for header in $headers; do
+	header_pos[$header]=$i
+	((i++))
+done
+
+values[0]=$1
+i=1
+while read pipe_line; do
+	repeated=0
+	value=$(echo $pipe_line | cut -d: -f$(((${header_pos[$1]}+1))))
+	for j in ${values[@]}; do
+		if [ "$value" == "$j" ]; then
+			repeated=1
+		fi
+	done
+	if [ $repeated == 0 ]; then
+		values[$i]=$value
+		((i++))
+	fi
+done
+
+echo "${values[@]}"
