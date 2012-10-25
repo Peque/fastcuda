@@ -37,6 +37,7 @@ function print_help {
 	echo -e ""
 }
 
+# Set program parameters
 for i in $@; do
 	var=$(echo $i | cut -d= -f1)
 	val=$(echo $i | cut -d= -f2 | tr "," "\n")
@@ -52,19 +53,45 @@ for i in $@; do
 	esac
 done
 
+# Check for suficient parameters (only some of them are mandatory)
 if [[ "$X" == "" || "$Y" == "" || "$D" == "" || "$C" == "$F" ]]; then
 	print_help
 	exit
 fi
 
+# Get synthesis report data
 statistics=$(./gen_statistics)
 
+# Set data to be filtered for each graph
 i=0
 for f in $F; do
-	compare_value=$(echo "$statistics" | ./table_values $f)
-	compare[$i]=${compare_value[@]}
-	compare_size[$i]=${#compare_value[@]}
-	echo "${compare_value[0]}"
-	echo ${compare_size[$i]}
+	compare_values[$i]=$(echo "$statistics" | ./table_values $f)
+	compare_length[$i]=$(echo "${compare_values[$i]}" | wc -w)
 	((i++))
+done
+nfilters=1
+for i in ${compare_length[@]}; do
+	((nfilters*=($i-1)))
+done
+divided_nfilters=1
+for ((i=0; i<${#compare_values[@]}; i++)); do
+	compare=${compare_values[$i]}
+	column=$(echo $compare | tr " " ":" | cut -d: -f1)
+	kn=$((($nfilters/((${compare_length[$i]}-1)*$divided_nfilters))))
+	for ((j=0; j<((${compare_length[$i]}-1)*$divided_nfilters); j++)); do
+		j_reduced=$j
+		while [ $j_reduced -ge $((${compare_length[$i]}-1)) ]; do
+			((j_reduced-=${compare_length[$i]}-1))
+		done
+		filter_by=$(echo $compare | tr " " ":" | cut -d: -f$((($j_reduced+2))))
+		for ((k=0; k<$kn; k++)); do
+			filter_number=$((($j*$kn+$k)))
+			filter[$filter_number]="${filter[$filter_number]} ${column}=$filter_by"
+		done
+	done
+	divided_nfilters=$((($divided_nfilters*(${compare_length[$i]}-1))))
+done
+
+for ((i=0; i<${#filter[@]}; i++)); do
+	echo "${filter[$i]}"
 done
