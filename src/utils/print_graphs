@@ -123,6 +123,12 @@ for header in $headers; do
 	header_pos[$header]=$i
 	((i++))
 done
+data_examples=$(echo "$statistics" | head -n 2 | tail -n 1 | tr ":" "\n")
+i=1
+for data in $data_examples; do
+	data_example[$i]=$data
+	((i++))
+done
 
 #
 # Generate combinations of parameters to be compared in different graphs
@@ -141,15 +147,23 @@ filter_c=( "${filter[@]}" )
 for ((i=0; i<${#filter_f[@]}; i++)); do
 	# TODO: various Y parameters!
 	if [ "${#filter_c[@]}" == "0" ]; then
-		# TODO: sort by the column we are displaying in the 'x' axis
-		echo "$statistics" | ./table_filter ${filter_f[$i]} | sed 's/:/\t/g' | sort -k +1n  > filtered_data
+		# Sort data by the column we are displaying in the 'x' axis
+		if [ "$(echo ${data_example[${header_pos[$X]}]} | grep '^[0-9\.]*$')" != "" ]; then
+			sort_options="-k${header_pos[$X]} -n"
+		else
+			sort_options="-k${header_pos[$X]}"
+		fi
+		# Generate filtered data
+		echo "$statistics" | ./table_filter ${filter_f[$i]} | sed 's/:/\t/g' | sort $sort_options > filtered_data
+		# Set gnuplot options
 		command="set terminal pngcairo font 'arial,10' size 600, 400; set key outside right center;"
 		command="$command set xlabel '$XL';"
 		command="$command set ylabel '$YL';"
-		command="$command set title '$T TODO: use other parameters here';"
-		command="$command set output 'TODO_$i.png';";
+		command="$command set title '$T $(echo "${filter_f[$i]}" | tr " " "\n")';"
+		command="$command set output '$T ${filter_f[$i]}.png';"
 		data="'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]}"
 		plot_data=""
+		# Define which functions/data to be drawn
 		D=$(echo $D | tr " " "\n")
 		for d in $D; do
 			if [ "$plot_data" != "" ]; then
@@ -162,7 +176,7 @@ for ((i=0; i<${#filter_f[@]}; i++)); do
 				*)       plot_data="$plot_data $data:($d) title '$Y (yerr=$d)' with yerrorbars lc rgb '#888888'";;
 			esac
 		done
-		echo "$plot_data"
+		# Plot data
 		gnuplot -p -e "$command plot $plot_data"
 	else
 		# TODO: C parameter not empty!
