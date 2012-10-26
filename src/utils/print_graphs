@@ -34,7 +34,7 @@ function print_help {
 	echo -e "  XL   = Label for the 'x' axis."
 	echo -e "  Y    = Data list for the 'y' axis."
 	echo -e "  YL   = Label for the 'y' axis."
-	echo -e "  D    = List of functions/data to be drawn: { POINTS, BEZIER, CSPLINE, YERR00.00 }."
+	echo -e "  D    = List of functions/data to be drawn: { POINTS, BEZIER, CSPLINE, 00.00 }. Real number correspond to the y-error to be displayed."
 	echo -e "  C    = List of factors to be compared in the same graph."
 	echo -e "  F    = List of factors to be compared in different graphs."
 	echo -e ""
@@ -100,6 +100,7 @@ for i in $@; do
 		D)  D=$val;;
 		C)  C=$val;;
 		F)  F=$val;;
+		*)  echo "ERROR: Unrecogniced parameter '$var'! Aborting..."
 	esac
 done
 
@@ -122,9 +123,6 @@ for header in $headers; do
 	header_pos[$header]=$i
 	((i++))
 done
-
-echo ${header_pos[$X]}
-echo ${header_pos[$Y]}
 
 #
 # Generate combinations of parameters to be compared in different graphs
@@ -150,11 +148,22 @@ for ((i=0; i<${#filter_f[@]}; i++)); do
 		command="$command set ylabel '$YL';"
 		command="$command set title '$T TODO: use other parameters here';"
 		command="$command set output 'TODO_$i.png';";
-		# TODO: take parameter D into account
-		gnuplot -p -e "$command \
-			plot 'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]} smooth bezier title '$Y (bezier)' with lines lt 0 lc rgb '#000000', \
-				 'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]} title '$Y (points)' with points pt 7 lc rgb '#000000', \
-				 'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]}:(1.2) title '$Y (yerr=1.2)' with yerrorbars lc rgb '#888888'"
+		data="'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]}"
+		plot_data=""
+		D=$(echo $D | tr " " "\n")
+		for d in $D; do
+			if [ "$plot_data" != "" ]; then
+				plot_data="$plot_data,"
+			fi
+			case $d in
+				POINTS)  plot_data="$plot_data $data title '$Y (points)' with points pt 7 lc rgb '#000000'";;
+				BEZIER)  plot_data="$plot_data $data smooth bezier title '$Y (bezier)' with lines lt 0 lc rgb '#000000'";;
+				CSPLINE) plot_data="$plot_data $data smooth cspline title '$Y (cspline)' with lines lt 0 lc rgb '#000000'";;
+				*)       plot_data="$plot_data $data:($d) title '$Y (yerr=$d)' with yerrorbars lc rgb '#888888'";;
+			esac
+		done
+		echo "$plot_data"
+		gnuplot -p -e "$command plot $plot_data"
 	else
 		# TODO: C parameter not empty!
 		echo "TODO: C parameter not empty!"
