@@ -22,6 +22,9 @@
 #
 
 
+#
+# Help function.
+#
 function print_help {
 	echo -e "\nUsage:\n"
 	echo -e "  print_graph T=TITLE X=X_DATA XL=X_LABEL Y=Y_DATA1,Y_DATA2 YL=Y_LABEL D=DRAW1,DRAW2,... C=FACTOR1,FACTOR2... F=FACTOR1,FACTOR2...\n"
@@ -37,7 +40,54 @@ function print_help {
 	echo -e ""
 }
 
-# Set program parameters
+function generate_parameters_combinations () {
+
+	# Reset variables that may already exist from previous executions
+
+	unset filter
+	unset factor_values
+	unset factor_length
+
+	# Set factors to be compared.
+
+	i=0
+	for f in $2; do
+		factor_values[$i]=$(echo "$1" | ./table_values $f)
+		factor_length[$i]=$(echo "${factor_values[$i]}" | wc -w)
+		((i++))
+	done
+
+	# Get all combinations, without repetitions, of the factors to be
+	# compared, and set the different filters to be applied.
+
+	nfilters=1
+	for i in ${factor_length[@]}; do
+		((nfilters*=($i-1)))
+	done
+	divided_nfilters=1
+	for ((i=0; i<${#factor_values[@]}; i++)); do
+		compare=${factor_values[$i]}
+		column=$(echo $compare | tr " " ":" | cut -d: -f1)
+		kn=$((($nfilters/((${factor_length[$i]}-1)*$divided_nfilters))))
+		for ((j=0; j<((${factor_length[$i]}-1)*$divided_nfilters); j++)); do
+			j_reduced=$j
+			while [ $j_reduced -ge $((${factor_length[$i]}-1)) ]; do
+				((j_reduced-=${factor_length[$i]}-1))
+			done
+			filter_by=$(echo $compare | tr " " ":" | cut -d: -f$((($j_reduced+2))))
+			for ((k=0; k<$kn; k++)); do
+				filter_number=$((($j*$kn+$k)))
+				filter[$filter_number]="${filter[$filter_number]} ${column}=$filter_by"
+			done
+		done
+		divided_nfilters=$((($divided_nfilters*(${factor_length[$i]}-1))))
+	done
+
+}
+
+#
+# Set program parameters.
+#
 for i in $@; do
 	var=$(echo $i | cut -d= -f1)
 	val=$(echo $i | cut -d= -f2 | tr "," "\n")
@@ -53,45 +103,60 @@ for i in $@; do
 	esac
 done
 
-# Check for suficient parameters (only some of them are mandatory)
+#
+# Check for suficient parameters (only some of them are mandatory).
+#
 if [[ "$X" == "" || "$Y" == "" || "$D" == "" || "$C" == "$F" ]]; then
 	print_help
 	exit
 fi
 
-# Get synthesis report data
+#
+# Get synthesis report data.
+#
 statistics=$(./gen_statistics)
-
-# Set data to be filtered for each graph
-i=0
-for f in $F; do
-	compare_values[$i]=$(echo "$statistics" | ./table_values $f)
-	compare_length[$i]=$(echo "${compare_values[$i]}" | wc -w)
+headers=$(echo "$statistics" | head -n 1 | tr ":" "\n")
+declare -A header_pos
+i=1
+for header in $headers; do
+	header_pos[$header]=$i
 	((i++))
 done
-nfilters=1
-for i in ${compare_length[@]}; do
-	((nfilters*=($i-1)))
-done
-divided_nfilters=1
-for ((i=0; i<${#compare_values[@]}; i++)); do
-	compare=${compare_values[$i]}
-	column=$(echo $compare | tr " " ":" | cut -d: -f1)
-	kn=$((($nfilters/((${compare_length[$i]}-1)*$divided_nfilters))))
-	for ((j=0; j<((${compare_length[$i]}-1)*$divided_nfilters); j++)); do
-		j_reduced=$j
-		while [ $j_reduced -ge $((${compare_length[$i]}-1)) ]; do
-			((j_reduced-=${compare_length[$i]}-1))
-		done
-		filter_by=$(echo $compare | tr " " ":" | cut -d: -f$((($j_reduced+2))))
-		for ((k=0; k<$kn; k++)); do
-			filter_number=$((($j*$kn+$k)))
-			filter[$filter_number]="${filter[$filter_number]} ${column}=$filter_by"
-		done
-	done
-	divided_nfilters=$((($divided_nfilters*(${compare_length[$i]}-1))))
-done
 
-for ((i=0; i<${#filter[@]}; i++)); do
-	echo "${filter[$i]}"
+echo ${header_pos[$X]}
+echo ${header_pos[$Y]}
+
+#
+# Generate combinations of parameters to be compared in different graphs
+# and store the result in a new array.
+#
+generate_parameters_combinations "$statistics" "$F"
+filter_f=( "${filter[@]}" )
+
+#
+# Generate combinations of parameters to be compared in the same graph
+# and store the result in a new array.
+#
+generate_parameters_combinations "$statistics" "$C"
+filter_c=( "${filter[@]}" )
+
+for ((i=0; i<${#filter_f[@]}; i++)); do
+	# TODO: various Y parameters!
+	if [ "${#filter_c[@]}" == "0" ]; then
+		# TODO: sort by the column we are displaying in the 'x' axis
+		echo "$statistics" | ./table_filter ${filter_f[$i]} | sed 's/:/\t/g' | sort -k +1n  > filtered_data
+		command="set terminal pngcairo font 'arial,10' size 600, 400; set key outside right center;"
+		command="$command set xlabel '$XL';"
+		command="$command set ylabel '$YL';"
+		command="$command set title '$T TODO: use other parameters here';"
+		command="$command set output 'TODO_$i.png';";
+		# TODO: take parameter D into account
+		gnuplot -p -e "$command \
+			plot 'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]} smooth bezier title '$Y (bezier)' with lines lt 0 lc rgb '#000000', \
+				 'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]} title '$Y (points)' with points pt 7 lc rgb '#000000', \
+				 'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]}:(1.2) title '$Y (yerr=1.2)' with yerrorbars lc rgb '#888888'"
+	else
+		# TODO: C parameter not empty!
+		echo "TODO: C parameter not empty!"
+	fi
 done
