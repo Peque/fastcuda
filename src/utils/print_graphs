@@ -37,6 +37,7 @@ function print_help {
 	echo -e "  D    = List of functions/data to be drawn: { POINTS, BEZIER, CSPLINE, 00.00 }. Real number correspond to the y-error to be displayed."
 	echo -e "  C    = List of factors to be compared in the same graph."
 	echo -e "  F    = List of factors to be compared in different graphs."
+	echo -e "  TT   = Terminal type: { pngcairo, TODO... }. See gnuplot terminal types."
 	echo -e ""
 }
 
@@ -92,14 +93,15 @@ for i in $@; do
 	var=$(echo $i | cut -d= -f1)
 	val=$(echo $i | cut -d= -f2 | tr "," "\n")
 	case $var in
-		T)  T=$val;;
-		X)  X=$val;;
+		T)   T=$val;;
+		X)   X=$val;;
 		XL) XL=$val;;
-		Y)  Y=$val;;
+		Y)   Y=$val;;
 		YL) YL=$val;;
-		D)  D=$val;;
-		C)  C=$val;;
-		F)  F=$val;;
+		D)   D=$val;;
+		C)   C=$val;;
+		F)   F=$val;;
+		TT) TT=$val;;
 		*)  echo "ERROR: Unrecogniced parameter '$var'! Aborting..."
 	esac
 done
@@ -129,6 +131,26 @@ for data in $data_examples; do
 	data_example[$i]=$data
 	((i++))
 done
+
+#
+# Set terminal type.
+#
+case $TT in
+	pngcairo)
+		set_term="set terminal pngcairo font 'arial,10' size 600, 600; set key outside center bottom;"
+		set_fext="png"
+		;;
+	# TODO: allow more terminal types.
+	'')
+		set_term="set terminal pngcairo font 'arial,10' size 600, 600; set key outside center bottom;"
+		set_fext="png"
+		;;
+	*)
+		echo "ERROR: Unrecogniced terminal type '$TT'! Using pngcairo as default..."
+		set_term="set terminal pngcairo font 'arial,10' size 600, 600; set key outside center bottom;"
+		set_fext="png"
+		;;
+esac
 
 #
 # Generate combinations of parameters to be compared in different graphs
@@ -163,11 +185,11 @@ for ((i=0; i<${#filter_f[@]}; i++)); do
 		# Generate filtered data
 		echo "$statistics" | ./table_filter ${filter_f[$i]} | sed 's/:/\t/g' | sort $sort_options > filtered_data
 		# Set gnuplot options
-		command="set terminal pngcairo font 'arial,10' size 600, 600; set key outside center bottom;"
+		command="$set_term"
 		command="$command set xlabel '$XL';"
 		command="$command set ylabel '$YL';"
-		command="$command set title '$T $(echo "${filter_f[$i]}" | tr " " "\n")';"
-		command="$command set output '$T ${filter_f[$i]}.png';"
+		command="$command set title '$T $Y $(echo "${filter_f[$i]}" | tr " " "\n")';"
+		command="$command set output './build/$T $Y ${filter_f[$i]}.$set_fext';"
 		data="'filtered_data' using ${header_pos[$X]}:${header_pos[$Y]}"
 		plot_data=""
 		# Define which functions/data to be drawn
@@ -189,11 +211,11 @@ for ((i=0; i<${#filter_f[@]}; i++)); do
 		# Prevent existing filtered_data file
 		rm -f filtered_data
 		# Set gnuplot options
-		command="set terminal pngcairo font 'arial,10' size 600, 600; set key outside center bottom;"
+		command="$set_term"
 		command="$command set xlabel '$XL';"
 		command="$command set ylabel '$YL';"
 		command="$command set title '$T $(echo "${filter_f[$i]}" | tr " " "\n")';"
-		command="$command set output '$T ${filter_f[$i]}.png';"
+		command="$command set output './build/$T ${filter_f[$i]}.$set_fext';"
 		data="'-' using ${header_pos[$X]}:${header_pos[$Y]}"
 		plot_data=""
 		for ((j=0; j<${#filter_c[@]}; j++)); do
