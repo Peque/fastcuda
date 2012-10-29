@@ -22,99 +22,42 @@
 #
 
 
-function print_help {
-	echo -e "\nUsage:\n"
-	echo -e "  plot [data_file]\n"
-	echo -e "Being:\n"
-	echo -e "  [data_file]  = Optional data file. If not present it will read from stdin."
-	echo -e ""
-}
+mkdir -p build
 
-function plot {
-	# TODO: generate this vectors automatically processing the data table
-	BROADCAST_ENABLED_OPTIONS=('broadcast' 'no_broadcast')
-	TARGET_DEVICE_OPTIONS=('xc6slx45-3-csg324')
-	DESIGN_GOAL_OPTIONS=('Area')
-	DESIGN_STRATEGY_OPTIONS=('1')
-	GLOBAL_OPTIMIZATION_OPTIONS=('AllClockNets')
+# Print slice LUTs utilization
+./print_graphs \
+	X=N_PORTS \
+	Y=SLICE_LUTS \
+	D=CSPLINE,POINTS \
+	F=TARGET_DEVICE,DESIGN_GOAL,DESIGN_STRATEGY,GLOBAL_OPTIMIZATION,BROADCAST_ENABLED
 
-	general="set terminal pngcairo font 'arial,10' size 600, 400; set key outside right center"
-	xlports="set xlabel 'Ports'"
-	ylns="set ylabel 'Delay (ns)'"
-	yllut="set ylabel 'Slice LUTs'"
-	ylbram="set ylabel 'BRAMs'"
+# Print BRAM utilization
+./print_graphs \
+	X=N_PORTS \
+	Y=BLOCK_RAM \
+	D=CSPLINE,POINTS \
+	F=TARGET_DEVICE,DESIGN_GOAL,DESIGN_STRATEGY,GLOBAL_OPTIMIZATION,BROADCAST_ENABLED
 
-	for b in ${TARGET_DEVICE_OPTIONS[@]}; do
-		for c in ${DESIGN_GOAL_OPTIONS[@]}; do
-			for d in ${DESIGN_STRATEGY_OPTIONS[@]}; do
-				for e in ${GLOBAL_OPTIMIZATION_OPTIONS[@]}; do
-					for a in ${BROADCAST_ENABLED_OPTIONS[@]}; do
-						filtered_data=$(cat $1 | ./table_filter \
-							BROADCAST_ENABLED=$a \
-							TARGET_DEVICE=$b \
-							DESIGN_GOAL=$c \
-							DESIGN_STRATEGY=$d \
-							GLOBAL_OPTIMIZATION=$e \
-							| sed 's/:/\t/g' \
-							| sort -k +1n)             # Sort by number of kernels
+# Print MIATBC comparison for BROADCAST_ENABLED
+./print_graphs \
+	X=N_PORTS \
+	Y=MIATBC \
+	D=BEZIER,POINTS \
+	C=BROADCAST_ENABLED \
+	F=TARGET_DEVICE,DESIGN_GOAL,DESIGN_STRATEGY,GLOBAL_OPTIMIZATION
 
-						title="set title 'Data for $a:$b:$c:$d:$e'"
+# Print MIATBC comparison for BROADCAST_ENABLED
+./print_graphs \
+	X=N_PORTS \
+	Y=MORTAC \
+	D=BEZIER,POINTS \
+	C=BROADCAST_ENABLED \
+	F=TARGET_DEVICE,DESIGN_GOAL,DESIGN_STRATEGY,GLOBAL_OPTIMIZATION
 
-						if [ "$filtered_data" != "" ]; then
-							echo "$filtered_data" > filtered_data
-							output="set output 'MIATBC - $a:$b:$c:$d:$e.png'";
-							gnuplot -p -e "$general;$title;$output;$xlports;$ylns; \
-								plot 'filtered_data' using 1:9 smooth bezier title 'MIATBC (bezier)' with lines lt 0 lc rgb '#000000', \
-								     'filtered_data' using 1:9 title 'MIATBC (points)' with points pt 7 lc rgb '#000000', \
-								     'filtered_data' using 1:9:(1.2) title 'MIATBC (yerr=1.2)' with yerrorbars lc rgb '#888888'"
-							output="set output 'MORTAC - $a:$b:$c:$d:$e.png'";
-							gnuplot -p -e "$general;$title;$output;$xlports;$ylns; \
-								plot 'filtered_data' using 1:10 smooth bezier title 'MORTAC (bezier)' with lines lt 0 lc rgb '#000000', \
-								     'filtered_data' using 1:10 title 'MORTAC (points)' with points pt 7 lc rgb '#000000', \
-								     'filtered_data' using 1:10:(0.3) title 'MORTAC (yerr=0.3)' with yerrorbars lc rgb '#888888'"
-							output="set output 'LUTs - $a:$b:$c:$d:$e.png'";
-							gnuplot -p -e "$general;$title;$output;$xlports;$yllut; \
-								plot 'filtered_data' using 1:7 smooth cspline title 'LUTs (cspline)' with lines lt 0 lc rgb '#000000', \
-								     'filtered_data' using 1:7 title 'LUTs (points)' with points pt 7 lc rgb '#000000'"
-							output="set output 'BRAMs - $a:$b:$c:$d:$e.png'";
-							gnuplot -p -e "$general;$title;$output;$xlports;$yllut; \
-								plot 'filtered_data' using 1:8 smooth cspline title 'BRAMs (cspline)' with lines lt 0 lc rgb '#000000', \
-								     'filtered_data' using 1:8 title 'BRAMs (points)' with points pt 7 lc rgb '#000000'"
-
-							if [ "$broadcast_compare" == "" ]; then
-								broadcast_compare=" '-' using 1:9 smooth bezier title 'MIATBC - $a (bezier)' with lines lt 0 lc rgb '#000000'"
-								cat filtered_data > broadcast_compare_file
-							else
-								broadcast_compare="$broadcast_compare, '-' using 1:9 smooth bezier title 'MIATBC - $a (bezier)' with lines lt 1 lc rgb '#000000'"
-								echo "e" >> broadcast_compare_file
-								cat filtered_data >> broadcast_compare_file
-							fi
-						fi
-
-					done
-					output="set output 'BC_comp - $b:$c:$d:$e.png'"
-					title="set title 'Data for $b:$c:$d:$e BC comp.'"
-					cat broadcast_compare_file | gnuplot -p -e "$general;$title;$output;$xlports;$ylns; \
-						plot $broadcast_compare"
-					broadcast_compare=""
-				done
-			done
-		done
-	done
-
-	rm filtered_data
-	rm broadcast_compare_file
-
-}
-
-
-if [ $# -lt 1 ]; then
-	while read pipe_line; do
-		echo "$pipe_line" >> gnuplot_data
-	done
-else
-	cat $1 >> gnuplot_data
-fi
-
-plot gnuplot_data
-rm gnuplot_data
+# Print SLICE_LUTS comparison for BROADCAST_ENABLED
+./print_graphs \
+	X=N_PORTS \
+	Y=SLICE_LUTS \
+	D=CSPLINE,POINTS \
+	C=BROADCAST_ENABLED \
+	F=TARGET_DEVICE,DESIGN_GOAL,DESIGN_STRATEGY,GLOBAL_OPTIMIZATION
