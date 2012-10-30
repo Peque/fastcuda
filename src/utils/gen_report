@@ -1,0 +1,94 @@
+#!/bin/bash
+
+#
+#  gen_report
+#
+#  Copyright 2012 Miguel Sánchez de León Peque <msdeleonpeque@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+#
+
+
+function print_help {
+	echo -e "\nUsage:\n"
+	echo -e "  gen_statistics [name]\n"
+	echo -e "Being:\n"
+	echo -e "  [name]  = Optional file name to filter synthesis report files"
+	echo -e ""
+}
+
+SYNTHESIS_REPORT_DIR=../../doc/synthesis_reports
+
+cd $SYNTHESIS_REPORT_DIR
+file_list=$(ls -1)
+
+echo "N_PORTS:\
+BROADCAST_ENABLED:\
+TARGET_DEVICE:\
+DESIGN_GOAL:\
+DESIGN_STRATEGY:\
+GLOBAL_OPTIMIZATION:\
+SLICE_LUTS:\
+BLOCK_RAM:\
+MIATBC:\
+MORTAC:\
+MACPD:\
+MIATBC_ROUTE:\
+MIATBC_LOGIC:\
+MORTAC_ROUTE:\
+MORTAC_LOGIC"
+
+for f in $1*; do
+
+	# Raw data
+	N_PORTS=$(echo $f | grep -o "\([0-9\.]\)\+" | head -n 1)
+	BROADCAST_ENABLED=$(if [ "$(echo $f | grep nobroadcast)" = "" ]; then echo broadcast; else echo no_broadcast; fi;)
+	TARGET_DEVICE=$(grep -e "Target Device.*:" $f | grep -o "[^ ]\+" | tail -n 1)
+	DESIGN_GOAL=$(grep -e "Optimization Goal.*:" $f | grep -o "[^ ]\+" | tail -n 1)
+	DESIGN_STRATEGY=$(grep -e "Optimization Effort.*:" $f | grep -o "[^ ]\+" | tail -n 1)
+	GLOBAL_OPTIMIZATION=$(grep -e "Global Optimization.*:" $f | grep -o "[^ ]\+" | tail -n 1)
+	SLICE_LUTS=$(grep -e "Number of Slice LUTs" $f | grep -o "[0-9\.]\+" | head -n 1)
+	BLOCK_RAM=$(grep -e "Number of Block RAM/FIFO" $f | grep -o "[0-9\.]\+" | head -n 1)
+	MIATBC=$(grep -e "Minimum input arrival time before clock" $f | grep -o "[0-9\.]\+" | head -n 1)
+	MORTAC=$(grep -e "Maximum output required time after clock" $f | grep -o "[0-9\.]\+" | head -n 1)
+	MACPD=$(grep -e "Maximum combinational path delay" $f | grep -o "[0-9\.]\+" | head -n 1)
+	MIATBC_ROUTE=$(grep -e "Timing constraint: Default OFFSET IN BEFORE for Clock" $f -A$((($(grep -e "Timing constraint: Default OFFSET OUT AFTER for Clock" $f -n | cut -d: -f1) - $(grep -e "Timing constraint: Default OFFSET IN BEFORE for Clock" -n $f | cut -d: -f1)))) | grep "Total.*logic.*route" | grep -o "[0-9\.]\+" | tail -n 1)
+	MORTAC_ROUTE=$(grep -e "Timing constraint: Default OFFSET OUT AFTER for Clock" $f -A$((($(grep -e "Timing constraint: Default path analysis" $f -n | cut -d: -f1) - $(grep -e "Timing constraint: Default OFFSET OUT AFTER for Clock" -n $f | cut -d: -f1)))) | grep "Total.*logic.*route" | grep -o "[0-9\.]\+" | tail -n 1)
+
+	# Post processing
+	MIATBC_LOGIC=$(echo "$MIATBC - $MIATBC_ROUTE" | bc -l)
+	MORTAC_LOGIC=$(expr "$MORTAC - $MORTAC_ROUTE" | bc -l)
+
+	# Report generation
+	echo -n $N_PORTS:
+	echo -n $BROADCAST_ENABLED:
+	echo -n $TARGET_DEVICE:
+	echo -n $DESIGN_GOAL:
+	echo -n $DESIGN_STRATEGY:
+	echo -n $GLOBAL_OPTIMIZATION:
+	echo -n $SLICE_LUTS:
+	echo -n $BLOCK_RAM:
+	echo -n $MIATBC:
+	echo -n $MORTAC:
+	echo -n $MACPD:
+	echo -n $MIATBC_ROUTE:
+	echo -n $MIATBC_LOGIC:
+	echo -n $MORTAC_ROUTE:
+	echo -n $MORTAC_LOGIC
+
+	echo ""
+
+done

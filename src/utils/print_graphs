@@ -117,7 +117,7 @@ fi
 #
 # Get synthesis report data.
 #
-statistics=$(./gen_statistics)
+statistics=$(./gen_report)
 headers=$(echo "$statistics" | head -n 1 | tr ":" "\n")
 declare -A header_pos
 i=1
