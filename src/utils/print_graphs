@@ -125,6 +125,7 @@ for header in $headers; do
 	header_pos[$header]=$i
 	((i++))
 done
+# Get some data samples for later check if they are numbers or not
 data_examples=$(echo "$statistics" | head -n 2 | tail -n 1 | tr ":" "\n")
 i=1
 for data in $data_examples; do
@@ -188,20 +189,21 @@ fi
 # Main loop iteration for plotting all graphs
 #
 for ((i=0; i<${#filter_f[@]}; i++)); do
-	# TODO: various Y parameters!
-	# TODO: use different line and point styles for different data!
-	if [ "${#filter_c[@]}" == "0" ]; then
-		# Prevent existing filtered_data file
-		rm -f filtered_data
-		# Set gnuplot options
-		command="$set_term"
-		command="$command set xlabel '$XL';"
-		command="$command set ylabel '$YL';"
-		command="$command set title '$T $Y $(echo "${filter_f[$i]}" | tr " " "\n")';"
-		command="$command set output './build/$T $Y ${filter_f[$i]}.$set_fext';"
-		plot_data=""
-		for ((j=0; j<${#y_parameters[@]}; j++)); do
-			data="'-' using ${header_pos[$X]}:${header_pos[${y_parameters[$j]}]}"
+
+	# Prevent existing filtered_data file
+	rm -f filtered_data
+	# Set gnuplot options
+	command="$set_term"
+	command="$command set xlabel '$XL';"
+	command="$command set ylabel '$YL';"
+	command="$command set title '$T $Y $(echo "${filter_f[$i]}" | tr " " "\n")';"
+	command="$command set output './build/$T $Y ${filter_f[$i]}.$set_fext';"
+	plot_data=""
+
+	# If filter C does not exist, execute the loop once
+	for ((j=0; j<${#filter_c[@]} || j<1; j++)); do
+		for ((k=0; k<${#y_parameters[@]}; k++)); do
+			data="'-' using ${header_pos[$X]}:${header_pos[${y_parameters[$k]}]}"
 			# Define which functions/data to be drawn
 			D=$(echo $D | tr " " "\n")
 			for d in $D; do
@@ -209,56 +211,24 @@ for ((i=0; i<${#filter_f[@]}; i++)); do
 				if [ -f filtered_data ]; then
 					echo "e" >> filtered_data
 				fi
-				echo "$statistics" | ./table_filter ${filter_f[$i]} | sed 's/:/\t/g' | sort $sort_options >> filtered_data
+				echo "$statistics" | ./table_filter ${filter_c[$j]} ${filter_f[$i]} | sed 's/:/\t/g' | sort $sort_options >> filtered_data
 				if [ "$plot_data" != "" ]; then
 					plot_data="$plot_data,"
 				fi
 				case $d in
-					POINTS)  plot_data="$plot_data $data title '${y_parameters[$j]} (points)' with points lc rgb '#000000'";;
-					BEZIER)  plot_data="$plot_data $data smooth bezier title '${y_parameters[$j]} (bezier)' with lines";;
-					CSPLINE) plot_data="$plot_data $data smooth cspline title '${y_parameters[$j]} (spline)' with lines";;
-					*)       plot_data="$plot_data $data:($d) title '${y_parameters[$j]} (yerr=$d)' with yerrorbars lc rgb '#888888'";;
+					# TODO: use different line styles for different data!
+					POINTS)  plot_data="$plot_data $data title '${y_parameters[$k]} ${filter_c[$j]} (points)' with points lc rgb '#000000'";;
+					BEZIER)  plot_data="$plot_data $data smooth bezier title '${y_parameters[$k]} ${filter_c[$j]} (bezier)' with lines";;
+					CSPLINE) plot_data="$plot_data $data smooth cspline title '${y_parameters[$k]} ${filter_c[$j]} (spline)' with lines";;
+					*)       plot_data="$plot_data $data:($d) title '${y_parameters[$k]} ${filter_c[$j]} (yerr=$d)' with yerrorbars lc rgb '#888888'";;
 				esac
 			done
 		done
-		# Plot data
-		cat filtered_data | gnuplot -p -e "$command plot $plot_data"
-	else
-		# Prevent existing filtered_data file
-		rm -f filtered_data
-		# Set gnuplot options
-		command="$set_term"
-		command="$command set xlabel '$XL';"
-		command="$command set ylabel '$YL';"
-		command="$command set title '$T $Y $(echo "${filter_f[$i]}" | tr " " "\n")';"
-		command="$command set output './build/$T $Y ${filter_f[$i]}.$set_fext';"
-		plot_data=""
-		for ((j=0; j<${#filter_c[@]}; j++)); do
-			for ((k=0; k<${#y_parameters[@]}; k++)); do
-				data="'-' using ${header_pos[$X]}:${header_pos[${y_parameters[$k]}]}"
-				# Define which functions/data to be drawn
-				D=$(echo $D | tr " " "\n")
-				for d in $D; do
-					# Generate filtered data
-					if [ -f filtered_data ]; then
-						echo "e" >> filtered_data
-					fi
-					echo "$statistics" | ./table_filter ${filter_c[$j]} ${filter_f[$i]} | sed 's/:/\t/g' | sort $sort_options >> filtered_data
-					if [ "$plot_data" != "" ]; then
-						plot_data="$plot_data,"
-					fi
-					case $d in
-						POINTS)  plot_data="$plot_data $data title '${y_parameters[$k]} - ${filter_c[$j]} (points)' with points lc rgb '#000000'";;
-						BEZIER)  plot_data="$plot_data $data smooth bezier title '${y_parameters[$k]} - ${filter_c[$j]} (bezier)' with lines";;
-						CSPLINE) plot_data="$plot_data $data smooth cspline title '${y_parameters[$k]} - ${filter_c[$j]} (spline)' with lines";;
-						*)       plot_data="$plot_data $data:($d) title '${y_parameters[$k]} - ${filter_c[$j]} (yerr=$d)' with yerrorbars lc rgb '#888888'";;
-					esac
-				done
-			done
-		done
-		# Plot data
-		cat filtered_data | gnuplot -p -e "$command plot $plot_data"
-	fi
+	done
+
+	# Plot data
+	cat filtered_data | gnuplot -p -e "$command plot $plot_data"
+
 done
 
 rm filtered_data
