@@ -30,10 +30,7 @@ function print_help {
 	echo -e ""
 }
 
-SYNTHESIS_REPORT_DIR=../../doc/synthesis_reports
-
-cd $SYNTHESIS_REPORT_DIR
-file_list=$(ls -1)
+file_list=$(find ../../doc/synthesis_reports -maxdepth 1 -type f)
 
 echo "N_PORTS:\
 BROADCAST_ENABLED:\
@@ -51,10 +48,10 @@ MIATBC_LOGIC:\
 MORTAC_ROUTE:\
 MORTAC_LOGIC"
 
-for f in $1*; do
+for f in ${file_list[@]}; do
 
 	# Raw data
-	N_PORTS=$(echo $f | grep -o "\([0-9\.]\)\+" | head -n 1)
+	N_PORTS=$(echo $f | grep -o "\([0-9]\)\+" | head -n 1)
 	BROADCAST_ENABLED=$(if [ "$(echo $f | grep nobroadcast)" = "" ]; then echo broadcast; else echo no_broadcast; fi;)
 	TARGET_DEVICE=$(grep -e "Target Device.*:" $f | grep -o "[^ ]\+" | tail -n 1)
 	DESIGN_GOAL=$(grep -e "Optimization Goal.*:" $f | grep -o "[^ ]\+" | tail -n 1)
