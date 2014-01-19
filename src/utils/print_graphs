@@ -89,7 +89,7 @@ function generate_parameters_combinations () {
 #
 # Set program parameters.
 #
-for i in $@; do
+for i in "$@"; do
 	var=$(echo $i | cut -d= -f1)
 	val=$(echo $i | cut -d= -f2 | tr "," "\n")
 	case $var in
